@@ -118,9 +118,9 @@ export default function FaqPage() {
                 <AccordionTrigger className="text-lg md:text-xl text-left hover:no-underline py-6">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent 
+                <AccordionContent
                   className="text-base md:text-lg text-muted-foreground prose prose-invert max-w-none prose-a:text-primary hover:prose-a:text-primary/80"
-                  dangerouslySetInnerHTML={{ __html: faq.answer.replace(/\n<br \/>/g, '<br />').replace(/\n/g, '<br />') }}
+                  htmlString={faq.answer.replace(/\n<br \/>/g, '<br />').replace(/\n/g, '<br />')}
                 />
               </AccordionItem>
             ))}
@@ -149,5 +149,3 @@ export default function FaqPage() {
     </div>
   );
 }
-
-    

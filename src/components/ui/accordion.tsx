@@ -41,42 +41,38 @@ const AccordionTrigger = React.forwardRef<
 ))
 AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName
 
+// Define more specific props for our AccordionContent wrapper
+interface CustomAccordionContentProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>, "dangerouslySetInnerHTML" | "children"> {
+  children?: React.ReactNode; // For standard JSX children
+  htmlString?: string; // For HTML content to be dangerously set
+  // className will be applied to the inner content div
+}
+
 const AccordionContent = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Content>,
-  // Allow all props of AccordionPrimitive.Content, including className, children, dangerouslySetInnerHTML
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
->(({ className, children, dangerouslySetInnerHTML, ...otherProps }, ref) => {
-  
-  // Props that will be passed to AccordionPrimitive.Content in both cases
-  const primitiveContentProps = {
-    ...otherProps, // Spread any other props passed to AccordionContent
-    ref,
-    className: cn(
-      "overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
-      className // User-provided className (e.g., for prose styles)
-    ),
-  };
-
-  if (dangerouslySetInnerHTML) {
-    // If dangerouslySetInnerHTML is provided, pass it directly to AccordionPrimitive.Content.
-    // Do NOT render any explicit JSX children for AccordionPrimitive.Content in this branch.
-    // The 'children' prop destructured above (from AccordionContent's arguments) is intentionally ignored here.
-    // 'otherProps' (and thus primitiveContentProps) should not contain 'children' if it was correctly destructured.
-    return (
-      <AccordionPrimitive.Content
-        {...primitiveContentProps}
-        dangerouslySetInnerHTML={dangerouslySetInnerHTML}
-      />
-    );
-  } else {
-    // If dangerouslySetInnerHTML is NOT provided, render the 'children' prop (passed to AccordionContent)
-    // wrapped in the standard padding div, which becomes the JSX children of AccordionPrimitive.Content.
-    return (
-      <AccordionPrimitive.Content {...primitiveContentProps}>
-        <div className="pb-4 pt-0">{children}</div>
-      </AccordionPrimitive.Content>
-    );
-  }
+  CustomAccordionContentProps
+>(({ className, children, htmlString, ...props }, ref) => {
+  return (
+    <AccordionPrimitive.Content
+      ref={ref}
+      className={cn( // This className is for the AccordionPrimitive.Content itself (the collapsible animation wrapper)
+        "overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+        // User's className (like prose) is applied to the inner div below
+      )}
+      {...props} // Pass other AccordionPrimitive.Content props (e.g., forceMount, asChild)
+    >
+      {/* Inner div that actually holds the content and gets user's className */}
+      {htmlString ? (
+        <div
+          className={cn("pb-4 pt-0", className)} // Apply user's className here
+          dangerouslySetInnerHTML={{ __html: htmlString }}
+        />
+      ) : (
+        <div className={cn("pb-4 pt-0", className)}>{children}</div> // Apply user's className here
+      )}
+    </AccordionPrimitive.Content>
+  );
 });
 AccordionContent.displayName = AccordionPrimitive.Content.displayName
 
