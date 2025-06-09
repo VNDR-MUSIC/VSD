@@ -9,6 +9,17 @@ export default function HomePage() {
   return (
     <div className="space-y-12">
       <section className="text-center py-16">
+        <div className="flex justify-center mb-8">
+          <Image
+            src="https://indiemedia.llc/vsdlogo.jpg"
+            alt="VSD Network Logo"
+            width={100} 
+            height={100}
+            className="rounded-full"
+            priority
+            data-ai-hint="logo abstract"
+          />
+        </div>
         <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6">
           Welcome to <span className="text-primary">{siteConfig.name}</span>
         </h1>
@@ -16,10 +27,10 @@ export default function HomePage() {
           Your central hub for the VSD decentralized stablecoin. Explore token information, discover ecosystem projects, and access developer resources.
         </p>
         <div className="space-x-4">
-          <Button asChild size="lg" className="font-bold">
+          <Button asChild size="lg" className="font-bold btn-hover-effect">
             <Link href="/token">Learn about VSD <ArrowRight className="ml-2 h-5 w-5" /></Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="font-bold">
+          <Button asChild size="lg" variant="outline" className="font-bold btn-hover-effect">
             <Link href="/developers">Developer Portal <Code className="ml-2 h-5 w-5" /></Link>
           </Button>
         </div>
@@ -40,7 +51,7 @@ export default function HomePage() {
             </ul>
           </CardContent>
           <CardFooter>
-            <Button asChild variant="outline" className="w-full">
+            <Button asChild variant="outline" className="w-full btn-hover-effect">
               <Link href="/token">View Token Details <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
           </CardFooter>
@@ -66,7 +77,7 @@ export default function HomePage() {
             />
           </CardContent>
           <CardFooter>
-            <Button asChild variant="outline" className="w-full">
+            <Button asChild variant="outline" className="w-full btn-hover-effect">
               <Link href="/ecosystem">Explore Ecosystem <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
           </CardFooter>
@@ -92,7 +103,7 @@ export default function HomePage() {
             />
           </CardContent>
           <CardFooter>
-            <Button asChild variant="outline" className="w-full">
+            <Button asChild variant="outline" className="w-full btn-hover-effect">
               <Link href="/developers">Access Developer Portal <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
           </CardFooter>
@@ -105,7 +116,7 @@ export default function HomePage() {
         <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
           Quickly find answers and navigate our extensive documentation using our intelligent search assistant.
         </p>
-        <Button asChild size="lg">
+        <Button asChild size="lg" className="btn-hover-effect">
           <Link href="/developers#ai-search">Try AI Search <ArrowRight className="ml-2 h-5 w-5" /></Link>
         </Button>
       </section>

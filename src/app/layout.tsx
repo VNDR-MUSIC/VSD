@@ -11,7 +11,10 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  // TODO: Add more metadata like icons, open graph, etc.
+  icons: {
+    icon: 'https://indiemedia.llc/vsdlogo.jpg',
+  }
+  // TODO: Add more metadata like open graph, etc.
 };
 
 export default function RootLayout({
@@ -25,6 +28,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet" />
+        {/* Favicon using the metadata object is preferred */}
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col">
         <Header />

@@ -1,26 +1,21 @@
-import type { SVGProps } from 'react';
+import Image from 'next/image';
+import type { ImageProps } from 'next/image';
+import { cn } from '@/lib/utils';
 
-export function Logo(props: SVGProps<SVGSVGElement>) {
+interface LogoProps extends Omit<ImageProps, 'src' | 'alt'> {
+  size?: number;
+}
+
+export function Logo({ size = 30, className, ...props }: LogoProps) {
   return (
-    <svg
-      width="80"
-      height="30"
-      viewBox="0 0 80 30"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
+    <Image
+      src="https://indiemedia.llc/vsdlogo.jpg"
+      alt="VSD Network Logo"
+      width={size}
+      height={size}
+      className={cn("rounded-full", className)}
+      priority // Good for LCP elements like header logo
       {...props}
-    >
-      <text
-        x="50%"
-        y="50%"
-        dominantBaseline="middle"
-        textAnchor="middle"
-        fontFamily="Orbitron, sans-serif"
-        fontSize="24"
-        fontWeight="bold"
-      >
-        VSD
-      </text>
-    </svg>
+    />
   );
 }
