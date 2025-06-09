@@ -1,27 +1,21 @@
 /* eslint-disable @next/next/no-css-tags */
 "use client";
-import type { Metadata } from 'next'; // Added
+import type { Metadata } from 'next';
 import Script from 'next/script';
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AIImage } from "@/components/ai/AIImage";
 
-// Added metadata export
 export const metadata: Metadata = {
   title: 'VSD Token | Official Utility Token of IMG Network',
   description: 'Unlock services, receive royalties, and participate in the future of the independent music ecosystem with VSD, the ERC20 token that connects it all.',
-  // You can add more metadata fields like openGraph, etc.
 };
 
 export default function VsdTokenInfoPage() {
-  const adoptionChartRef = useRef<HTMLCanvasElement>(null);
-  const valueChartRef = useRef<HTMLCanvasElement>(null);
-  const chartsRendered = useRef(false);
+  const chartsRendered = useRef(false); // Kept for now, though charts are removed
 
   useEffect(() => {
-    // Removed: document.title = 'VSD Token | The Official Utility Token of the IMG Network';
-
     const observedElements = new Map();
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -46,96 +40,6 @@ export default function VsdTokenInfoPage() {
   }, []);
 
 
-  const initializeCharts = () => {
-    if (chartsRendered.current || typeof window === 'undefined' || !(window as any).Chart) return;
-
-    const Chart = (window as any).Chart;
-    const primaryColor = 'hsl(346, 100%, 40.8%)';
-    const accentColor = 'hsl(0, 0%, 50.2%)';
-    const chart1Color = 'hsl(220, 70%, 50%)';
-    const chart2Color = 'hsl(160, 60%, 45%)';
-    const textColor = 'hsl(0, 0%, 98%)';
-    const gridColor = 'hsla(0, 0%, 20%, 0.3)';
-
-    const adoptionLabels = ['2024', '2025', '2026', '2027', '2028', '2029', '2030', '2031', '2032', '2033', '2034', '2035'];
-    const adoptionData = [500, 2500, 7000, 15000, 30000, 50000, 80000, 120000, 170000, 230000, 300000, 400000];
-
-    if (adoptionChartRef.current) {
-      const adoptionCtx = adoptionChartRef.current.getContext('2d');
-      if (adoptionCtx) {
-        new Chart(adoptionCtx, {
-          type: 'bar',
-          data: {
-            labels: adoptionLabels,
-            datasets: [{
-              label: 'Hypothetical Active Network Users',
-              data: adoptionData,
-              backgroundColor: chart1Color,
-              borderColor: chart1Color,
-              borderWidth: 1
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: { beginAtZero: true, ticks: { color: textColor, stepSize: 100000 }, grid: { color: gridColor } },
-              x: { ticks: { color: textColor }, grid: { display: false } }
-            },
-            plugins: {
-              legend: { display: false },
-              tooltip: { callbacks: { label: (context: any) => ` Users: ${context.parsed.y.toLocaleString()}` } }
-            },
-            animation: { duration: 1500, easing: 'easeOutQuart' }
-          }
-        });
-      }
-    }
-
-    const valueData = [
-      { x: '2024-01-01', y: 0.05 }, { x: '2025-01-01', y: 0.12 }, { x: '2026-01-01', y: 0.25 },
-      { x: '2027-01-01', y: 0.40 }, { x: '2028-01-01', y: 0.65 }, { x: '2029-01-01', y: 0.90 },
-      { x: '2030-01-01', y: 1.20 }, { x: '2031-01-01', y: 1.60 }, { x: '2032-01-01', y: 2.10 },
-      { x: '2033-01-01', y: 2.70 }, { x: '2034-01-01', y: 3.40 }, { x: '2035-01-01', y: 4.20 }
-    ];
-
-    if (valueChartRef.current) {
-      const valueCtx = valueChartRef.current.getContext('2d');
-      if (valueCtx) {
-        new Chart(valueCtx, {
-          type: 'line',
-          data: {
-            datasets: [{
-              label: 'Hypothetical VSD Value (USD)',
-              data: valueData,
-              borderColor: chart2Color,
-              backgroundColor: chart2Color + '66',
-              tension: 0.3,
-              fill: true,
-              pointBackgroundColor: chart2Color,
-              pointRadius: 3,
-              pointHoverRadius: 5
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              x: { type: 'time', time: { unit: 'year' }, ticks: { color: textColor, source: 'auto' }, grid: { color: gridColor } },
-              y: { beginAtZero: true, ticks: { color: textColor, callback: (value: any) => '$' + Number(value).toFixed(2) }, grid: { color: gridColor } }
-            },
-            plugins: {
-              legend: { display: false },
-              tooltip: { callbacks: { label: (context: any) => ` Value: $${context.parsed.y.toFixed(2)}` } }
-            },
-            animation: { duration: 1500, easing: 'easeOutQuart' }
-          }
-        });
-      }
-    }
-    chartsRendered.current = true;
-  };
-
   const customAnimationStyle = `
     @keyframes float {
       0% { transform: translateY(0px); }
@@ -155,10 +59,6 @@ export default function VsdTokenInfoPage() {
     <>
       {/* Font Awesome Script using next/script */}
       <Script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js" integrity="sha512-yFjWTYkSz0D7KbjwWslD9s3Fssf3S3DqJNSL7XvG8p0nCrcsT/kM2ErHkLInL/L7rTfC+9J+tA81pM4/dYj2jQ==" crossOrigin="anonymous" referrerPolicy="no-referrer" strategy="lazyOnload" />
-
-      {/* Chart.js scripts using next/script */}
-      <Script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js" strategy="lazyOnload" onReady={initializeCharts} />
-      <Script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0/dist/chartjs-adapter-date-fns.bundle.min.js" strategy="lazyOnload" onReady={initializeCharts} />
 
       {/* AI Calling Bot script using next/script */}
       <Script src="https://backend.aicallings.com/assets/clone_bot.js?id=13711" id="calling_bot" strategy="lazyOnload" />
@@ -372,20 +272,19 @@ export default function VsdTokenInfoPage() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16 items-start">
-                <div className="animate-fadeIn p-4 bg-background/70 rounded-lg border border-border shadow-md" style={{ animationDelay: '0.2s' }}>
-                  <h3 className="font-headline text-xl text-foreground mb-4 text-center">Hypothetical Network Adoption
-                    Growth</h3>
-                  <div className="h-64 md:h-80"><canvas id="adoptionChart" ref={adoptionChartRef}></canvas></div>
-                  <p className="text-xs text-center text-muted-foreground mt-2">Illustrative projection of active
-                    users/artists</p>
-                </div>
-                <div className="animate-fadeIn p-4 bg-background/70 rounded-lg border border-border shadow-md" style={{ animationDelay: '0.3s' }}>
-                  <h3 className="font-headline text-xl text-foreground mb-4 text-center">Hypothetical VSD Value
-                    Projection</h3>
-                  <div className="h-64 md:h-80"><canvas id="valueChart" ref={valueChartRef}></canvas></div>
-                  <p className="text-xs text-center text-muted-foreground mt-2">Illustrative projection based on network
-                    factors</p>
+              {/* Charts removed from here */}
+              <div className="grid grid-cols-1 lg:grid-cols-1 gap-12 md:gap-16 items-start">
+                <div className="animate-fadeIn p-4 bg-background/70 rounded-lg border border-border shadow-md text-center" style={{ animationDelay: '0.2s' }}>
+                  <h3 className="font-headline text-xl text-foreground mb-4">Growth Projections</h3>
+                   <p className="text-muted-foreground">Detailed growth and value projection charts are currently under review and will be updated soon. </p>
+                   <AIImage
+                     initialSrc="https://placehold.co/700x350.png"
+                     alt="Placeholder for growth chart"
+                     width={700}
+                     height={350}
+                     className="rounded-md my-6 shadow-md mx-auto"
+                     hint="financial graph placeholder"
+                   />
                 </div>
               </div>
 
@@ -411,7 +310,7 @@ export default function VsdTokenInfoPage() {
               <div className="mt-12 max-w-4xl mx-auto animate-fadeIn" style={{ animationDelay: '0.5s' }}>
                 <div className="p-6 bg-destructive/10 border border-destructive/30 rounded-lg text-destructive-foreground">
                   <strong className="block mb-2 text-destructive">IMPORTANT DISCLAIMER: Not Financial Advice</strong>
-                  The charts and information presented in this section regarding potential growth and value
+                  The information presented in this section regarding potential growth and value
                   are purely hypothetical, illustrative examples based on internal assumptions and goals for
                   the IMG Network&apos;s expansion and VSD adoption. They DO NOT represent actual market
                   predictions, guarantees of future value, or financial advice. The value of VSD tokens, like
