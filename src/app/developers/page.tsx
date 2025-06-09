@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { BookOpen, Users, Github, MessageSquare, Search, Lightbulb, Code } from "lucide-react";
+import { BookOpen, Users, Github, MessageSquare, Search, Lightbulb, Code, Package } from "lucide-react"; // Added Package
 import { DocumentationSearchForm } from "@/components/ai/DocumentationSearchForm";
 import { Separator } from "@/components/ui/separator";
 import type { Metadata } from 'next';
@@ -41,22 +41,45 @@ export default function DevelopersPage() {
 
       <Separator />
 
-      <section className="grid md:grid-cols-2 gap-8">
-        <Card className="shadow-lg">
+      <section className="grid md:grid-cols-2 gap-8 items-stretch"> {/* Added items-stretch for consistent card height */}
+        <Card className="shadow-lg flex flex-col"> {/* Flex classes for footer alignment */}
           <CardHeader>
             <BookOpen className="h-10 w-10 text-primary mb-3" />
             <CardTitle className="font-headline text-2xl">Documentation</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-grow"> {/* flex-grow to push footer down */}
             <p className="text-muted-foreground mb-4">
               Dive into our comprehensive documentation to understand VSD's architecture, smart contracts, APIs, and integration guides.
             </p>
-            <Button asChild variant="outline">
-              <Link href="/developers/documentation" rel="noopener noreferrer">Read Docs</Link>
-            </Button>
           </CardContent>
+          <CardFooter>
+            <Button asChild variant="outline" className="w-full">
+              <Link href="/developers/documentation">Read Docs</Link>
+            </Button>
+          </CardFooter>
         </Card>
 
+        <Card className="shadow-lg flex flex-col">
+          <CardHeader>
+            <Package className="h-10 w-10 text-primary mb-3" /> {/* Changed icon */}
+            <CardTitle className="font-headline text-2xl">SDKs & Tools</CardTitle> {/* Changed title */}
+          </CardHeader>
+          <CardContent className="flex-grow">
+            <p className="text-muted-foreground mb-4">
+              Explore our Software Development Kits and tools designed to simplify your integration with the VSD Network.
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button asChild variant="outline" className="w-full">
+              <Link href="/developers/sdks-tools">Explore SDKs & Tools</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+      </section>
+      
+      <Separator />
+      
+      <section id="community">
         <Card className="shadow-lg">
           <CardHeader>
             <Users className="h-10 w-10 text-primary mb-3" />
@@ -87,27 +110,6 @@ export default function DevelopersPage() {
         </Card>
       </section>
 
-      <Separator />
-      
-      <section>
-        <Card className="shadow-lg">
-            <CardHeader>
-                <Code className="h-10 w-10 text-primary mb-3" />
-                <CardTitle className="font-headline text-2xl">SDKs & Tools (Coming Soon)</CardTitle>
-                <CardDescription>
-                    We are developing Software Development Kits (SDKs) and tools to make integration with VSD seamless. Stay tuned for updates.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <p className="text-muted-foreground">
-                    Placeholder for future SDKs (e.g., JavaScript, Python) and CLI tools.
-                </p>
-            </CardContent>
-        </Card>
-      </section>
-
     </div>
   );
 }
-
-    
