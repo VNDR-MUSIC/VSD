@@ -1,0 +1,9 @@
+
+/* 
+  This file is intentionally left empty or can be deleted.
+  Styles have been migrated to Tailwind CSS utility classes, 
+  ShadCN component styles, and inline styles within page.tsx 
+  for VSD Network theme consistency.
+  The `animate-float` and `animate-pulse-glow` keyframes are now 
+  defined within a <style jsx global> tag in vsd-token-info/page.tsx.
+*/

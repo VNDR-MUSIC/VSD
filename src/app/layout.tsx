@@ -1,3 +1,4 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
@@ -14,7 +15,6 @@ export const metadata: Metadata = {
   icons: {
     icon: 'https://indiemedia.llc/vsdlogo.jpg',
   }
-  // TODO: Add more metadata like open graph, etc.
 };
 
 export default function RootLayout({
@@ -28,15 +28,28 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet" />
-        {/* Favicon using the metadata object is preferred */}
       </head>
-      <body className="font-body antialiased min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-grow container mx-auto px-4 py-8">
-          {children}
-        </main>
-        <Footer />
-        <Toaster />
+      <body className="font-body antialiased min-h-screen flex flex-col relative">
+        <div className="fixed inset-0 w-full h-full -z-10">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover opacity-30"
+            src="https://videos.pexels.com/video-files/4431790/4431790-uhd_2560_1440_30fps.mp4"
+            typeof="video/mp4"
+          />
+          <div className="absolute inset-0 bg-black/50"></div> {/* Optional: slightly darker overlay */}
+        </div>
+        <div className="relative z-0 flex flex-col min-h-screen">
+          <Header />
+          <main className="flex-grow container mx-auto px-4 py-8">
+            {children}
+          </main>
+          <Footer />
+          <Toaster />
+        </div>
       </body>
     </html>
   );

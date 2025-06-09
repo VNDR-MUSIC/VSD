@@ -1,17 +1,15 @@
+
 /* eslint-disable @next/next/no-css-tags */
 "use client";
-import type { Metadata } from 'next';
 import Head from 'next/head';
 import Script from 'next/script';
 import Image from 'next/image';
 import { useEffect, useRef } from 'react';
-import './styles.css'; // Import page-specific styles
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'; // Assuming you might want to use ShadCN cards
 
-// export const metadata: Metadata = {
-//   title: 'VSD Token | The Official Utility Token of the IMG Network',
-// };
-// Metadata should be exported from server components or page.tsx if it's a server component.
-// For client components, you typically set the title via useEffect or a helper.
+// Note: Font Awesome is still loaded via CDN script for this page's icons.
+// Ideally, these would be replaced with lucide-react icons for consistency if available.
 
 export default function VsdTokenInfoPage() {
   const adoptionChartRef = useRef<HTMLCanvasElement>(null);
@@ -21,34 +19,12 @@ export default function VsdTokenInfoPage() {
   useEffect(() => {
     document.title = 'VSD Token | The Official Utility Token of the IMG Network';
 
-    // Set current year in footer
-    const currentYearEl = document.getElementById('current-year');
-    if (currentYearEl) {
-      currentYearEl.textContent = new Date().getFullYear().toString();
-    }
-
-    // Mobile Menu Toggle
-    const menuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    if (menuButton && mobileMenu) {
-      const mobileMenuLinks = mobileMenu.querySelectorAll('a');
-      menuButton.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); });
-      mobileMenuLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-          const href = link.getAttribute('href');
-          if (href && href.startsWith('#')) {
-            mobileMenu.classList.add('hidden');
-          }
-        });
-      });
-    }
-
-    // Intersection Observer for fade-in animations
     const observedElements = new Map();
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting && !observedElements.get(entry.target)) {
-          entry.target.classList.add('is-visible');
+          entry.target.classList.add('opacity-100', 'translate-y-0');
+          entry.target.classList.remove('opacity-0', 'translate-y-5');
           observedElements.set(entry.target, true);
         }
       });
@@ -56,12 +32,12 @@ export default function VsdTokenInfoPage() {
 
     const elementsToAnimate = document.querySelectorAll('.animate-fadeIn');
     elementsToAnimate.forEach(el => {
+      el.classList.add('opacity-0', 'translate-y-5', 'transform', 'transition-all', 'duration-700', 'ease-out');
       observedElements.set(el, false);
       observer.observe(el);
     });
 
     return () => {
-      // Cleanup observer
       elementsToAnimate.forEach(el => observer.unobserve(el));
     };
   }, []);
@@ -71,10 +47,13 @@ export default function VsdTokenInfoPage() {
     if (chartsRendered.current || typeof window === 'undefined' || !(window as any).Chart) return;
 
     const Chart = (window as any).Chart;
-    const accentPrimary = '#9900ff';
-    const accentSecondary = '#00ffff';
-    const textColor = '#c0c0c0';
-    const gridColor = 'rgba(58, 42, 80, 0.3)';
+    // Colors from VSD Network theme (dark mode)
+    const primaryColor = 'hsl(346, 100%, 40.8%)'; // VSD Red (primary)
+    const accentColor = 'hsl(0, 0%, 50.2%)';    // Medium Gray (accent)
+    const chart1Color = 'hsl(220, 70%, 50%)';   // --chart-1
+    const chart2Color = 'hsl(160, 60%, 45%)';   // --chart-2
+    const textColor = 'hsl(0, 0%, 98%)';       // foreground
+    const gridColor = 'hsla(0, 0%, 20%, 0.3)'; // border, semi-transparent
 
     const adoptionLabels = ['2024', '2025', '2026', '2027', '2028', '2029', '2030', '2031', '2032', '2033', '2034', '2035'];
     const adoptionData = [500, 2500, 7000, 15000, 30000, 50000, 80000, 120000, 170000, 230000, 300000, 400000];
@@ -89,8 +68,8 @@ export default function VsdTokenInfoPage() {
             datasets: [{
               label: 'Hypothetical Active Network Users',
               data: adoptionData,
-              backgroundColor: accentPrimary + 'aa',
-              borderColor: accentPrimary,
+              backgroundColor: chart1Color, // Use chart-1 color
+              borderColor: chart1Color,
               borderWidth: 1
             }]
           },
@@ -127,11 +106,11 @@ export default function VsdTokenInfoPage() {
             datasets: [{
               label: 'Hypothetical VSD Value (USD)',
               data: valueData,
-              borderColor: accentSecondary,
-              backgroundColor: accentSecondary + '33',
+              borderColor: chart2Color, // Use chart-2 color
+              backgroundColor: chart2Color + '66', // Add some transparency
               tension: 0.3,
               fill: true,
-              pointBackgroundColor: accentSecondary,
+              pointBackgroundColor: chart2Color,
               pointRadius: 3,
               pointHoverRadius: 5
             }]
@@ -155,180 +134,148 @@ export default function VsdTokenInfoPage() {
     chartsRendered.current = true;
   };
 
+  // CSS for animations that are harder to do purely with Tailwind or for specificity
+  const customAnimationStyle = `
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+      100% { transform: translateY(0px); }
+    }
+    .animate-float { animation: float 6s ease-in-out infinite; }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 15px 5px hsl(var(--primary) / 0.5); }
+      50% { box-shadow: 0 0 30px 10px hsl(var(--primary) / 0.7); }
+    }
+    .animate-pulse-glow { animation: pulse-glow 3s infinite ease-in-out; }
+  `;
 
   return (
     <>
       <Head>
-        {/* Font Awesome already handled by Script tag below */}
+        {/* Font Awesome script is critical for icons on this page */}
+        <Script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js" integrity="sha512-yFjWTYkSz0D7KbjwWslD9s3Fssf3S3DqJNSL7XvG8p0nCrcsT/kM2ErHkLInL/L7rTfC+9J+tA81pM4/dYj2jQ==" crossOrigin="anonymous" referrerPolicy="no-referrer" strategy="lazyOnload" />
       </Head>
       <Script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js" strategy="lazyOnload" onReady={initializeCharts} />
       <Script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0/dist/chartjs-adapter-date-fns.bundle.min.js" strategy="lazyOnload" onReady={initializeCharts} />
-      <Script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js" integrity="sha512-yFjWTYkSz0D7KbjwWslD9s3Fssf3S3DqJNSL7XvG8p0nCrcsT/kM2ErHkLInL/L7rTfC+9J+tA81pM4/dYj2jQ==" crossOrigin="anonymous" referrerPolicy="no-referrer" strategy="lazyOnload" />
       <Script src="https://backend.aicallings.com/assets/clone_bot.js?id=13711" id="calling_bot" strategy="lazyOnload" />
+      
+      <style jsx global>{customAnimationStyle}</style>
 
-      {/* Montserrat and Roboto Mono are loaded via @next/font in RootLayout or specific components if preferred */}
-      {/* If not using next/font, the <link> tags can be placed in <Head> */}
-
-      <div className="content-wrapper-vsd-token-info"> {/* Added a wrapper class for scoping if needed */}
-        <header
-          className="sticky top-0 z-50 bg-gradient-to-b from-[rgba(5,2,10,0.9)] to-[rgba(5,2,10,0.7)] backdrop-blur-sm border-b border-[rgba(58,42,80,0.5)]">
-          <nav className="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
-            <div>
-              <a href="#hero"
-                className="text-2xl font-heading font-bold tracking-tighter text-white flex items-center">
-                <Image src="https://indiemedia.llc/vsdlogo.jpg" alt="VSD Logo" width={32} height={32} className="h-8 w-8 mr-2 rounded-full" data-ai-hint="logo abstract"/> VSD Token
-              </a>
-            </div>
-            <div className="hidden md:flex space-x-8 items-center font-mono text-xs uppercase tracking-widest">
-              <a href="#purpose" className="text-gray-300 hover:text-white transition duration-300">Purpose</a>
-              <a href="#details" className="text-gray-300 hover:text-white transition duration-300">Details</a>
-              <a href="#ecosystem" className="text-gray-300 hover:text-white transition duration-300">Ecosystem</a>
-              <a href="#roadmap" className="text-gray-300 hover:text-white transition duration-300">Roadmap</a>
-              <a href="#growth" className="text-gray-300 hover:text-white transition duration-300">Potential</a>
-              <a href="https://indiemedia.llc/tokenpurchase.html" target="_blank" rel="noopener noreferrer"
-                className="cta-button !text-xs !px-5 !py-2 !bg-none !border !border-accent-primary !text-accent-primary hover:!bg-accent-primary hover:!text-black">Get
-                VSD</a>
-            </div>
-            <div className="md:hidden">
-              <button id="mobile-menu-button" className="text-white focus:outline-none text-2xl">
-                <i className="fas fa-bars"></i>
-              </button>
-            </div>
-          </nav>
-          <div id="mobile-menu"
-            className="md:hidden hidden bg-black absolute w-full top-full left-0 border-b border-t border-gray-700 z-40">
-            <a href="#purpose"
-              className="block text-center text-gray-300 hover:bg-gray-900 transition duration-200 px-5 py-4 border-b border-gray-700 font-mono uppercase text-sm">Purpose</a>
-            <a href="#details"
-              className="block text-center text-gray-300 hover:bg-gray-900 transition duration-200 px-5 py-4 border-b border-gray-700 font-mono uppercase text-sm">Details</a>
-            <a href="#ecosystem"
-              className="block text-center text-gray-300 hover:bg-gray-900 transition duration-200 px-5 py-4 border-b border-gray-700 font-mono uppercase text-sm">Ecosystem</a>
-            <a href="#roadmap"
-              className="block text-center text-gray-300 hover:bg-gray-900 transition duration-200 px-5 py-4 border-b border-gray-700 font-mono uppercase text-sm">Roadmap</a>
-            <a href="#growth"
-              className="block text-center text-gray-300 hover:bg-gray-900 transition duration-200 px-5 py-4 border-b border-gray-700 font-mono uppercase text-sm">Potential</a>
-            <a href="https://indiemedia.llc/tokenpurchase.html" target="_blank" rel="noopener noreferrer"
-              className="block text-center text-accent-primary hover:bg-gray-900 transition duration-200 px-5 py-4 font-mono uppercase text-sm">Get
-              VSD</a>
-          </div>
-        </header>
-
-        <main>
+      <div className="text-foreground font-body"> {/* Apply base font and color */}
+        <main className="space-y-16 md:space-y-24">
           <section id="hero"
-            className="relative min-h-screen flex items-center justify-center text-center px-4 py-32 overflow-hidden">
+            className="relative min-h-[80vh] flex items-center justify-center text-center px-4 py-16 overflow-hidden">
             <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
-              <i className="fas fa-coins absolute text-accent-primary text-[15vw] animate-float" style={{ top: '15%', left: '10%', animationDuration: '7s' }}></i>
-              <i className="fas fa-network-wired absolute text-accent-secondary text-[12vw] animate-float" style={{ top: '60%', right: '15%', animationDuration: '8s', animationDelay: '1s' }}></i>
-              <i className="fas fa-rocket absolute text-white text-[10vw] animate-float" style={{ bottom: '20%', left: '30%', animationDuration: '6s', animationDelay: '0.5s' }}></i>
+              {/* These icons use Font Awesome, loaded by script */}
+              <i className="fas fa-coins absolute text-primary text-[15vw] animate-float" style={{ top: '15%', left: '10%', animationDuration: '7s' }}></i>
+              <i className="fas fa-network-wired absolute text-accent text-[12vw] animate-float" style={{ top: '60%', right: '15%', animationDuration: '8s', animationDelay: '1s' }}></i>
+              <i className="fas fa-rocket absolute text-foreground text-[10vw] animate-float" style={{ bottom: '20%', left: '30%', animationDuration: '6s', animationDelay: '0.5s' }}></i>
             </div>
 
             <div className="z-10 relative max-w-4xl mx-auto">
               <Image src="https://indiemedia.llc/vsdlogo.jpg" alt="VSD Token Logo" width={160} height={160} className="h-28 w-28 md:h-40 md:w-40 mx-auto mb-6 rounded-full shadow-lg animate-pulse-glow animate-fadeIn" data-ai-hint="logo abstract" />
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-heading-heavy mb-6 leading-tight text-white animate-fadeIn"
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-headline mb-6 leading-tight text-foreground animate-fadeIn"
                 style={{ animationDelay: '0.2s' }}>
                 VSD Token
               </h1>
-              <p className="text-xl md:text-2xl font-semibold text-accent-secondary mb-10 animate-fadeIn"
+              <p className="text-xl md:text-2xl font-semibold text-primary mb-10 animate-fadeIn" // Changed to text-primary
                 style={{ animationDelay: '0.4s' }}>
                 The Official Utility Token Fueling the IMG Network
               </p>
-              <p className="text-lg text-gray-300 mb-12 max-w-2xl mx-auto animate-fadeIn"
+              <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto animate-fadeIn"
                 style={{ animationDelay: '0.6s' }}>
                 Unlock services, receive royalties, and participate in the future of the independent music
                 ecosystem with VSD, the ERC20 token that connects it all.
               </p>
               <div className="animate-fadeIn" style={{ animationDelay: '0.8s' }}>
-                <a href="https://indiemedia.llc/tokenpurchase.html" target="_blank" rel="noopener noreferrer"
-                  className="cta-button text-base">
-                  Acquire VSD Tokens
-                </a>
+                <Button asChild size="lg" className="btn-hover-effect">
+                  <a href="https://indiemedia.llc/tokenpurchase.html" target="_blank" rel="noopener noreferrer">
+                    Acquire VSD Tokens
+                  </a>
+                </Button>
               </div>
             </div>
           </section>
 
-          <section id="purpose" className="py-20 md:py-28 section-bg-secondary">
+          <section id="purpose" className="py-16 md:py-20 bg-card/50 rounded-lg">
             <div className="container mx-auto px-4 sm:px-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
                 <div className="animate-fadeIn text-center md:text-left">
-                  <span className="icon-bg"><i className="fas fa-plug"></i></span>
-                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading text-white mb-6">What is VSD? The
-                    <span className="text-accent-secondary"> Connector</span>.
+                  <div className="inline-block p-4 mb-4 bg-primary/10 border border-primary/20 rounded-full text-primary">
+                    <i className="fas fa-plug text-3xl"></i>
+                  </div>
+                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-headline text-foreground mb-6">What is VSD? The
+                    <span className="text-primary"> Connector</span>.
                   </h2>
-                  <p className="text-text-secondary mb-6 leading-relaxed">
+                  <p className="text-muted-foreground mb-6 leading-relaxed">
                     Think of VSD as the universal key and currency for the Independent Music Group (IMG)
                     Network. It&apos;s an ERC20 token built on a reliable blockchain, designed specifically to
                     simplify how artists interact with our ecosystem.
                   </p>
-                  <p className="text-text-secondary leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     Instead of multiple payment methods or complex royalty systems, VSD provides a single,
                     transparent way to access powerful tools and receive your earnings, empowering you to
                     focus on your music.
                   </p>
                 </div>
                 <div className="animate-fadeIn" style={{ animationDelay: '0.2s' }}>
-                   <Image src="https://placehold.co/600x400.png" alt="Abstract network graphic" width={600} height={400} className="rounded-lg shadow-xl border-2 border-border-color mx-auto" data-ai-hint="network diagram"/>
+                   <Image src="https://placehold.co/600x400.png" alt="Abstract network graphic" width={600} height={400} className="rounded-lg shadow-xl border-2 border-border mx-auto" data-ai-hint="network diagram"/>
                 </div>
               </div>
             </div>
           </section>
 
-          <section id="details" className="py-20 md:py-28 section-bg-primary">
+          <section id="details" className="py-16 md:py-20">
             <div className="container mx-auto px-4 sm:px-6">
-              <div className="text-center mb-16 md:mb-20">
-                <span className="icon-bg !bg-accent-tertiary/10 !border-accent-tertiary/20 !text-accent-tertiary"><i className="fas fa-info-circle"></i></span>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading text-white animate-fadeIn">Token
+              <div className="text-center mb-12 md:mb-16">
+                <div className="inline-block p-4 mb-4 bg-accent/10 border border-accent/20 rounded-full text-accent">
+                  <i className="fas fa-info-circle text-3xl"></i>
+                </div>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-headline text-foreground animate-fadeIn">Token
                   Details</h2>
-                <p className="text-gray-400 mt-4 max-w-2xl mx-auto animate-fadeIn" style={{ animationDelay: '0.1s' }}>
+                <p className="text-muted-foreground mt-4 max-w-2xl mx-auto animate-fadeIn" style={{ animationDelay: '0.1s' }}>
                   Key information about the VSD utility token based on its Etherscan data.
                 </p>
               </div>
-              <div className="token-details-grid animate-fadeIn" style={{ animationDelay: '0.2s' }}>
-                <div className="detail-item">
-                  <p className="detail-label">Token Name</p>
-                  <p className="detail-value">VSDuck (VSD)</p>
-                </div>
-                <div className="detail-item">
-                  <p className="detail-label">Symbol</p>
-                  <p className="detail-value">VSD</p>
-                </div>
-                <div className="detail-item">
-                  <p className="detail-label">Contract Address</p>
-                  <p className="detail-value">
-                    <a href="https://etherscan.io/token/0xa37cdc5ce42333a4f57776a4cd93f434e59ab243"
-                      target="_blank" rel="noopener noreferrer">
-                      0xa37cdc5c...e59ab243
-                    </a>
-                  </p>
-                </div>
-                <div className="detail-item">
-                  <p className="detail-label">Decimals</p>
-                  <p className="detail-value">18</p>
-                </div>
-                <div className="detail-item">
-                  <p className="detail-label">Token Standard</p>
-                  <p className="detail-value">ERC20</p>
-                </div>
-                <div className="detail-item">
-                  <p className="detail-label">Total Supply</p>
-                  <p className="detail-value">1,000,000,000 VSD</p>
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fadeIn p-6 bg-card/50 rounded-lg border border-border" style={{ animationDelay: '0.2s' }}>
+                {[
+                  { label: "Token Name", value: "VSDuck (VSD)" },
+                  { label: "Symbol", value: "VSD" },
+                  { label: "Contract Address", value: "0xa37cdc5c...e59ab243", href: "https://etherscan.io/token/0xa37cdc5ce42333a4f57776a4cd93f434e59ab243" },
+                  { label: "Decimals", value: "18" },
+                  { label: "Token Standard", value: "ERC20" },
+                  { label: "Total Supply", value: "1,000,000,000 VSD" },
+                ].map(item => (
+                  <div key={item.label} className="p-4 bg-background/70 rounded-md shadow">
+                    <p className="text-sm text-muted-foreground mb-1">{item.label}</p>
+                    {item.href ? (
+                      <a href={item.href} target="_blank" rel="noopener noreferrer" className="text-lg font-semibold text-primary hover:underline break-all">
+                        {item.value}
+                      </a>
+                    ) : (
+                      <p className="text-lg font-semibold text-foreground break-all">{item.value}</p>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
           </section>
 
-          <section id="ecosystem" className="py-20 md:py-28 section-bg-secondary">
+          <section id="ecosystem" className="py-16 md:py-20 bg-card/50 rounded-lg">
             <div className="container mx-auto px-4 sm:px-6">
-              <div className="text-center mb-16 md:mb-20">
-                <span className="icon-bg !bg-accent-secondary/10 !border-accent-secondary/20 !text-accent-secondary"><i className="fas fa-project-diagram"></i></span>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading text-white animate-fadeIn">VSD Across
+              <div className="text-center mb-12 md:mb-16">
+                <div className="inline-block p-4 mb-4 bg-primary/10 border border-primary/20 rounded-full text-primary">
+                   <i className="fas fa-project-diagram text-3xl"></i>
+                </div>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-headline text-foreground animate-fadeIn">VSD Across
                   the IMG Ecosystem</h2>
-                <p className="text-gray-400 mt-4 max-w-3xl mx-auto animate-fadeIn" style={{ animationDelay: '0.1s' }}>
+                <p className="text-muted-foreground mt-4 max-w-3xl mx-auto animate-fadeIn" style={{ animationDelay: '0.1s' }}>
                   VSD is the integrated currency for accessing services and receiving value throughout the
                   network. Here&apos;s how it works:
                 </p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {/* Ecosystem cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
                   { title: "AI MUSIC", service: "Service Payment", desc: "Pay for AI music generation credits and premium features using VSD tokens.", link: "https://indiemedia.llc/aimusic.html", delay: "0.2s" },
                   { title: "IMG DISTRIBUTION", service: "Service Payment", desc: "Pay for global music distribution packages with VSD and keep 100% of your royalties.", link: "https://indiemedia.llc/distribution.html", delay: "0.25s" },
@@ -339,42 +286,53 @@ export default function VsdTokenInfoPage() {
                   { title: "MIU Courses", service: "Potential Future Use", desc: "Future plans may include paying for premium Music Industry University courses with VSD.", link: "https://indiemedia.llc/university.html", delay: "0.5s" },
                   { title: "Future Utility", service: "Staking, Governance", desc: "Roadmap includes potential for VSD staking rewards and governance voting rights within the IMG Network.", link: null, delay: "0.55s" },
                 ].map(item => (
-                  <div key={item.title} className="card animate-fadeIn" style={{ animationDelay: item.delay }}>
-                    <h3 className="font-heading text-lg font-semibold text-white mb-2">{item.title}</h3>
-                    <p className="text-xs text-accent-primary mb-3 font-mono uppercase tracking-wider">{item.service}</p>
-                    <p className="text-sm text-text-secondary flex-grow">{item.desc}</p>
-                    {item.link && <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-xs text-accent-secondary hover:underline mt-4 self-start">Visit {item.title.split(" ")[0]} &rarr;</a>}
-                  </div>
+                  <Card key={item.title} className="animate-fadeIn bg-background/70 shadow-lg flex flex-col" style={{ animationDelay: item.delay }}>
+                    <CardHeader>
+                      <CardTitle className="font-headline text-xl text-foreground">{item.title}</CardTitle>
+                      <CardDescription className="text-xs text-primary uppercase tracking-wider">{item.service}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-grow">
+                      <p className="text-sm text-muted-foreground">{item.desc}</p>
+                    </CardContent>
+                    {item.link && (
+                      <CardContent>
+                         <Button asChild variant="outline" size="sm">
+                            <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-xs">Visit {item.title.split(" ")[0]} &rarr;</a>
+                         </Button>
+                      </CardContent>
+                    )}
+                  </Card>
                 ))}
               </div>
             </div>
           </section>
 
-          <section id="roadmap" className="py-20 md:py-28 section-bg-primary">
+          <section id="roadmap" className="py-16 md:py-20">
             <div className="container mx-auto px-4 sm:px-6">
-              <div className="text-center mb-16 md:mb-20">
-                <span className="icon-bg !bg-accent-tertiary/10 !border-accent-tertiary/20 !text-accent-tertiary"><i className="fas fa-route"></i></span>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading text-white animate-fadeIn">VSD Roadmap:
+              <div className="text-center mb-12 md:mb-16">
+                <div className="inline-block p-4 mb-4 bg-accent/10 border border-accent/20 rounded-full text-accent">
+                    <i className="fas fa-route text-3xl"></i>
+                </div>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-headline text-foreground animate-fadeIn">VSD Roadmap:
                   The Path Ahead</h2>
-                <p className="text-gray-400 mt-4 max-w-2xl mx-auto animate-fadeIn" style={{ animationDelay: '0.1s' }}>
+                <p className="text-muted-foreground mt-4 max-w-2xl mx-auto animate-fadeIn" style={{ animationDelay: '0.1s' }}>
                   Our vision for VSD extends beyond current utility, aiming for deeper integration and value.
                 </p>
               </div>
-              <div className="max-w-3xl mx-auto">
-                {/* Roadmap Items */}
+              <div className="max-w-3xl mx-auto space-y-8">
                 {[
                   { date: "Phase 1 (Completed)", title: "Token Launch & Initial Integration", desc: "VSD ERC20 token deployed. Integrated for payments in AI Music, Distribution, Art Maker, Promo Hub, Focus Group.", delay: "0.2s" },
                   { date: "Phase 2 (Completed)", title: "Royalty Payout System", desc: "VSD.Network launched for seamless VSD royalty payouts from VNDR Music & SoundKlix streams.", delay: "0.3s" },
                   { date: "Phase 3 (In Progress - Q3 2025)", title: "Expanded Utility & Partnerships", desc: "Exploring VSD use for MIU courses, exclusive content access, and potential partnerships outside IMG.", delay: "0.4s" },
                   { date: "Phase 4 (Planned - 2026)", title: "Staking & Rewards", desc: "Development of VSD staking mechanisms to reward long-term holders and network participants.", delay: "0.5s" },
                   { date: "Phase 5 (Future Vision - 2027+)", title: "Decentralized Governance", desc: "Implementing on-chain governance features allowing VSD holders to vote on network proposals and future directions.", delay: "0.6s" }
-                ].map(item => (
-                  <div key={item.title} className="roadmap-item animate-fadeIn" style={{ animationDelay: item.delay }}>
-                    <div className="roadmap-dot"></div>
-                    <div className="roadmap-item-content">
-                      <p className="roadmap-date">{item.date}</p>
-                      <h4 className="roadmap-title">{item.title}</h4>
-                      <p className="roadmap-desc">{item.desc}</p>
+                ].map((item, index) => (
+                  <div key={item.title} className="animate-fadeIn flex items-start space-x-4 p-4 bg-card/50 rounded-lg border border-border" style={{ animationDelay: item.delay }}>
+                    <div className="mt-1 flex-shrink-0 h-3 w-3 rounded-full bg-primary ring-2 ring-primary/30"></div>
+                    <div className="flex-grow">
+                      <p className="text-xs text-muted-foreground">{item.date}</p>
+                      <h4 className="text-lg font-semibold text-foreground mt-1">{item.title}</h4>
+                      <p className="text-sm text-muted-foreground mt-1">{item.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -382,13 +340,15 @@ export default function VsdTokenInfoPage() {
             </div>
           </section>
 
-          <section id="growth" className="py-20 md:py-28 section-bg-secondary">
+          <section id="growth" className="py-16 md:py-20 bg-card/50 rounded-lg">
             <div className="container mx-auto px-4 sm:px-6">
-              <div className="text-center mb-16 md:mb-20">
-                <span className="icon-bg !bg-accent-secondary/10 !border-accent-secondary/20 !text-accent-secondary"><i className="fas fa-chart-line"></i></span>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading text-white animate-fadeIn">Illustrative
+              <div className="text-center mb-12 md:mb-16">
+                <div className="inline-block p-4 mb-4 bg-primary/10 border border-primary/20 rounded-full text-primary">
+                    <i className="fas fa-chart-line text-3xl"></i>
+                </div>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-headline text-foreground animate-fadeIn">Illustrative
                   Growth Potential</h2>
-                <p className="text-gray-400 mt-4 max-w-3xl mx-auto animate-fadeIn" style={{ animationDelay: '0.1s' }}>
+                <p className="text-muted-foreground mt-4 max-w-3xl mx-auto animate-fadeIn" style={{ animationDelay: '0.1s' }}>
                   The utility and potential value of VSD are intrinsically linked to the growth and activity
                   within the entire IMG Network. More artists, more services used, more royalties paid =
                   greater potential demand and utility.
@@ -396,44 +356,44 @@ export default function VsdTokenInfoPage() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16 items-start">
-                <div className="graph-container animate-fadeIn" style={{ animationDelay: '0.2s' }}>
-                  <h3 className="font-heading text-xl text-white mb-4 text-center">Hypothetical Network Adoption
+                <div className="animate-fadeIn p-4 bg-background/70 rounded-lg border border-border shadow-md" style={{ animationDelay: '0.2s' }}>
+                  <h3 className="font-headline text-xl text-foreground mb-4 text-center">Hypothetical Network Adoption
                     Growth</h3>
-                  <canvas id="adoptionChart" ref={adoptionChartRef}></canvas>
-                  <p className="text-xs text-center text-gray-500 mt-2">Illustrative projection of active
+                  <div className="h-64 md:h-80"><canvas id="adoptionChart" ref={adoptionChartRef}></canvas></div>
+                  <p className="text-xs text-center text-muted-foreground mt-2">Illustrative projection of active
                     users/artists</p>
                 </div>
-                <div className="graph-container animate-fadeIn" style={{ animationDelay: '0.3s' }}>
-                  <h3 className="font-heading text-xl text-white mb-4 text-center">Hypothetical VSD Value
+                <div className="animate-fadeIn p-4 bg-background/70 rounded-lg border border-border shadow-md" style={{ animationDelay: '0.3s' }}>
+                  <h3 className="font-headline text-xl text-foreground mb-4 text-center">Hypothetical VSD Value
                     Projection</h3>
-                  <canvas id="valueChart" ref={valueChartRef}></canvas>
-                  <p className="text-xs text-center text-gray-500 mt-2">Illustrative projection based on network
+                  <div className="h-64 md:h-80"><canvas id="valueChart" ref={valueChartRef}></canvas></div>
+                  <p className="text-xs text-center text-muted-foreground mt-2">Illustrative projection based on network
                     factors</p>
                 </div>
               </div>
 
               <div className="mt-12 animate-fadeIn" style={{ animationDelay: '0.4s' }}>
-                <h3 className="font-heading text-2xl text-white mb-4 text-center">Logic Behind the Potential</h3>
+                <h3 className="font-headline text-2xl text-foreground mb-4 text-center">Logic Behind the Potential</h3>
                 <div
-                  className="max-w-3xl mx-auto text-sm text-text-secondary space-y-3 text-left bg-black/20 p-6 rounded-lg border border-border-color">
-                  <p><strong className="text-white">Increased Service Usage:</strong> As more artists join IMG and
+                  className="max-w-3xl mx-auto text-sm text-muted-foreground space-y-3 text-left bg-background/70 p-6 rounded-lg border border-border">
+                  <p><strong className="text-foreground">Increased Service Usage:</strong> As more artists join IMG and
                     utilize services like AI Music, Distribution, Promo Hub, etc., the demand for VSD as a
                     payment method inherently increases.</p>
-                  <p><strong className="text-white">Royalty Volume:</strong> Growth in streaming activity on VNDR
+                  <p><strong className="text-foreground">Royalty Volume:</strong> Growth in streaming activity on VNDR
                     and SoundKlix leads to larger volumes of royalties being paid out in VSD, increasing its
                     circulation and utility.</p>
-                  <p><strong className="text-white">Network Effect:</strong> A larger, more active user base
+                  <p><strong className="text-foreground">Network Effect:</strong> A larger, more active user base
                     across all subsidiaries creates a stronger network effect, potentially increasing the
                     perceived value and utility of the token that connects them.</p>
-                  <p><strong className="text-white">Future Utility (Roadmap):</strong> Planned features like
+                  <p><strong className="text-foreground">Future Utility (Roadmap):</strong> Planned features like
                     staking and governance could introduce new demand drivers and value propositions for
                     holding VSD.</p>
                 </div>
               </div>
 
               <div className="mt-12 max-w-4xl mx-auto animate-fadeIn" style={{ animationDelay: '0.5s' }}>
-                <div className="disclaimer">
-                  <strong className="text-accent-tertiary block mb-2">IMPORTANT DISCLAIMER: Not Financial Advice</strong>
+                <div className="p-6 bg-destructive/10 border border-destructive/30 rounded-lg text-destructive-foreground">
+                  <strong className="block mb-2 text-destructive">IMPORTANT DISCLAIMER: Not Financial Advice</strong>
                   The charts and information presented in this section regarding potential growth and value
                   are purely hypothetical, illustrative examples based on internal assumptions and goals for
                   the IMG Network&apos;s expansion and VSD adoption. They DO NOT represent actual market
@@ -448,76 +408,27 @@ export default function VsdTokenInfoPage() {
             </div>
           </section>
 
-          <section id="get-vsd" className="py-20 md:py-28 section-bg-primary text-center">
+          <section id="get-vsd" className="py-16 md:py-20 text-center">
             <div className="container mx-auto px-4 sm:px-6">
               <div className="animate-fadeIn">
                 <Image src="https://indiemedia.llc/vsdlogo.jpg" alt="VSD Token Logo" width={80} height={80} className="h-20 w-20 mx-auto mb-5 rounded-full shadow-lg animate-pulse-glow" data-ai-hint="logo abstract"/>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading text-white mb-6">Get VSD & Power Your
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-headline text-foreground mb-6">Get VSD & Power Your
                   Journey</h2>
-                <p className="text-gray-300 mb-10 max-w-xl mx-auto">
+                <p className="text-muted-foreground mb-10 max-w-xl mx-auto">
                   Acquire VSD tokens to start utilizing the full suite of IMG Network services and prepare for
                   future ecosystem benefits.
                 </p>
-                <a href="https://indiemedia.llc/tokenpurchase.html" target="_blank" rel="noopener noreferrer" className="cta-button text-lg">
-                  Purchase VSD Tokens Now
-                </a>
+                <Button asChild size="lg" className="btn-hover-effect text-lg">
+                    <a href="https://indiemedia.llc/tokenpurchase.html" target="_blank" rel="noopener noreferrer">
+                    Purchase VSD Tokens Now
+                    </a>
+                </Button>
               </div>
             </div>
           </section>
-
         </main>
-
-        <footer className="bg-black py-8 border-t border-gray-800">
-          <div className="container mx-auto px-4 sm:px-6 text-center text-gray-500 text-xs">
-            <div className="mb-4">
-              <a href="https://img-corporate-placeholder.com" target="_blank" rel="noopener noreferrer"
-                className="text-sm font-semibold font-heading text-gray-400 hover:text-white transition duration-300">Independent
-                Music Group</a>
-            </div>
-            <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mb-4 text-gray-400 text-[0.65rem]">
-              <a href="https://vndrmusic.com" target="_blank" rel="noopener noreferrer"
-                className="hover:text-accent-primary transition duration-200">VNDR</a> |
-              <a href="https://soundklix.com" target="_blank" rel="noopener noreferrer"
-                className="hover:text-accent-primary transition duration-200">SoundKlix</a> |
-              <a href="https://indievideos.tv" target="_blank" rel="noopener noreferrer"
-                className="hover:text-accent-primary transition duration-200">Indie Videos TV</a> |
-              <a href="https://indieartist.network" target="_blank" rel="noopener noreferrer"
-                className="hover:text-accent-primary transition duration-200">Indie Artist Network</a> |
-              <a href="https://social.indiemusic.group" target="_blank" rel="noopener noreferrer"
-                className="hover:text-accent-primary transition duration-200">IMG Social</a> |
-              <a href="https://indiemedia.llc/ndradio.html" target="_blank" rel="noopener noreferrer"
-                className="hover:text-accent-primary transition duration-200">ND Radio</a> |
-              <a href="https://indiemedia.llc/university.html" target="_blank" rel="noopener noreferrer"
-                className="hover:text-accent-primary transition duration-200">MIU</a> |
-              <a href="https://indiemedia.llc/podcast.html" target="_blank" rel="noopener noreferrer"
-                className="hover:text-accent-primary transition duration-200">Podcast</a> |
-              <a href="https://indiemedia.llc/promo.html" target="_blank" rel="noopener noreferrer"
-                className="hover:text-accent-primary transition duration-200">Promo Hub</a> |
-              <a href="https://indiemedia.llc/artwork.html" target="_blank" rel="noopener noreferrer"
-                className="hover:text-accent-primary transition duration-200">Art Maker</a> |
-              <a href="https://indiemedia.llc/tokenpurchase.html" target="_blank" rel="noopener noreferrer"
-                className="hover:text-accent-primary transition duration-200">VSD Tokens</a> |
-              <a href="https://indiemedia.llc/focusgroup.html" target="_blank" rel="noopener noreferrer"
-                className="hover:text-accent-primary transition duration-200">Focus Group</a> |
-              <a href="https://indiemedia.llc/aimusic.html" target="_blank" rel="noopener noreferrer"
-                className="hover:text-accent-primary transition duration-200">AI Music</a> |
-              <a href="https://indiemedia.llc/distribution.html" target="_blank" rel="noopener noreferrer"
-                className="hover:text-accent-primary transition duration-200">Distribution</a>
-            </div>
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mb-4">
-              <a href="#" className="hover:text-gray-300 transition duration-200">Terms of Service</a> |
-              <a href="#" className="hover:text-gray-300 transition duration-200">Privacy Policy</a> |
-              <a href="https://indiemedia.llc/payment-plan" target="_blank" rel="noopener noreferrer"
-                className="hover:text-gray-300 transition duration-200">Payment Plans</a> |
-              <a href="mailto:support@imgmedia.llc?subject=VSD Token Inquiry"
-                className="hover:text-gray-300 transition duration-200">Contact Support</a>
-            </div>
-            <p>&copy; <span id="current-year"></span> Independent Music Group. All Rights Reserved.</p>
-            <p className="mt-2 text-gray-600">VSD Token is a utility token for the IMG Network ecosystem and is not
-              intended as an investment vehicle. Token value is speculative and subject to market risks.</p>
-          </div>
-        </footer>
       </div>
     </>
   );
 }
+
