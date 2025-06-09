@@ -1,7 +1,7 @@
 
 /* eslint-disable @next/next/no-css-tags */
 "use client";
-import Head from 'next/head';
+// Removed: import Head from 'next/head';
 import Script from 'next/script';
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
@@ -44,12 +44,12 @@ export default function VsdTokenInfoPage() {
     if (chartsRendered.current || typeof window === 'undefined' || !(window as any).Chart) return;
 
     const Chart = (window as any).Chart;
-    const primaryColor = 'hsl(346, 100%, 40.8%)'; 
-    const accentColor = 'hsl(0, 0%, 50.2%)';    
-    const chart1Color = 'hsl(220, 70%, 50%)';   
-    const chart2Color = 'hsl(160, 60%, 45%)';   
-    const textColor = 'hsl(0, 0%, 98%)';       
-    const gridColor = 'hsla(0, 0%, 20%, 0.3)'; 
+    const primaryColor = 'hsl(346, 100%, 40.8%)';
+    const accentColor = 'hsl(0, 0%, 50.2%)';
+    const chart1Color = 'hsl(220, 70%, 50%)';
+    const chart2Color = 'hsl(160, 60%, 45%)';
+    const textColor = 'hsl(0, 0%, 98%)';
+    const gridColor = 'hsla(0, 0%, 20%, 0.3)';
 
     const adoptionLabels = ['2024', '2025', '2026', '2027', '2028', '2029', '2030', '2031', '2032', '2033', '2034', '2035'];
     const adoptionData = [500, 2500, 7000, 15000, 30000, 50000, 80000, 120000, 170000, 230000, 300000, 400000];
@@ -64,7 +64,7 @@ export default function VsdTokenInfoPage() {
             datasets: [{
               label: 'Hypothetical Active Network Users',
               data: adoptionData,
-              backgroundColor: chart1Color, 
+              backgroundColor: chart1Color,
               borderColor: chart1Color,
               borderWidth: 1
             }]
@@ -102,8 +102,8 @@ export default function VsdTokenInfoPage() {
             datasets: [{
               label: 'Hypothetical VSD Value (USD)',
               data: valueData,
-              borderColor: chart2Color, 
-              backgroundColor: chart2Color + '66', 
+              borderColor: chart2Color,
+              backgroundColor: chart2Color + '66',
               tension: 0.3,
               fill: true,
               pointBackgroundColor: chart2Color,
@@ -147,16 +147,19 @@ export default function VsdTokenInfoPage() {
 
   return (
     <>
-      <Head>
-        <Script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js" integrity="sha512-yFjWTYkSz0D7KbjwWslD9s3Fssf3S3DqJNSL7XvG8p0nCrcsT/kM2ErHkLInL/L7rTfC+9J+tA81pM4/dYj2jQ==" crossOrigin="anonymous" referrerPolicy="no-referrer" strategy="lazyOnload" />
-      </Head>
+      {/* Font Awesome Script using next/script */}
+      <Script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js" integrity="sha512-yFjWTYkSz0D7KbjwWslD9s3Fssf3S3DqJNSL7XvG8p0nCrcsT/kM2ErHkLInL/L7rTfC+9J+tA81pM4/dYj2jQ==" crossOrigin="anonymous" referrerPolicy="no-referrer" strategy="lazyOnload" />
+
+      {/* Chart.js scripts using next/script */}
       <Script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js" strategy="lazyOnload" onReady={initializeCharts} />
       <Script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0/dist/chartjs-adapter-date-fns.bundle.min.js" strategy="lazyOnload" onReady={initializeCharts} />
+
+      {/* AI Calling Bot script using next/script */}
       <Script src="https://backend.aicallings.com/assets/clone_bot.js?id=13711" id="calling_bot" strategy="lazyOnload" />
-      
+
       <style jsx global>{customAnimationStyle}</style>
 
-      <div className="text-foreground"> 
+      <div className="text-foreground">
         <main className="space-y-16 md:space-y-24">
           <section id="hero"
             className="relative min-h-[80vh] flex items-center justify-center text-center px-4 py-16 overflow-hidden">
@@ -167,13 +170,13 @@ export default function VsdTokenInfoPage() {
             </div>
 
             <div className="z-10 relative max-w-4xl mx-auto">
-              <AIImage 
-                initialSrc="https://indiemedia.llc/vsdlogo.jpg" 
-                alt="VSD Token Logo" 
-                width={160} 
-                height={160} 
-                className="h-28 w-28 md:h-40 md:w-40 mx-auto mb-6 rounded-full shadow-lg animate-pulse-glow animate-fadeIn" 
-                hint="abstract V logo" 
+              <AIImage
+                initialSrc="https://indiemedia.llc/vsdlogo.jpg"
+                alt="VSD Token Logo"
+                width={160}
+                height={160}
+                className="h-28 w-28 md:h-40 md:w-40 mx-auto mb-6 rounded-full shadow-lg animate-pulse-glow animate-fadeIn"
+                hint="abstract V logo"
                 priority
               />
               <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-headline mb-6 leading-tight text-foreground animate-fadeIn"
@@ -221,12 +224,12 @@ export default function VsdTokenInfoPage() {
                   </p>
                 </div>
                 <div className="animate-fadeIn" style={{ animationDelay: '0.2s' }}>
-                   <AIImage 
-                     initialSrc="https://placehold.co/600x400.png" 
-                     alt="Abstract network graphic" 
-                     width={600} 
-                     height={400} 
-                     className="rounded-lg shadow-xl border-2 border-border mx-auto" 
+                   <AIImage
+                     initialSrc="https://placehold.co/600x400.png"
+                     alt="Abstract network graphic"
+                     width={600}
+                     height={400}
+                     className="rounded-lg shadow-xl border-2 border-border mx-auto"
                      hint="network diagram"
                    />
                 </div>
@@ -419,12 +422,12 @@ export default function VsdTokenInfoPage() {
           <section id="get-vsd" className="py-16 md:py-20 text-center">
             <div className="container mx-auto px-4 sm:px-6">
               <div className="animate-fadeIn">
-                <AIImage 
-                    initialSrc="https://indiemedia.llc/vsdlogo.jpg" 
-                    alt="VSD Token Logo" 
-                    width={80} 
-                    height={80} 
-                    className="h-20 w-20 mx-auto mb-5 rounded-full shadow-lg animate-pulse-glow" 
+                <AIImage
+                    initialSrc="https://indiemedia.llc/vsdlogo.jpg"
+                    alt="VSD Token Logo"
+                    width={80}
+                    height={80}
+                    className="h-20 w-20 mx-auto mb-5 rounded-full shadow-lg animate-pulse-glow"
                     hint="V logo"
                 />
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-headline text-foreground mb-6">Get VSD & Power Your
