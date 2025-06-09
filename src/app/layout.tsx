@@ -30,11 +30,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("dark", fontSans.variable)}> {/* Apply font variable to html */}
+    <html lang="en" className={cn("dark", fontSans.variable)}>
       <head>
-        {/* Removed direct Google Font link for Orbitron, next/font handles it */}
       </head>
-      <body className="font-sans antialiased min-h-screen flex flex-col relative"> {/* Use font-sans from Tailwind config */}
+      <body className="font-sans antialiased min-h-screen flex flex-col relative">
         <div className="fixed inset-0 w-full h-full -z-10">
           <video
             autoPlay
@@ -43,9 +42,9 @@ export default function RootLayout({
             playsInline
             className="w-full h-full object-cover opacity-30"
             src="https://videos.pexels.com/video-files/4431790/4431790-uhd_2560_1440_30fps.mp4"
-            typeof="video/mp4"
+            type="video/mp4"
           />
-          <div className="absolute inset-0 bg-black/50"></div> {/* Optional: slightly darker overlay */}
+          <div className="absolute inset-0 bg-black/50" />
         </div>
         <div className="relative z-0 flex flex-col min-h-screen">
           <Header />
