@@ -1,12 +1,18 @@
-
 /* eslint-disable @next/next/no-css-tags */
 "use client";
-// Removed: import Head from 'next/head';
+import type { Metadata } from 'next'; // Added
 import Script from 'next/script';
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AIImage } from "@/components/ai/AIImage";
+
+// Added metadata export
+export const metadata: Metadata = {
+  title: 'VSD Token | Official Utility Token of IMG Network',
+  description: 'Unlock services, receive royalties, and participate in the future of the independent music ecosystem with VSD, the ERC20 token that connects it all.',
+  // You can add more metadata fields like openGraph, etc.
+};
 
 export default function VsdTokenInfoPage() {
   const adoptionChartRef = useRef<HTMLCanvasElement>(null);
@@ -14,7 +20,7 @@ export default function VsdTokenInfoPage() {
   const chartsRendered = useRef(false);
 
   useEffect(() => {
-    document.title = 'VSD Token | The Official Utility Token of the IMG Network';
+    // Removed: document.title = 'VSD Token | The Official Utility Token of the IMG Network';
 
     const observedElements = new Map();
     const observer = new IntersectionObserver((entries) => {
