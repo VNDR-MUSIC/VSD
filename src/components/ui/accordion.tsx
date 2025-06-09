@@ -44,29 +44,29 @@ AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName
 const AccordionContent = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
->(({ className, children, ...props }, ref) => {
-  // Check if dangerouslySetInnerHTML is being passed in props
-  const hasDangerousHtml = props.dangerouslySetInnerHTML != null;
+>(({ className, children, dangerouslySetInnerHTML, ...otherProps }, ref) => {
+  // Base props for AccordionPrimitive.Content
+  const primitiveProps: Omit<React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>, "children" | "dangerouslySetInnerHTML"> & { ref: React.Ref<HTMLDivElement> } = {
+    ...otherProps,
+    ref,
+    className: cn(
+      "overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
+      className // User-provided className (e.g., for prose styles)
+    ),
+  };
 
-  return (
-    <AccordionPrimitive.Content
-      ref={ref}
-      className={cn(
-        "overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
-        className // Apply props.className to AccordionPrimitive.Content itself
-      )}
-      {...props} // Spread all props, including dangerouslySetInnerHTML if present
-    >
-      {/*
-        Only render the inner div and children if dangerouslySetInnerHTML is NOT being used.
-        If dangerouslySetInnerHTML is used, AccordionPrimitive.Content will render that HTML,
-        and the className (e.g., for prose styling) is already on AccordionPrimitive.Content.
-      */}
-      {!hasDangerousHtml && (
-        <div className={cn("pb-4 pt-0")}>{children}</div>
-      )}
-    </AccordionPrimitive.Content>
-  );
+  if (dangerouslySetInnerHTML) {
+    // If dangerouslySetInnerHTML is provided, pass it directly.
+    // AccordionPrimitive.Content should not have explicit JSX children in this case.
+    return <AccordionPrimitive.Content {...primitiveProps} dangerouslySetInnerHTML={dangerouslySetInnerHTML} />;
+  } else {
+    // If dangerouslySetInnerHTML is NOT provided, render children wrapped in the standard padding div.
+    return (
+      <AccordionPrimitive.Content {...primitiveProps}>
+        <div className="pb-4 pt-0">{children}</div>
+      </AccordionPrimitive.Content>
+    );
+  }
 });
 AccordionContent.displayName = AccordionPrimitive.Content.displayName
 
