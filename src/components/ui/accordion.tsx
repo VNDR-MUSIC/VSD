@@ -43,11 +43,13 @@ AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName
 
 const AccordionContent = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Content>,
+  // Allow all props of AccordionPrimitive.Content, including className, children, dangerouslySetInnerHTML
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
 >(({ className, children, dangerouslySetInnerHTML, ...otherProps }, ref) => {
-  // Base props for AccordionPrimitive.Content
-  const primitiveProps: Omit<React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>, "children" | "dangerouslySetInnerHTML"> & { ref: React.Ref<HTMLDivElement> } = {
-    ...otherProps,
+  
+  // Props that will be passed to AccordionPrimitive.Content in both cases
+  const primitiveContentProps = {
+    ...otherProps, // Spread any other props passed to AccordionContent
     ref,
     className: cn(
       "overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
@@ -56,13 +58,21 @@ const AccordionContent = React.forwardRef<
   };
 
   if (dangerouslySetInnerHTML) {
-    // If dangerouslySetInnerHTML is provided, pass it directly.
-    // AccordionPrimitive.Content should not have explicit JSX children in this case.
-    return <AccordionPrimitive.Content {...primitiveProps} dangerouslySetInnerHTML={dangerouslySetInnerHTML} />;
-  } else {
-    // If dangerouslySetInnerHTML is NOT provided, render children wrapped in the standard padding div.
+    // If dangerouslySetInnerHTML is provided, pass it directly to AccordionPrimitive.Content.
+    // Do NOT render any explicit JSX children for AccordionPrimitive.Content in this branch.
+    // The 'children' prop destructured above (from AccordionContent's arguments) is intentionally ignored here.
+    // 'otherProps' (and thus primitiveContentProps) should not contain 'children' if it was correctly destructured.
     return (
-      <AccordionPrimitive.Content {...primitiveProps}>
+      <AccordionPrimitive.Content
+        {...primitiveContentProps}
+        dangerouslySetInnerHTML={dangerouslySetInnerHTML}
+      />
+    );
+  } else {
+    // If dangerouslySetInnerHTML is NOT provided, render the 'children' prop (passed to AccordionContent)
+    // wrapped in the standard padding div, which becomes the JSX children of AccordionPrimitive.Content.
+    return (
+      <AccordionPrimitive.Content {...primitiveContentProps}>
         <div className="pb-4 pt-0">{children}</div>
       </AccordionPrimitive.Content>
     );
