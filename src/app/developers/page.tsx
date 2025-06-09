@@ -1,7 +1,8 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { BookOpen, Users, Github, MessageSquare, Search, Lightbulb } from "lucide-react";
+import { BookOpen, Users, Github, MessageSquare, Search, Lightbulb, Code } from "lucide-react";
 import { DocumentationSearchForm } from "@/components/ai/DocumentationSearchForm";
 import { Separator } from "@/components/ui/separator";
 import type { Metadata } from 'next';
@@ -51,7 +52,7 @@ export default function DevelopersPage() {
               Dive into our comprehensive documentation to understand VSD's architecture, smart contracts, APIs, and integration guides.
             </p>
             <Button asChild variant="outline">
-              <Link href="#" target="_blank" rel="noopener noreferrer">Read Docs (Placeholder)</Link>
+              <Link href="/developers/documentation" rel="noopener noreferrer">Read Docs</Link>
             </Button>
           </CardContent>
         </Card>
@@ -91,6 +92,7 @@ export default function DevelopersPage() {
       <section>
         <Card className="shadow-lg">
             <CardHeader>
+                <Code className="h-10 w-10 text-primary mb-3" />
                 <CardTitle className="font-headline text-2xl">SDKs & Tools (Coming Soon)</CardTitle>
                 <CardDescription>
                     We are developing Software Development Kits (SDKs) and tools to make integration with VSD seamless. Stay tuned for updates.
@@ -107,3 +109,5 @@ export default function DevelopersPage() {
     </div>
   );
 }
+
+    
