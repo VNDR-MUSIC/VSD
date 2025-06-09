@@ -3,13 +3,10 @@
 "use client";
 import Head from 'next/head';
 import Script from 'next/script';
-import Image from 'next/image';
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'; // Assuming you might want to use ShadCN cards
-
-// Note: Font Awesome is still loaded via CDN script for this page's icons.
-// Ideally, these would be replaced with lucide-react icons for consistency if available.
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AIImage } from "@/components/ai/AIImage";
 
 export default function VsdTokenInfoPage() {
   const adoptionChartRef = useRef<HTMLCanvasElement>(null);
@@ -47,13 +44,12 @@ export default function VsdTokenInfoPage() {
     if (chartsRendered.current || typeof window === 'undefined' || !(window as any).Chart) return;
 
     const Chart = (window as any).Chart;
-    // Colors from VSD Network theme (dark mode)
-    const primaryColor = 'hsl(346, 100%, 40.8%)'; // VSD Red (primary)
-    const accentColor = 'hsl(0, 0%, 50.2%)';    // Medium Gray (accent)
-    const chart1Color = 'hsl(220, 70%, 50%)';   // --chart-1
-    const chart2Color = 'hsl(160, 60%, 45%)';   // --chart-2
-    const textColor = 'hsl(0, 0%, 98%)';       // foreground
-    const gridColor = 'hsla(0, 0%, 20%, 0.3)'; // border, semi-transparent
+    const primaryColor = 'hsl(346, 100%, 40.8%)'; 
+    const accentColor = 'hsl(0, 0%, 50.2%)';    
+    const chart1Color = 'hsl(220, 70%, 50%)';   
+    const chart2Color = 'hsl(160, 60%, 45%)';   
+    const textColor = 'hsl(0, 0%, 98%)';       
+    const gridColor = 'hsla(0, 0%, 20%, 0.3)'; 
 
     const adoptionLabels = ['2024', '2025', '2026', '2027', '2028', '2029', '2030', '2031', '2032', '2033', '2034', '2035'];
     const adoptionData = [500, 2500, 7000, 15000, 30000, 50000, 80000, 120000, 170000, 230000, 300000, 400000];
@@ -68,7 +64,7 @@ export default function VsdTokenInfoPage() {
             datasets: [{
               label: 'Hypothetical Active Network Users',
               data: adoptionData,
-              backgroundColor: chart1Color, // Use chart-1 color
+              backgroundColor: chart1Color, 
               borderColor: chart1Color,
               borderWidth: 1
             }]
@@ -106,8 +102,8 @@ export default function VsdTokenInfoPage() {
             datasets: [{
               label: 'Hypothetical VSD Value (USD)',
               data: valueData,
-              borderColor: chart2Color, // Use chart-2 color
-              backgroundColor: chart2Color + '66', // Add some transparency
+              borderColor: chart2Color, 
+              backgroundColor: chart2Color + '66', 
               tension: 0.3,
               fill: true,
               pointBackgroundColor: chart2Color,
@@ -134,7 +130,6 @@ export default function VsdTokenInfoPage() {
     chartsRendered.current = true;
   };
 
-  // CSS for animations that are harder to do purely with Tailwind or for specificity
   const customAnimationStyle = `
     @keyframes float {
       0% { transform: translateY(0px); }
@@ -153,7 +148,6 @@ export default function VsdTokenInfoPage() {
   return (
     <>
       <Head>
-        {/* Font Awesome script is critical for icons on this page */}
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js" integrity="sha512-yFjWTYkSz0D7KbjwWslD9s3Fssf3S3DqJNSL7XvG8p0nCrcsT/kM2ErHkLInL/L7rTfC+9J+tA81pM4/dYj2jQ==" crossOrigin="anonymous" referrerPolicy="no-referrer" strategy="lazyOnload" />
       </Head>
       <Script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js" strategy="lazyOnload" onReady={initializeCharts} />
@@ -162,24 +156,31 @@ export default function VsdTokenInfoPage() {
       
       <style jsx global>{customAnimationStyle}</style>
 
-      <div className="text-foreground font-body"> {/* Apply base font and color */}
+      <div className="text-foreground"> 
         <main className="space-y-16 md:space-y-24">
           <section id="hero"
             className="relative min-h-[80vh] flex items-center justify-center text-center px-4 py-16 overflow-hidden">
             <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
-              {/* These icons use Font Awesome, loaded by script */}
               <i className="fas fa-coins absolute text-primary text-[15vw] animate-float" style={{ top: '15%', left: '10%', animationDuration: '7s' }}></i>
               <i className="fas fa-network-wired absolute text-accent text-[12vw] animate-float" style={{ top: '60%', right: '15%', animationDuration: '8s', animationDelay: '1s' }}></i>
               <i className="fas fa-rocket absolute text-foreground text-[10vw] animate-float" style={{ bottom: '20%', left: '30%', animationDuration: '6s', animationDelay: '0.5s' }}></i>
             </div>
 
             <div className="z-10 relative max-w-4xl mx-auto">
-              <Image src="https://indiemedia.llc/vsdlogo.jpg" alt="VSD Token Logo" width={160} height={160} className="h-28 w-28 md:h-40 md:w-40 mx-auto mb-6 rounded-full shadow-lg animate-pulse-glow animate-fadeIn" data-ai-hint="logo abstract" />
+              <AIImage 
+                initialSrc="https://indiemedia.llc/vsdlogo.jpg" 
+                alt="VSD Token Logo" 
+                width={160} 
+                height={160} 
+                className="h-28 w-28 md:h-40 md:w-40 mx-auto mb-6 rounded-full shadow-lg animate-pulse-glow animate-fadeIn" 
+                hint="abstract V logo" 
+                priority
+              />
               <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-headline mb-6 leading-tight text-foreground animate-fadeIn"
                 style={{ animationDelay: '0.2s' }}>
                 VSD Token
               </h1>
-              <p className="text-xl md:text-2xl font-semibold text-primary mb-10 animate-fadeIn" // Changed to text-primary
+              <p className="text-xl md:text-2xl font-semibold text-primary mb-10 animate-fadeIn"
                 style={{ animationDelay: '0.4s' }}>
                 The Official Utility Token Fueling the IMG Network
               </p>
@@ -220,7 +221,14 @@ export default function VsdTokenInfoPage() {
                   </p>
                 </div>
                 <div className="animate-fadeIn" style={{ animationDelay: '0.2s' }}>
-                   <Image src="https://placehold.co/600x400.png" alt="Abstract network graphic" width={600} height={400} className="rounded-lg shadow-xl border-2 border-border mx-auto" data-ai-hint="network diagram"/>
+                   <AIImage 
+                     initialSrc="https://placehold.co/600x400.png" 
+                     alt="Abstract network graphic" 
+                     width={600} 
+                     height={400} 
+                     className="rounded-lg shadow-xl border-2 border-border mx-auto" 
+                     hint="network diagram"
+                   />
                 </div>
               </div>
             </div>
@@ -411,7 +419,14 @@ export default function VsdTokenInfoPage() {
           <section id="get-vsd" className="py-16 md:py-20 text-center">
             <div className="container mx-auto px-4 sm:px-6">
               <div className="animate-fadeIn">
-                <Image src="https://indiemedia.llc/vsdlogo.jpg" alt="VSD Token Logo" width={80} height={80} className="h-20 w-20 mx-auto mb-5 rounded-full shadow-lg animate-pulse-glow" data-ai-hint="logo abstract"/>
+                <AIImage 
+                    initialSrc="https://indiemedia.llc/vsdlogo.jpg" 
+                    alt="VSD Token Logo" 
+                    width={80} 
+                    height={80} 
+                    className="h-20 w-20 mx-auto mb-5 rounded-full shadow-lg animate-pulse-glow" 
+                    hint="V logo"
+                />
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-headline text-foreground mb-6">Get VSD & Power Your
                   Journey</h2>
                 <p className="text-muted-foreground mb-10 max-w-xl mx-auto">
@@ -431,4 +446,3 @@ export default function VsdTokenInfoPage() {
     </>
   );
 }
-

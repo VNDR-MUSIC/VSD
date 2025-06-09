@@ -1,7 +1,8 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle, BarChart2, Users, Shield, Target } from "lucide-react";
-import Image from "next/image";
+import { AIImage } from "@/components/ai/AIImage";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -78,13 +79,13 @@ export default function TokenPage() {
               VSD's tokenomics are designed to ensure stability, incentivize participation, and support long-term growth of the ecosystem. This includes mechanisms for minting, burning, collateral management, and governance. (Detailed charts and figures would go here).
             </p>
             <div className="bg-muted/30 p-6 rounded-lg">
-              <Image 
-                src="https://placehold.co/800x400.png" 
+              <AIImage 
+                initialSrc="https://placehold.co/800x400.png" 
                 alt="Tokenomics chart placeholder"
                 width={800}
                 height={400}
                 className="rounded-md mx-auto shadow-md"
-                data-ai-hint="chart graph"
+                hint="financial chart graph"
               />
             </div>
             <p className="text-sm text-muted-foreground text-center pt-2">

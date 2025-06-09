@@ -1,8 +1,9 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { siteConfig } from "@/config/site";
 import { ArrowRight, BarChart3, Code, Network, Search, ShieldCheck } from "lucide-react";
-import Image from "next/image";
+import { AIImage } from "@/components/ai/AIImage";
 import Link from "next/link";
 
 export default function HomePage() {
@@ -10,14 +11,14 @@ export default function HomePage() {
     <div className="space-y-12">
       <section className="text-center py-16">
         <div className="flex justify-center mb-8">
-          <Image
-            src="https://indiemedia.llc/vsdlogo.jpg"
+          <AIImage
+            initialSrc="https://indiemedia.llc/vsdlogo.jpg"
             alt="VSD Network Logo"
             width={100} 
             height={100}
             className="rounded-full"
             priority
-            data-ai-hint="logo abstract"
+            hint="abstract logo"
           />
         </div>
         <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6">
@@ -67,13 +68,13 @@ export default function HomePage() {
             <p className="text-muted-foreground">
               The VSD ecosystem is constantly growing. Explore a variety of applications and platforms leveraging the power of our decentralized stablecoin.
             </p>
-            <Image 
-              src="https://placehold.co/600x400.png" 
+            <AIImage 
+              initialSrc="https://placehold.co/600x400.png" 
               alt="Ecosystem visualization placeholder"
               width={600}
               height={400}
               className="rounded-md mt-4"
-              data-ai-hint="abstract network"
+              hint="abstract network"
             />
           </CardContent>
           <CardFooter>
@@ -93,13 +94,13 @@ export default function HomePage() {
             <p className="text-muted-foreground">
               Access comprehensive documentation, SDKs, community channels, and our unique AI-powered documentation search to kickstart your development journey.
             </p>
-             <Image 
-              src="https://placehold.co/600x400.png" 
+             <AIImage 
+              initialSrc="https://placehold.co/600x400.png" 
               alt="Developer coding placeholder"
               width={600}
               height={400}
               className="rounded-md mt-4"
-              data-ai-hint="code screen"
+              hint="code screen"
             />
           </CardContent>
           <CardFooter>

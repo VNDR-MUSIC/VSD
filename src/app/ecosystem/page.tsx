@@ -1,9 +1,10 @@
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRightSquare } from "lucide-react";
 import type { Metadata } from 'next';
+import { AIImage } from "@/components/ai/AIImage";
 
 export const metadata: Metadata = {
   title: 'VSD Ecosystem Projects',
@@ -26,7 +27,7 @@ const projects: Project[] = [
     name: "DeFiLend Protocol",
     description: "A decentralized lending and borrowing platform utilizing VSD as a primary stable asset for loans and collateral.",
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "abstract finance",
+    imageHint: "secure vault", 
     projectUrl: "#",
     category: "DeFi",
   },
@@ -35,7 +36,7 @@ const projects: Project[] = [
     name: "NFT Marketplace Prime",
     description: "Trade unique digital collectibles and art, with VSD as a stable currency for bids and payments.",
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "digital art",
+    imageHint: "crypto art", 
     projectUrl: "#",
     category: "NFTs",
   },
@@ -44,7 +45,7 @@ const projects: Project[] = [
     name: "YieldFarm Aggregator",
     description: "Optimize your yield farming strategies across multiple protocols, with VSD-based liquidity pools.",
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "data graph",
+    imageHint: "crypto farming", 
     projectUrl: "#",
     category: "DeFi",
   },
@@ -53,7 +54,7 @@ const projects: Project[] = [
     name: "CrossChain Pay",
     description: "Facilitating seamless cross-border payments and remittances using VSD for low-cost, fast transactions.",
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "global network",
+    imageHint: "fast payments", 
     category: "Payments",
   },
   {
@@ -61,7 +62,7 @@ const projects: Project[] = [
     name: "DAO Governance Hub",
     description: "A platform for decentralized organizations to manage proposals and voting, often using VSD for treasury management.",
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "community collaboration",
+    imageHint: "token governance", 
     projectUrl: "#",
     category: "DAO",
   },
@@ -70,7 +71,7 @@ const projects: Project[] = [
     name: "Gaming Universe X",
     description: "An immersive blockchain-based game where VSD is the in-game currency for assets and rewards.",
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "fantasy world",
+    imageHint: "virtual coins", 
     category: "Gaming",
   },
 ];
@@ -90,12 +91,12 @@ export default function EcosystemPage() {
           <Card key={project.id} className="flex flex-col shadow-lg hover:shadow-primary/20 transition-shadow duration-300">
             <CardHeader>
               <div className="aspect-video relative mb-4">
-                <Image
-                  src={project.imageUrl}
+                <AIImage
+                  initialSrc={project.imageUrl}
                   alt={project.name}
                   fill
                   className="rounded-t-lg object-cover"
-                  data-ai-hint={project.imageHint}
+                  hint={project.imageHint}
                 />
               </div>
               <CardTitle className="font-headline text-2xl">{project.name}</CardTitle>
