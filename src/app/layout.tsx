@@ -5,6 +5,13 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
 import { siteConfig } from '@/config/site';
+import { Montserrat as FontSans } from 'next/font/google'; // Changed from Orbitron
+import { cn } from '@/lib/utils';
+
+const fontSans = FontSans({
+  subsets: ['latin'],
+  variable: '--font-sans', // Using a more generic variable name
+});
 
 export const metadata: Metadata = {
   title: {
@@ -23,13 +30,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark"> {/* Enforce dark theme */}
+    <html lang="en" className={cn("dark", fontSans.variable)}> {/* Apply font variable to html */}
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet" />
+        {/* Removed direct Google Font link for Orbitron, next/font handles it */}
       </head>
-      <body className="font-body antialiased min-h-screen flex flex-col relative">
+      <body className="font-sans antialiased min-h-screen flex flex-col relative"> {/* Use font-sans from Tailwind config */}
         <div className="fixed inset-0 w-full h-full -z-10">
           <video
             autoPlay

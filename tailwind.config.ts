@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -10,8 +11,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Orbitron', 'sans-serif'],
-        headline: ['Orbitron', 'sans-serif'],
+        // Updated to use the CSS variable defined by next/font
+        sans: ['var(--font-sans)', 'sans-serif'], // Default sans-serif font
+        body: ['var(--font-sans)', 'sans-serif'], // Explicitly for body if needed elsewhere
+        headline: ['var(--font-sans)', 'sans-serif'], // Explicitly for headlines
         code: ['monospace'],
       },
       colors: {

@@ -3,9 +3,10 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: var(--font-orbitron), sans-serif;
-}
+/* Removed direct body font-family rule as it's now handled by next/font and Tailwind config */
+/* body {
+  font-family: var(--font-orbitron), sans-serif; Removed this
+} */
 
 @layer base {
   :root {
@@ -109,6 +110,7 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+     /* font-family is now applied via font-sans class from Tailwind, driven by next/font */
   }
 }
 
