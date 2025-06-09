@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -43,16 +44,30 @@ AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName
 const AccordionContent = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <AccordionPrimitive.Content
-    ref={ref}
-    className="overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
-    {...props}
-  >
-    <div className={cn("pb-4 pt-0", className)}>{children}</div>
-  </AccordionPrimitive.Content>
-))
+>(({ className, children, ...props }, ref) => {
+  // Check if dangerouslySetInnerHTML is being passed in props
+  const hasDangerousHtml = props.dangerouslySetInnerHTML != null;
 
+  return (
+    <AccordionPrimitive.Content
+      ref={ref}
+      className={cn(
+        "overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
+        className // Apply props.className to AccordionPrimitive.Content itself
+      )}
+      {...props} // Spread all props, including dangerouslySetInnerHTML if present
+    >
+      {/*
+        Only render the inner div and children if dangerouslySetInnerHTML is NOT being used.
+        If dangerouslySetInnerHTML is used, AccordionPrimitive.Content will render that HTML,
+        and the className (e.g., for prose styling) is already on AccordionPrimitive.Content.
+      */}
+      {!hasDangerousHtml && (
+        <div className={cn("pb-4 pt-0")}>{children}</div>
+      )}
+    </AccordionPrimitive.Content>
+  );
+});
 AccordionContent.displayName = AccordionPrimitive.Content.displayName
 
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }
