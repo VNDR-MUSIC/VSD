@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -48,7 +49,23 @@ const documentationSearchFlow = ai.defineFlow(
     outputSchema: DocumentationSearchOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+      const {output} = await prompt(input);
+      if (!output) {
+        console.warn('Documentation search returned no output from AI for query:', input.query);
+        return {
+          answer: "I encountered an issue searching the documentation. The AI did not provide a response. Please try again later.",
+          relevantSection: "Error"
+        };
+      }
+      return output;
+    } catch (error) {
+      console.error(`Error in documentationSearchFlow for query "${input.query}":`, error);
+      return {
+        answer: "I encountered an internal error while searching the documentation. Please check server logs and ensure AI services are correctly configured.",
+        relevantSection: "Error - AI Service Failure"
+      };
+    }
   }
 );
+

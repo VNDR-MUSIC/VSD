@@ -32,30 +32,37 @@ const generateImageFromHintFlow = ai.defineFlow(
     outputSchema: GenerateImageFromHintOutputSchema,
   },
   async (input) => {
-    const { media, finishReason } = await ai.generate({
-      model: 'googleai/gemini-2.0-flash-exp', 
-      prompt: `Generate an image based on the following hint: ${input.hint}. Style: photorealistic, vibrant, high quality. Focus on the core subject described by the hint. Avoid text in the image.`,
-      config: {
-        responseModalities: ['IMAGE', 'TEXT'], 
-        safetySettings: [
-          { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
-          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-          { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-          { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-        ],
-      },
-    });
+    try {
+      const { media, finishReason } = await ai.generate({
+        model: 'googleai/gemini-2.0-flash-exp', 
+        prompt: `Generate an image based on the following hint: ${input.hint}. Style: photorealistic, vibrant, high quality. Focus on the core subject described by the hint. Avoid text in the image.`,
+        config: {
+          responseModalities: ['IMAGE', 'TEXT'], 
+          safetySettings: [
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+          ],
+        },
+      });
 
-    if (finishReason !== 'STOP' || !media?.url) {
-      console.warn(`Image generation may have failed or was altered for hint: "${input.hint}". Finish reason: ${finishReason}. Media URL present: ${!!media?.url}`);
-      // If no media URL, definitely return empty to fallback
-      if (!media?.url) {
-        return { imageDataUri: "" }; 
+      if (finishReason !== 'STOP' || !media?.url) {
+        console.warn(`Image generation may have failed or was altered for hint: "${input.hint}". Finish reason: ${finishReason}. Media URL present: ${!!media?.url}`);
+        // If no media URL, definitely return empty to fallback
+        if (!media?.url) {
+          return { imageDataUri: "" }; 
+        }
       }
+      
+      // Even if finishReason is not perfect, if we have a URL, try to use it.
+      // The component's onError can handle if the URL is bad.
+      return { imageDataUri: media.url || "" };
+    } catch (error) {
+      console.error(`Error in generateImageFromHintFlow for hint "${input.hint}":`, error);
+      // Return an empty URI to allow fallback to placeholder
+      return { imageDataUri: "" };
     }
-    
-    // Even if finishReason is not perfect, if we have a URL, try to use it.
-    // The component's onError can handle if the URL is bad.
-    return { imageDataUri: media.url || "" };
   }
 );
+
