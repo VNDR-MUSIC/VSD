@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -29,8 +30,8 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
-          <Logo size={28} /> {/* Updated logo usage */}
-          <span className="font-bold font-headline sm:inline-block hidden">{siteConfig.name}</span>
+          <Logo size={28} />
+          {/* <span className="font-bold font-headline sm:inline-block hidden">{siteConfig.name}</span> */}
         </Link>
         
         {/* Desktop Navigation */}
@@ -49,8 +50,8 @@ export function Header() {
             </SheetTrigger>
             <SheetContent side="right">
               <Link href="/" className="mb-6 flex items-center">
-                 <Logo size={28} className="mr-2" /> {/* Updated logo usage */}
-                 <span className="font-bold font-headline">{siteConfig.name}</span>
+                 <Logo size={28} className="mr-2" />
+                 {/* <span className="font-bold font-headline">{siteConfig.name}</span> */}
               </Link>
               <nav className="flex flex-col space-y-4">
                 {siteConfig.mainNav.map((item) => (
