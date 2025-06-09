@@ -21,7 +21,7 @@ const GenerateSmartContractInputSchema = z.object({
 });
 export type GenerateSmartContractInput = z.infer<typeof GenerateSmartContractInputSchema>;
 
-export const GenerateSmartContractOutputSchema = z.object({
+const GenerateSmartContractOutputSchema = z.object({
   solidityCode: z.string().describe("The generated Solidity smart contract code."),
   warnings: z.string().optional().describe("Any important warnings or considerations about the generated code, especially regarding security or complexity. If no specific warnings, this can be omitted or state 'No specific warnings at this complexity level.'"),
   suggestions: z.string().optional().describe("Suggestions for improvement, next steps, or features that might be considered. If no specific suggestions, this can be omitted or state 'The contract is a basic implementation. Consider adding more robust error handling and specific business logic.'"),
@@ -77,3 +77,4 @@ const generateSmartContractFlow = ai.defineFlow(
     return output;
   }
 );
+
