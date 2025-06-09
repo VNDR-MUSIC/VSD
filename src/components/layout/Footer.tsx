@@ -9,7 +9,7 @@ export function Footer() {
         <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
           {siteConfig.footerNav.map((item) => (
             <Link
-              key={item.href}
+              key={item.title} // Changed from item.href to item.title
               href={item.href}
               className="transition-colors hover:text-primary"
             >
