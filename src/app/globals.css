@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -108,5 +109,14 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .btn-hover-effect {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  .btn-hover-effect:hover:not(:disabled) {
+    @apply transform scale-[1.03] brightness-110;
   }
 }
