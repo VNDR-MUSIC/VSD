@@ -1,12 +1,12 @@
 
 import type { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
 import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Code, Library, Workflow, Cpu, GitBranch, HelpCircle, BookOpenText, Layers } from "lucide-react";
+import { Code, Library, Workflow, Cpu, GitBranch, HelpCircle, BookOpenText, Layers, CreditCard } from "lucide-react";
 import { AIImage } from "@/components/ai/AIImage";
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
   title: 'VSD Network Documentation',
@@ -161,11 +161,13 @@ export default function DocumentationPage() {
       <SectionCard icon={Cpu} title="APIs & SDKs" description="Tools for programmatic interaction with VSD Network.">
         <p>We provide several ways for developers to integrate VSD into their applications and services.</p>
         <h4 className="text-2xl mt-6 mb-2">REST API (Coming Soon)</h4>
-        <p>A public REST API will provide access to real-time data such as VSD total supply, circulating supply, collateralization ratios, market prices (via oracles), and governance proposal statuses.</p>
+        <p>A public REST API will provide access to real-time data such as VSD total supply, circulating supply, collateralization ratios, market prices (via oracles), and governance proposal statuses. This API will be essential for businesses looking to integrate VSD payment information, verify transactions, or display VSD-related data on their platforms.</p>
         <ul>
-          <li><strong>Endpoints:</strong>
+          <li><strong>Endpoints (Examples for Business Integration):</strong>
             <ul>
-              <li><code>/token/info</code></li>
+              <li><code>/token/info</code>: General VSD token metrics.</li>
+              <li><code>/transaction/{'{txHash}'}</code>: Verify transaction status and details.</li>
+              <li><code>/address/{'{address}'}/balance</code>: Check VSD balance of an address.</li>
               <li><code>/collateral/stats</code></li>
               <li><code>/governance/proposals</code></li>
             </ul>
@@ -183,7 +185,7 @@ export default function DocumentationPage() {
         />
 
         <h4 className="text-2xl mt-8 mb-2">JavaScript SDK (Alpha)</h4>
-        <p>A JavaScript/TypeScript SDK is available to simplify interaction with VSD smart contracts from Node.js or browser environments.</p>
+        <p>Our JavaScript/TypeScript SDK simplifies interaction with VSD smart contracts and planned REST API endpoints. It's ideal for both frontend and backend development when integrating VSD payments or functionalities.</p>
         <pre className="bg-muted/50 p-4 rounded-md overflow-x-auto my-4">
           <code>
 {`// Installation
@@ -194,21 +196,80 @@ yarn add @vsdnetwork/sdk
 // Basic Usage (Illustrative)
 import { VSDSDK, Networks } from '@vsdnetwork/sdk';
 
-async function getVsdBalance() {
+async function checkVsdBalance(userAddress) {
   const sdk = new VSDSDK({ network: Networks.Mainnet }); // Or your testnet
-  const balance = await sdk.vsdToken.balanceOf('0xYourAccountAddress');
+  const balance = await sdk.vsdToken.balanceOf(userAddress);
   console.log('VSD Balance:', sdk.utils.formatUnits(balance, 18));
+  return balance;
 }
 
-getVsdBalance();`}
+// Example: Initiating a VSD payment (conceptual)
+async function initiateVsdPayment(sdk, recipientAddress, amount) {
+  // This would involve interacting with a user's wallet (e.g., MetaMask)
+  // or a backend wallet system to sign and send a transaction.
+  // The SDK would provide helper functions for constructing the transaction.
+  console.log(\`Preparing to send \${amount} VSD to \${recipientAddress}\`);
+  // const tx = await sdk.vsdToken.transfer(recipientAddress, sdk.utils.parseUnits(amount, 18));
+  // console.log('Transaction sent:', tx.hash);
+  // return tx;
+}
+`}
           </code>
         </pre>
         <Button variant="outline" asChild className="mt-4">
-          <Link href="#" target="_blank" rel="noopener noreferrer">
-            <Layers className="mr-2 h-4 w-4" /> View JS SDK on GitHub (Placeholder)
+          <Link href="/developers/sdks-tools">
+            <Layers className="mr-2 h-4 w-4" /> Explore All SDKs & Tools
           </Link>
         </Button>
-        <p className="mt-4">Other SDKs (Python, Go) are planned for future releases.</p>
+        <p className="mt-4">Other SDKs (Python, Go) are planned for future releases to support a wider range of backend systems.</p>
+      </SectionCard>
+
+      <Separator />
+      
+      <SectionCard icon={CreditCard} title="Integrating VSD for Payments" description="Guidance for businesses wanting to accept VSD.">
+        <p>Accepting VSD as a payment method can offer stability and efficiency. Here's a general approach:</p>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="payment-flow">
+            <AccordionTrigger className="text-xl hover:no-underline">Typical Payment Flow</AccordionTrigger>
+            <AccordionContent>
+              <ol className="list-decimal pl-5 space-y-2">
+                <li><strong>Display Price in VSD:</strong> Convert your product/service price from fiat to VSD (usually 1 VSD = $1 USD, but always confirm).</li>
+                <li><strong>Provide Payment Address:</strong> Present a unique VSD deposit address for each transaction or a static address for your business.</li>
+                <li><strong>User Initiates Transfer:</strong> The customer sends the VSD amount from their wallet to your address.</li>
+                <li><strong>Monitor Blockchain:</strong> Your backend system (or a third-party payment processor) monitors the blockchain for incoming transactions to your address. Our upcoming REST API's <code>/address/{'{address}'}/transactions</code> endpoint will be useful here.</li>
+                <li><strong>Confirm Transaction:</strong> Wait for a sufficient number of block confirmations to consider the transaction final. This varies by blockchain.</li>
+                <li><strong>Fulfill Order:</strong> Once confirmed, process the order or grant access to the service.</li>
+              </ol>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="integration-methods">
+            <AccordionTrigger className="text-xl hover:no-underline">Integration Methods</AccordionTrigger>
+            <AccordionContent>
+              <h5 className="text-lg font-semibold mt-2 mb-1">Direct Integration:</h5>
+              <p>Use our <Link href="/developers/sdks-tools">SDKs</Link> (JavaScript for frontend/Node.js, upcoming Python/Go for backend) to interact with the VSD token contract directly. This gives you full control but requires more development effort.</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Generate deposit addresses.</li>
+                <li>Query balances and transaction history (via SDK or directly on-chain).</li>
+                <li>Securely manage private keys for your business wallet if holding VSD.</li>
+              </ul>
+              <h5 className="text-lg font-semibold mt-4 mb-1">Using Payment Processors (Future):</h5>
+              <p>As the VSD ecosystem grows, we anticipate third-party payment processors will add support for VSD. These services simplify accepting crypto by handling wallet management, transaction monitoring, and conversion to fiat if needed. Keep an eye on our <Link href="/ecosystem">Ecosystem page</Link> for partners.</p>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="best-practices">
+            <AccordionTrigger className="text-xl hover:no-underline">Best Practices</AccordionTrigger>
+            <AccordionContent>
+              <ul className="list-disc pl-5 space-y-1">
+                <li><strong>Security:</strong> Prioritize the security of your wallet's private keys. Use hardware wallets or multi-signature solutions for significant funds.</li>
+                <li><strong>Transaction Confirmations:</strong> Determine an appropriate number of block confirmations before considering a payment final to mitigate risks of block reorganizations.</li>
+                <li><strong>User Experience:</strong> Provide clear instructions to your customers on how to pay with VSD. Include QR codes for addresses, expected amounts, and links to block explorers for transaction tracking.</li>
+                <li><strong>Refunds:</strong> Plan how you will handle refunds in VSD.</li>
+                <li><strong>Compliance:</strong> Understand and adhere to any local regulations regarding cryptocurrency transactions and KYC/AML requirements if applicable to your business.</li>
+              </ul>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+         <p className="mt-6">For more detailed technical guidance, refer to our <Link href="/developers/sdks-tools">SDK documentation</Link> and the upcoming REST API specifications.</p>
       </SectionCard>
 
       <Separator />
@@ -301,5 +362,3 @@ getVsdBalance();`}
     </div>
   );
 }
-
-    

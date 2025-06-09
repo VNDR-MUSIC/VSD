@@ -1,13 +1,13 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle, BarChart2, Users, Shield, Target } from "lucide-react";
+import { CheckCircle, BarChart2, Users, Shield, Target, Briefcase, ShoppingCart, Repeat, Gamepad2, FileText, Mic2 } from "lucide-react";
 import { AIImage } from "@/components/ai/AIImage";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'VSD Token Information',
-  description: 'Detailed information about the VSD decentralized stablecoin, its features, and tokenomics.',
+  description: 'Detailed information about the VSD decentralized stablecoin, its features, tokenomics, and business use cases.',
 };
 
 const FeatureItem = ({ icon: Icon, title, children }: { icon: React.ElementType, title: string, children: React.ReactNode }) => (
@@ -19,6 +19,19 @@ const FeatureItem = ({ icon: Icon, title, children }: { icon: React.ElementType,
     </div>
   </div>
 );
+
+const UseCaseCard = ({ icon: Icon, title, children }: { icon: React.ElementType, title: string, children: React.ReactNode }) => (
+    <Card className="shadow-md h-full">
+        <CardHeader className="flex flex-row items-center space-x-3 pb-2">
+            <Icon className="h-6 w-6 text-primary" />
+            <CardTitle className="font-headline text-xl">{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+            <p className="text-muted-foreground text-sm">{children}</p>
+        </CardContent>
+    </Card>
+);
+
 
 export default function TokenPage() {
   return (
@@ -73,15 +86,16 @@ export default function TokenPage() {
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="font-headline text-2xl">Understanding VSD's Economic Model</CardTitle>
+             <CardDescription>VSD's tokenomics are designed for stability, utility, and ecosystem growth.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              VSD's tokenomics are designed to ensure stability, incentivize participation, and support long-term growth of the ecosystem. This includes mechanisms for minting, burning, collateral management, and governance. (Detailed charts and figures would go here).
+              The economic model of VSD focuses on maintaining its peg, ensuring sufficient collateralization, and incentivizing participation across its ecosystem. This includes mechanisms for minting VSD by locking collateral, burning VSD upon redemption, and potential governance rights for token holders to influence protocol parameters. (Specific details like total supply, distribution, and inflation/deflation mechanisms should be detailed here based on VSD's actual design).
             </p>
             <div className="bg-muted/30 p-6 rounded-lg">
               <AIImage 
                 initialSrc="https://placehold.co/800x400.png" 
-                alt="Tokenomics chart placeholder"
+                alt="Tokenomics chart placeholder illustrating VSD supply and stability mechanisms"
                 width={800}
                 height={400}
                 className="rounded-md mx-auto shadow-md"
@@ -89,12 +103,38 @@ export default function TokenPage() {
               />
             </div>
             <p className="text-sm text-muted-foreground text-center pt-2">
-              (Example: Pie chart showing token distribution or a graph illustrating stability mechanisms)
+              (Example: A chart showing collateral types and ratios, or VSD supply dynamics.)
             </p>
           </CardContent>
         </Card>
       </section>
       
+      <Separator />
+       <section className="space-y-8">
+        <h2 className="font-headline text-3xl font-semibold text-center">Use Cases for Businesses</h2>
+        <p className="text-muted-foreground text-center max-w-2xl mx-auto">VSD offers a stable and efficient digital currency solution for a variety of commercial applications.</p>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <UseCaseCard icon={ShoppingCart} title="E-commerce Payments">
+                Accept VSD for online sales. Benefit from potentially lower transaction fees, faster settlement, and reduced chargeback risk compared to traditional methods.
+            </UseCaseCard>
+            <UseCaseCard icon={Repeat} title="Subscription Services">
+                Implement VSD for recurring billing in SaaS, content platforms, or memberships, offering customers a stable and predictable payment method.
+            </UseCaseCard>
+            <UseCaseCard icon={Gamepad2} title="In-App & In-Game Purchases">
+                Utilize VSD as a stable in-app or in-game currency for digital goods, services, or virtual assets, simplifying microtransactions.
+            </UseCaseCard>
+            <UseCaseCard icon={Briefcase} title="B2B Transactions">
+                Streamline business-to-business payments, especially cross-border, with VSD's efficiency and transparency.
+            </UseCaseCard>
+            <UseCaseCard icon={FileText} title="Invoice Payments">
+                Settle invoices quickly and securely using VSD, reducing administrative overhead and payment processing times.
+            </UseCaseCard>
+            <UseCaseCard icon={Mic2} title="Creator & Freelancer Payouts">
+                 Enable direct and stable payments to content creators, artists, and freelancers globally, bypassing traditional banking delays.
+            </UseCaseCard>
+        </div>
+      </section>
+
       <Separator />
 
       <section className="space-y-8">
@@ -106,17 +146,17 @@ export default function TokenPage() {
             </p>
             <ul className="list-disc list-inside space-y-3 mt-4 text-lg text-muted-foreground pl-4">
               <li>
-                <strong>Minting:</strong> Users can lock up approved collateral assets in the VSD protocol smart contracts to mint new VSD tokens.
+                <strong>Minting:</strong> Users can lock up approved collateral assets in the VSD protocol smart contracts to mint new VSD tokens. (Refer to our <a href="/developers/documentation#smart-contracts" className="text-primary hover:underline">Smart Contracts documentation</a> for details).
               </li>
               <li>
-                <strong>Decentralized Exchanges (DEXs):</strong> VSD is often available for trading on various DEXs against other cryptocurrencies.
+                <strong>Decentralized Exchanges (DEXs):</strong> VSD is often available for trading on various DEXs against other cryptocurrencies. (Check our <a href="/ecosystem" className="text-primary hover:underline">Ecosystem page</a> for listed exchanges).
               </li>
               <li>
-                <strong>Ecosystem Participation:</strong> Some projects within the VSD ecosystem might offer VSD as rewards or incentives.
+                <strong>Ecosystem Participation:</strong> Some projects within the VSD ecosystem might offer VSD as rewards or incentives for activities like liquidity provision or governance participation.
               </li>
             </ul>
             <p className="mt-6 text-sm text-center text-primary font-medium">
-              Always ensure you are interacting with official VSD protocol interfaces and reputable exchanges.
+              Always ensure you are interacting with official VSD protocol interfaces and reputable exchanges. Verify contract addresses before any transaction.
             </p>
           </CardContent>
         </Card>
