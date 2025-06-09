@@ -14,7 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2, Copy, Sparkles, ShieldAlert, UserPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { generateSmartContract, GenerateSmartContractInput, GenerateSmartContractOutputSchema } from '@/ai/flows/generate-smart-contract-flow';
+import { generateSmartContract, type GenerateSmartContractInput } from '@/ai/flows/generate-smart-contract-flow';
 import type { GenerateSmartContractOutput } from '@/ai/flows/generate-smart-contract-flow';
 
 const contractFormSchema = z.object({
@@ -74,13 +74,9 @@ export default function SmartContractGeneratorPage() {
         // keyFunctionalities is already an array due to transform
       };
       const result = await generateSmartContract(inputData);
-      const parsedResult = GenerateSmartContractOutputSchema.safeParse(result);
-      if (parsedResult.success) {
-        setGeneratedContract(parsedResult.data);
-      } else {
-         setError("AI returned an unexpected data structure. Please try again.");
-         console.error("AI response parsing error:", parsedResult.error);
-      }
+      // The result from generateSmartContract is already of type GenerateSmartContractOutput
+      // or the flow would have thrown an error.
+      setGeneratedContract(result);
     } catch (e) {
       console.error(e);
       setError("An error occurred while generating the smart contract. Please try again.");
