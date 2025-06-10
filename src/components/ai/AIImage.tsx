@@ -47,17 +47,23 @@ export function AIImage({
           if (isMounted && response && response.imageDataUri) {
             setCurrentImageSrc(response.imageDataUri);
           } else if (isMounted) {
-            // If imageDataUri is empty/null or response itself is problematic, but no error thrown from flow
-            console.error('AIImage: Image generation returned empty or invalid data URI for hint:', hint, 'Response:', response);
-            setError('Failed to generate image: AI returned invalid data.');
-            setCurrentImageSrc(initialSrc); // Fallback to initial source
+            const errorMessage = 'AIImage: Image generation returned empty or invalid data URI.';
+            console.error(errorMessage, { hint, response, environment: typeof window !== 'undefined' ? window.location.host : 'server' });
+            setError(errorMessage);
+            setCurrentImageSrc(initialSrc); 
           }
         })
         .catch((err) => {
           if (isMounted) {
-            console.error(`AIImage: Failed to generate image for hint "${hint}":`, err);
-            setError(err.message || 'An unknown error occurred during image generation.');
-            setCurrentImageSrc(initialSrc); // Fallback to initial source on error
+            const errorMessage = err.message || 'An unknown error occurred during image generation.';
+            console.error("AI_IMAGE_EXCEPTION: Client-side catch for image generation failure.", {
+              hint,
+              error: errorMessage,
+              errorObject: err,
+              environment: typeof window !== 'undefined' ? window.location.host : 'server'
+            });
+            setError(errorMessage);
+            setCurrentImageSrc(initialSrc); 
           }
         })
         .finally(() => {
@@ -66,15 +72,14 @@ export function AIImage({
           }
         });
     } else {
-      // No hint provided, use initialSrc and stop loading
       setCurrentImageSrc(initialSrc);
       setIsLoading(false);
     }
 
     return () => {
-      isMounted = false; // Cleanup to prevent state updates on unmounted component
+      isMounted = false; 
     };
-  }, [hint, initialSrc]); // Rerun if hint or initialSrc changes
+  }, [hint, initialSrc]); 
 
   const isDataUri = currentImageSrc.startsWith('data:');
 
@@ -90,11 +95,6 @@ export function AIImage({
     );
   }
 
-
-  // If there was an error, and currentImageSrc is still the initial placeholder,
-  // we can optionally display an error state or just show the placeholder.
-  // For now, it just shows the placeholder (initialSrc).
-
   return (
     <Image
       src={currentImageSrc}
@@ -103,15 +103,16 @@ export function AIImage({
       height={layout === "fill" ? undefined : height}
       className={className}
       priority={priority}
-      unoptimized={isDataUri} // Important for data URIs
+      unoptimized={isDataUri} 
       data-ai-hint={hint}
       layout={layout}
       objectFit={objectFit}
       onError={() => {
-        // Fallback if the currentImageSrc (even AI generated one) fails to load
-        console.error(`AIImage: Error loading image source: ${currentImageSrc}. Falling back to initialSrc.`);
-        setCurrentImageSrc(initialSrc);
+        console.error(`AIImage: Error loading image source (could be AI-generated or initialSrc): ${currentImageSrc}. Falling back to initialSrc if not already there.`);
         setError('Image source failed to load.');
+        if (currentImageSrc !== initialSrc) { // Avoid infinite loop if initialSrc itself is bad
+          setCurrentImageSrc(initialSrc);
+        }
       }}
       {...props}
     />
