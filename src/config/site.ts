@@ -13,6 +13,7 @@ export const siteConfig = {
     { title: "Developers", href: "/developers", icon: Code },
     { title: "AI Contract Gen", href: "/smart-contract-generator", icon: Sparkles, label: "New" },
     { title: "FAQ", href: "/faq", icon: HelpCircle },
+    // The VSD Token Info link that pointed to /vsd-token-info has been removed.
   ] satisfies NavItem[],
   footerNav: [
     { title: "Terms of Service", href: "#" }, // Placeholder link
