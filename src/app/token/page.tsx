@@ -2,9 +2,9 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle, BarChart2, Users, Shield, Target, Briefcase, ShoppingCart, Repeat, Gamepad2, FileText, Mic2, DollarSign, GitBranch, Aperture } from "lucide-react";
-import Image from "next/image";
 import type { Metadata } from 'next';
 import Link from "next/link";
+import { AIImage } from "@/components/ai/AIImage";
 
 export const metadata: Metadata = {
   title: 'VSD Token Information',
@@ -118,13 +118,13 @@ export default function TokenPage() {
                 </ul>
             </div>
             <div className="bg-muted/30 p-6 rounded-lg">
-              <Image 
-                src="https://placehold.co/800x400.png"
-                alt="Tokenomics chart placeholder"
+              <AIImage
+                initialSrc="https://placehold.co/800x400.png"
+                alt="Tokenomics chart"
                 width={800}
                 height={400}
                 className="rounded-md mx-auto shadow-md"
-                data-ai-hint="tokenomics crypto chart"
+                hint="tokenomics crypto chart"
               />
             </div>
             <p className="text-sm text-muted-foreground text-center pt-2">

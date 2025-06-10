@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Code, Library, Workflow, Cpu, GitBranch, HelpCircle, BookOpenText, Layers, CreditCard } from "lucide-react";
-import Image from 'next/image';
 import Link from 'next/link';
+import { AIImage } from '@/components/ai/AIImage';
 
 export const metadata: Metadata = {
   title: 'VSD Network Documentation',
@@ -58,13 +58,13 @@ export default function DocumentationPage() {
 
       <SectionCard icon={Workflow} title="Architecture Overview" description="A high-level look at the components of the VSD Network.">
         <p>The VSD Network is composed of several key layers and smart contracts working in concert on a public blockchain to ensure stability, security, and decentralization:</p>
-        <Image
-          src="https://placehold.co/800x400.png"
-          alt="VSD Network Architecture Diagram Placeholder"
+        <AIImage
+          initialSrc="https://placehold.co/800x400.png"
+          alt="VSD Network Architecture Diagram"
           width={800}
           height={400}
           className="rounded-md my-6 shadow-md mx-auto"
-          data-ai-hint="blockchain architecture diagram"
+          hint="blockchain architecture diagram"
         />
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="item-1">
@@ -169,13 +169,13 @@ export default function DocumentationPage() {
           <li><strong>Authentication:</strong> API key based for rate-limited endpoints.</li>
           <li><strong>Rate Limits:</strong> Generous free tier, with options for higher limits.</li>
         </ul>
-        <Image
-          src="https://placehold.co/700x350.png"
-          alt="API Interaction Diagram Placeholder"
+        <AIImage
+          initialSrc="https://placehold.co/700x350.png"
+          alt="API Interaction Diagram"
           width={700}
           height={350}
           className="rounded-md my-6 shadow-md mx-auto"
-          data-ai-hint="API data flow blockchain"
+          hint="API data flow blockchain"
         />
 
         <h4 className="text-2xl mt-8 mb-2">JavaScript SDK (Alpha)</h4>

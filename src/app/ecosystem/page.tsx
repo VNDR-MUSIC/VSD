@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowUpRightSquare } from "lucide-react";
 import type { Metadata } from 'next';
-import Image from 'next/image';
+import { AIImage } from '@/components/ai/AIImage';
 
 export const metadata: Metadata = {
   title: 'VSD Ecosystem Projects',
@@ -15,8 +15,8 @@ interface Project {
   id: string;
   name: string;
   description: string;
-  imageUrl: string;
-  imageHint?: string;
+  imageUrl: string; // This will be the initial placeholder
+  imageHint: string; // Hint for AI generation
   projectUrl?: string;
   category: string; // e.g., DeFi, NFT, DAO, Gaming
 }
@@ -91,12 +91,15 @@ export default function EcosystemPage() {
           <Card key={project.id} className="flex flex-col shadow-lg hover:shadow-primary/20 transition-shadow duration-300">
             <CardHeader>
               <div className="aspect-video relative mb-4">
-                <Image
-                  src={project.imageUrl}
+                <AIImage
+                  initialSrc={project.imageUrl}
                   alt={project.name}
-                  fill
+                  width={600} // Assuming all placeholders are 600x400, adjust if not
+                  height={400}
                   className="rounded-t-lg object-cover"
-                  data-ai-hint={project.imageHint}
+                  hint={project.imageHint}
+                  layout="fill" // This prop might be needed if parent div controls size
+                  objectFit="cover" // Ensure image covers the area
                 />
               </div>
               <CardTitle className="font-headline text-2xl">{project.name}</CardTitle>

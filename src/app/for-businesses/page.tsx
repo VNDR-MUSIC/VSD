@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { DollarSign, Zap, Globe, Puzzle, ArrowRight, ShieldCheck, Users, Briefcase } from 'lucide-react';
-import Image from 'next/image';
+import { AIImage } from '@/components/ai/AIImage';
 
 export const metadata: Metadata = {
   title: 'VSD for Businesses',
@@ -64,13 +64,13 @@ export default function ForBusinessesPage() {
       <Separator />
 
       <section className="text-center">
-        <Image
-          src="https://placehold.co/800x400.png"
+        <AIImage
+          initialSrc="https://placehold.co/800x400.png"
           alt="Businesses using VSD for crypto transactions"
           width={800}
           height={400}
           className="rounded-md my-8 shadow-md mx-auto"
-          data-ai-hint="business crypto transaction"
+          hint="business crypto transaction"
         />
         <h2 className="font-headline text-3xl font-semibold mb-6">Ready to Integrate VSD?</h2>
         <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">

@@ -5,6 +5,7 @@ import { siteConfig } from "@/config/site";
 import { ArrowRight, BarChart3, Code, Network } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { AIImage } from "@/components/ai/AIImage";
 
 export default function HomePage() {
   return (
@@ -68,13 +69,13 @@ export default function HomePage() {
             <p className="text-muted-foreground">
               The VSD ecosystem is constantly growing. Explore a variety of decentralized applications and platforms leveraging our stablecoin.
             </p>
-            <Image
-              src="https://placehold.co/600x400.png"
-              alt="Ecosystem visualization placeholder"
+            <AIImage
+              initialSrc="https://placehold.co/600x400.png"
+              alt="Ecosystem visualization"
               width={600}
               height={400}
               className="rounded-md mt-4"
-              data-ai-hint="abstract network"
+              hint="abstract network"
             />
           </CardContent>
           <CardFooter>
@@ -94,13 +95,13 @@ export default function HomePage() {
             <p className="text-muted-foreground">
               Access comprehensive documentation, SDKs, smart contract examples, and community channels to kickstart your development journey.
             </p>
-             <Image
-              src="https://placehold.co/600x400.png"
-              alt="Developer coding placeholder"
+             <AIImage
+              initialSrc="https://placehold.co/600x400.png"
+              alt="Developer coding"
               width={600}
               height={400}
               className="rounded-md mt-4"
-              data-ai-hint="code screen"
+              hint="code screen"
             />
           </CardContent>
           <CardFooter>
