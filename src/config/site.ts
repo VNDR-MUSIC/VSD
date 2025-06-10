@@ -1,15 +1,16 @@
 
 import type { NavItem } from '@/types/nav';
-import { LayoutDashboard, CircleDollarSign, Network, Code, Briefcase, HelpCircle } from 'lucide-react';
+import { LayoutDashboard, CircleDollarSign, Network, Code, Briefcase, HelpCircle, FileText } from 'lucide-react';
 
 export const siteConfig = {
   name: "VSD Network",
-  description: "Centralized dashboard for VSD token information, ecosystem projects, and developer resources.",
+  description: "Centralized dashboard for VSD token information, ecosystem projects, and developer resources for our decentralized stablecoin platform.",
   mainNav: [
     { title: "Dashboard", href: "/", icon: LayoutDashboard },
-    { title: "Token", href: "/token", icon: CircleDollarSign }, // Changed "Product" back to "Token"
+    { title: "Token", href: "/token", icon: CircleDollarSign },
     { title: "Ecosystem", href: "/ecosystem", icon: Network },
     { title: "For Businesses", href: "/for-businesses", icon: Briefcase },
+    { title: "AI Contract Gen", href: "/smart-contract-generator", icon: FileText },
     { title: "Developers", href: "/developers", icon: Code },
     { title: "FAQ", href: "/faq", icon: HelpCircle },
   ] satisfies NavItem[],
