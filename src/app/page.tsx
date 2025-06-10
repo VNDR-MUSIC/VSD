@@ -2,8 +2,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { siteConfig } from "@/config/site";
-import { ArrowRight, BarChart3, Code, Network, ShieldCheck } from "lucide-react"; // Removed Search
-import Image from "next/image"; // Replaced AIImage with next/image
+import { ArrowRight, BarChart3, Code, Network } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function HomePage() {
@@ -12,7 +12,7 @@ export default function HomePage() {
       <section className="text-center py-16">
         <div className="flex justify-center mb-8">
           <Image
-            src="https://indiemedia.llc/vsdlogo.jpg" // Was initialSrc
+            src="https://indiemedia.llc/vsdlogo.jpg"
             alt="VSD Network Logo"
             width={100}
             height={100}
@@ -24,11 +24,11 @@ export default function HomePage() {
           Welcome to <span className="text-primary">{siteConfig.name}</span>
         </h1>
         <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8">
-          Your central hub for the VSD platform. Explore product information, discover ecosystem projects, and access developer resources.
+          Your central hub for the VSD token. Explore token information, discover ecosystem projects, and access developer resources for our decentralized stablecoin platform.
         </p>
         <div className="space-x-4">
           <Button asChild size="lg" className="font-bold btn-hover-effect">
-            <Link href="/token">Learn about VSD <ArrowRight className="ml-2 h-5 w-5" /></Link>
+            <Link href="/token">Learn about VSD Token <ArrowRight className="ml-2 h-5 w-5" /></Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="font-bold btn-hover-effect">
             <Link href="/developers">Developer Portal <Code className="ml-2 h-5 w-5" /></Link>
@@ -40,19 +40,20 @@ export default function HomePage() {
         <Card className="shadow-lg hover:shadow-primary/20 transition-shadow duration-300">
           <CardHeader>
             <BarChart3 className="h-10 w-10 text-primary mb-3" />
-            <CardTitle className="font-headline text-2xl">VSD Product Insights</CardTitle>
-            <CardDescription>Key metrics and information about the VSD platform.</CardDescription>
+            <CardTitle className="font-headline text-2xl">VSD Token Insights</CardTitle>
+            <CardDescription>Key metrics and information about the VSD stablecoin.</CardDescription>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2 text-muted-foreground">
-              <li>Total Units: 1,000,000,000 VSD (Example)</li>
-              <li>Active Units: 750,000,000 VSD (Example)</li>
-              <li>Target Value: $1.00 USD Equivalent (Example)</li>
+              <li>Total Supply: 1,000,000,000 VSD (Example)</li>
+              <li>Circulating Supply: 750,000,000 VSD (Example)</li>
+              <li>Target Value: $1.00 USD (Pegged)</li>
+              <li>Collateralization Ratio: 150% (Example)</li>
             </ul>
           </CardContent>
           <CardFooter>
             <Button asChild variant="outline" className="w-full btn-hover-effect">
-              <Link href="/token">View Product Details <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Link href="/token">View Token Details <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
           </CardFooter>
         </Card>
@@ -61,14 +62,14 @@ export default function HomePage() {
           <CardHeader>
             <Network className="h-10 w-10 text-primary mb-3" />
             <CardTitle className="font-headline text-2xl">Ecosystem Projects</CardTitle>
-            <CardDescription>Discover innovative projects building with VSD.</CardDescription>
+            <CardDescription>Discover innovative DeFi and Web3 projects building with VSD.</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              The VSD ecosystem is constantly growing. Explore a variety of applications and platforms leveraging the power of our platform.
+              The VSD ecosystem is constantly growing. Explore a variety of decentralized applications and platforms leveraging our stablecoin.
             </p>
             <Image
-              src="https://placehold.co/600x400.png" // Was initialSrc
+              src="https://placehold.co/600x400.png"
               alt="Ecosystem visualization placeholder"
               width={600}
               height={400}
@@ -87,14 +88,14 @@ export default function HomePage() {
           <CardHeader>
             <Code className="h-10 w-10 text-primary mb-3" />
             <CardTitle className="font-headline text-2xl">Developer Resources</CardTitle>
-            <CardDescription>Tools and documentation for building with VSD.</CardDescription>
+            <CardDescription>Tools and documentation for building on the VSD Network.</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              Access comprehensive documentation, SDKs, and community channels to kickstart your development journey.
+              Access comprehensive documentation, SDKs, smart contract examples, and community channels to kickstart your development journey.
             </p>
              <Image
-              src="https://placehold.co/600x400.png" // Was initialSrc
+              src="https://placehold.co/600x400.png"
               alt="Developer coding placeholder"
               width={600}
               height={400}
@@ -109,8 +110,6 @@ export default function HomePage() {
           </CardFooter>
         </Card>
       </section>
-
-      {/* Removed AI Search Section */}
     </div>
   );
 }

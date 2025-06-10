@@ -3,99 +3,99 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from '@/components/ui/button'; // Added Button import
+import { Button } from '@/components/ui/button';
 import { HelpCircle, BookOpen } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'FAQ | VSD Network',
-  description: 'Frequently Asked Questions about the VSD Network, VSD platform, its technology, usage, and security.',
+  description: 'Frequently Asked Questions about the VSD Network, VSD stablecoin, its technology, usage, and security in the Web3 space.',
 };
 
 const faqs = [
   {
     id: "what-is-vsd-network",
     question: "What is the VSD Network?",
-    answer: "The VSD Network is a decentralized digital ecosystem centered around the VSD platform. Our mission is to provide a transparent, stable, and accessible digital platform that can be seamlessly integrated into various applications and services, aiming to bridge traditional digital services with decentralized possibilities."
+    answer: "The VSD Network is a decentralized ecosystem built around the VSD stablecoin. Its mission is to provide a transparent, stable, and accessible digital currency platform that can be seamlessly integrated into various DeFi applications, Web3 services, and traditional businesses looking to leverage blockchain technology."
   },
   {
-    id: "what-is-vsd-platform",
-    question: "What is the VSD platform/product?",
-    answer: "VSD is a decentralized, asset-backed digital platform designed to maintain a stable reference value (e.g., pegged to the US Dollar). It serves as a primary medium for digital interactions and store of value within the VSD Network and its associated ecosystem projects."
+    id: "what-is-vsd-stablecoin",
+    question: "What is the VSD stablecoin?",
+    answer: "VSD is a cryptocurrency designed to maintain a stable value, typically pegged to a major fiat currency like the US Dollar (e.g., 1 VSD = $1 USD). It achieves this stability through mechanisms like collateralization with other crypto assets, algorithmic adjustments, and arbitrage incentives, all managed by smart contracts on a blockchain."
   },
   {
-    id: "how-value-maintained",
-    question: "How is the VSD reference value maintained?",
-    answer: "The VSD reference value is maintained through a combination of robust mechanisms including: <br />1. **Asset Backing:** Users interact with VSD by using approved digital assets of sufficient value. <br />2. **Arbitrage Incentives:** Market participants are incentivized to interact with the platform in ways that help restore the reference value if it deviates. <br />3. **Algorithmic Adjustments & Stability Modules:** The platform may include algorithmic mechanisms and stability modules to absorb volatility and maintain the peg during market fluctuations. <br />4. **Risk Management:** Positions or interactions that fall below certain thresholds are subject to automated processes to ensure the platform's stability."
+    id: "how-peg-maintained",
+    question: "How is the VSD stablecoin's peg maintained?",
+    answer: "The VSD peg is maintained through a combination of: <br />1. **Over-Collateralization:** Users mint VSD by locking up collateral assets (like ETH, WBTC) worth more than the VSD they generate. <br />2. **Arbitrage Incentives:** If VSD's market price deviates from its peg, arbitrageurs are incentivized to buy or sell VSD to bring it back to the target value (e.g., buying VSD below $1 to redeem $1 worth of collateral, or minting VSD to sell above $1). <br />3. **Stability Modules & Smart Contracts:** Automated smart contracts manage collateral ratios, liquidations of undercollateralized positions, and potentially algorithmic supply adjustments to support the peg."
   },
   {
-    id: "what-network",
-    question: "What underlying network/technology does VSD use?",
-    answer: "VSD is initially deployed on [Specify Main Network/Technology, e.g., a specific distributed ledger or secure network]. We are actively exploring and developing solutions for cross-platform compatibility to enhance VSD's accessibility and utility. Please refer to our official <a href='/developers/documentation' class='text-primary hover:underline'>documentation</a> for the latest information on supported technologies."
+    id: "what-blockchain",
+    question: "What blockchain does VSD operate on?",
+    answer: "VSD is initially deployed on [Specify Blockchain, e.g., Ethereum Mainnet, Polygon, BNB Chain]. We are actively exploring and developing solutions for cross-chain compatibility (bridges, Layer 2 solutions) to enhance VSD's accessibility and utility across multiple blockchain ecosystems. Please refer to our official <a href='/developers/documentation' class='text-primary hover:underline'>documentation</a> for the latest information on supported networks and contract addresses."
   },
   {
     id: "how-to-get-vsd",
-    question: "How can I acquire/use VSD units/services?",
-    answer: "VSD units/services can be acquired or accessed through several methods: <br />1. **Platform Interaction:** By interacting with the VSD platform's core services using approved assets. <br />2. **Partner Platforms:** Exchanging or accessing VSD on various partner platforms where it is integrated. <br />3. **Ecosystem Engagement:** As the project grows, VSD may be available through select partner services. <br />Always check our <a href='/ecosystem' class='text-primary hover:underline'>Ecosystem page</a> and official announcements for verified sources."
+    question: "How can I get VSD tokens?",
+    answer: "VSD tokens can be acquired through several methods: <br />1. **Minting:** By depositing approved collateral assets into the VSD platform's smart contract vaults via our official dApp or integrated platforms. <br />2. **Decentralized Exchanges (DEXs):** Swapping other cryptocurrencies for VSD on DEXs like Uniswap, Sushiswap, PancakeSwap, etc. (where liquidity pools exist). <br />3. **Centralized Exchanges (CEXs):** VSD may be listed on select centralized exchanges for trading. <br />Always verify contract addresses and use reputable platforms. Check our <a href='/ecosystem' class='text-primary hover:underline'>Ecosystem page</a> for official listings and partners."
   },
   {
     id: "benefits-of-vsd",
     question: "What are the primary benefits of using VSD?",
-    answer: "VSD offers numerous advantages: <br />- **Value Stability:** Designed to minimize volatility compared to other digital assets. <br />- **Transparency:** All platform operations and backing (where applicable) are auditable on its underlying network. <br />- **Decentralization:** Aims for resilience and reduced reliance on single points of failure. <br />- **Efficiency:** Enables fast and potentially low-cost digital interactions. <br />- **Application Integration:** Seamlessly usable in various applications for payments, value storage, and more. <br />- **Accessibility:** Provides a stable digital value option for a global user base."
+    answer: "VSD offers numerous advantages in the Web3 space: <br />- **Value Stability:** Minimizes price volatility common with other cryptocurrencies, making it suitable for payments, savings, and as a quote currency. <br />- **Transparency & Auditability:** All transactions and smart contract logic are on a public blockchain. <br />- **Decentralization & Censorship Resistance:** Reduced reliance on traditional intermediaries. <br />- **Efficiency & Speed:** Faster and potentially lower-cost transactions compared to traditional finance. <br />- **DeFi Composability:** Seamlessly integrates with various DeFi protocols for lending, borrowing, yield farming, etc. <br />- **Global Accessibility:** Provides a stable digital currency option for a global user base."
   },
   {
     id: "security-audits",
-    question: "Is the VSD platform's core logic audited?",
-    answer: "Yes, security is paramount for the VSD Network. Our core logic modules undergo multiple independent security audits conducted by reputable security firms. Audit reports are made publicly available in our <a href='/developers/documentation#security' class='text-primary hover:underline'>documentation</a> (ensure this link points to a valid section or document). We also may run ongoing bug bounty programs to encourage community security contributions."
+    question: "Are the VSD smart contracts audited?",
+    answer: "Yes, security is paramount. Our core smart contracts (token contract, vault manager, governance, etc.) undergo multiple independent security audits by reputable blockchain security firms. Audit reports are made publicly available in our <a href='/developers/documentation#security' class='text-primary hover:underline'>documentation</a>. We also run ongoing bug bounty programs to encourage community security contributions."
   },
   {
-    id: "business-integration",
-    question: "How can businesses integrate VSD for payments or services?",
-    answer: "Businesses can integrate VSD in several ways: <br />1. **Direct Integration:** Utilizing our <a href='/developers/sdks-tools' class='text-primary hover:underline'>SDKs</a> and APIs for custom solutions. <br />2. **Payment Processors:** Partnering with third-party payment processors that support VSD. <br />3. **Platform Plugins:** We aim to provide or support plugins for popular e-commerce and service platforms. <br />Visit our <a href='/for-businesses' class='text-primary hover:underline'>For Businesses page</a> and the <a href='/developers/documentation#integrating-vsd-for-payments' class='text-primary hover:underline'>payment integration guide</a> in our documentation for more details."
+    id: "business-integration-crypto",
+    question: "How can businesses integrate VSD for crypto payments?",
+    answer: "Businesses can integrate VSD in several ways: <br />1. **Direct Smart Contract Integration:** Utilizing our <a href='/developers/sdks-tools' class='text-primary hover:underline'>SDKs</a> and APIs for custom wallet solutions or dApp integrations. <br />2. **Crypto Payment Processors:** Partnering with third-party payment processors that support VSD and other cryptocurrencies. <br />3. **E-commerce Plugins:** Using or developing plugins for popular e-commerce platforms. <br />Visit our <a href='/for-businesses' class='text-primary hover:underline'>For Businesses page</a> and the <a href='/developers/documentation#integrating-vsd-for-payments' class='text-primary hover:underline'>payment integration guide</a> in our documentation for more details."
   },
   {
-    id: "vsd-governance",
-    question: "Who governs the VSD Network?",
-    answer: "The VSD Network is designed for decentralized governance. Holders of a designated governance instrument (or potentially through other mechanisms) can participate in voting on platform upgrades, risk parameters, and other key decisions. Our <a href='/developers/documentation#governance-module' class='text-primary hover:underline'>documentation</a> provides more details on the governance model."
+    id: "vsd-governance-dao",
+    question: "Who governs the VSD Network and protocol?",
+    answer: "The VSD Network aims for decentralized governance through a DAO (Decentralized Autonomous Organization). Holders of VSD tokens (or a dedicated governance token) can participate in voting on protocol upgrades, risk parameters (like collateral types, fees, liquidation ratios), and other key decisions. Our <a href='/developers/documentation#governance-module' class='text-primary hover:underline'>documentation</a> provides more details on the governance model and how to participate."
   },
   {
-    id: "risks-associated",
-    question: "What are the risks associated with VSD?",
-    answer: "While VSD is designed for stability and security, all digital platform involvement carries risks, including: <br />- **Technology Vulnerabilities:** Despite audits, the risk of undiscovered bugs exists in any software. <br />- **Asset Volatility:** If VSD is backed by other assets, their value can fluctuate, which could impact VSD if extreme market events occur. <br />- **Data Feed Risks:** Dependence on external data feeds introduces a potential point of failure or manipulation. <br />- **Regulatory Uncertainty:** The legal and regulatory landscape for digital platforms is still evolving. <br />- **Market & Liquidity Risks:** Overall market conditions can affect the liquidity and demand for VSD. <br />We strongly advise users to do their own research (DYOR) and understand these risks."
+    id: "risks-associated-crypto",
+    question: "What are the risks associated with VSD and DeFi?",
+    answer: "While VSD is designed for stability, all cryptocurrency and DeFi involvement carries risks: <br />- **Smart Contract Vulnerabilities:** Despite audits, the risk of undiscovered bugs or exploits in smart contracts exists. <br />- **Collateral Volatility:** The value of assets backing VSD can fluctuate. Extreme market events could potentially impact the peg if liquidation mechanisms are overwhelmed. <br />- **Oracle Risks:** Dependence on oracles for price feeds introduces a potential point of failure or manipulation. <br />- **Regulatory Uncertainty:** The legal and regulatory landscape for stablecoins and DeFi is still evolving globally. <br />- **Market & Liquidity Risks:** Overall crypto market conditions can affect the liquidity and demand for VSD on exchanges. <br />- **Loss of Private Keys:** Users are responsible for securing their own private keys; loss of keys means loss of funds. <br />We strongly advise users to Do Your Own Research (DYOR), understand these risks, and never invest more than they can afford to lose."
   },
   {
-    id: "transaction-fees",
-    question: "What are the transaction fees for using VSD?",
-    answer: "Transaction fees for VSD interactions are determined by the underlying network it operates on. The VSD platform itself generally does not add extra fees for standard transfers or interactions. However, specific platform functions might incur protocol-specific fees. Always check for estimated costs before confirming any transaction."
+    id: "transaction-fees-gas",
+    question: "What are the transaction fees (gas) for using VSD?",
+    answer: "Transaction fees for using VSD (e.g., transfers, minting, interacting with dApps) are determined by the underlying blockchain network it operates on (e.g., Ethereum gas fees, Polygon gas fees). The VSD protocol itself may have specific fees for certain actions like minting or stability fees, which are usually set by governance. Always check your wallet for estimated gas costs before confirming any transaction."
   },
   {
-    id: "vsd-vs-other-platforms",
-    question: "How does VSD compare to other digital value platforms?",
-    answer: "VSD aims to distinguish itself through its commitment to decentralization, transparency of its operational model and backing (where applicable), and a robust, community-focused governance model. Unlike some systems that rely on centralized custodians, VSD's value and operations are secured by its underlying technology and distributed network. Our focus is on resilience and providing a truly decentralized stable medium of exchange."
+    id: "vsd-vs-other-stablecoins",
+    question: "How does VSD compare to other stablecoins?",
+    answer: "VSD aims to differentiate itself through its commitment to decentralization (both in terms of infrastructure and governance via a DAO), transparency of its backing mechanisms and smart contract operations, and a robust, community-focused approach. Different stablecoins have varying models (e.g., fiat-backed, crypto-backed, algorithmic). VSD's specific model [mention VSD's specific model, e.g., is primarily crypto-collateralized and aims for deep DeFi integration]."
   },
   {
-    id: "use-in-applications",
-    question: "Can VSD be used in various digital applications?",
-    answer: "Absolutely. VSD is designed for deep integration within the digital ecosystem. It can serve as stable backing in lending/borrowing platforms, a reliable trading pair on exchanges, a means for yield generation, and a stable unit of account in various strategies. Explore our <a href='/ecosystem' class='text-primary hover:underline'>Ecosystem page</a> to see examples."
+    id: "use-in-defi",
+    question: "Can VSD be used in DeFi applications?",
+    answer: "Absolutely. VSD is designed for deep integration within the DeFi ecosystem. It can serve as stable collateral in lending/borrowing platforms, a reliable trading pair on DEXs, a means for yield farming and liquidity provision, and a stable unit of account in various DeFi strategies. Explore our <a href='/ecosystem' class='text-primary hover:underline'>Ecosystem page</a> to see examples of dApps and protocols integrating VSD."
   },
   {
-    id: "backing-value-drop",
+    id: "collateral-value-drop",
     question: "What happens if the value of assets backing VSD drops significantly?",
-    answer: "The VSD platform has built-in mechanisms like over-backing (if applicable) and automated risk management processes. If the value of a user's backing assets falls below a specific threshold, their position may become eligible for liquidation or other mitigation steps. This process ensures the overall stability and solvency of the VSD platform."
+    answer: "The VSD protocol has built-in mechanisms like over-collateralization and automated liquidations. If the value of a user's collateral falls below a specific threshold (liquidation ratio), their position (vault/CDP) becomes eligible for liquidation. This means a portion of their collateral is sold to cover their VSD debt, ensuring the overall stability and solvency of the VSD stablecoin."
   },
   {
-    id: "whitepaper-location",
+    id: "whitepaper-location-crypto",
     question: "Where can I find the VSD Network whitepaper or detailed technical documentation?",
-    answer: "The VSD Network whitepaper, along with in-depth technical specifications and architectural details, is available on our <a href='/developers/documentation' class='text-primary hover:underline'>Developer Documentation site</a>. We encourage thorough review for a comprehensive understanding of the platform."
+    answer: "The VSD Network whitepaper, along with in-depth technical specifications for our smart contracts, economic model, and architecture, is available on our <a href='/developers/documentation' class='text-primary hover:underline'>Developer Documentation site</a>. We encourage thorough review for a comprehensive understanding of the protocol."
   },
   {
-    id: "technical-support",
-    question: "How can I get technical support or ask more questions?",
-    answer: "For technical assistance, further questions, or to engage with our community, please join our official channels such as Discord or Telegram (links can be found on the <a href='/developers#community' class='text-primary hover:underline'>Developer Portal</a>). Our team and community members are active and ready to help."
+    id: "technical-support-crypto",
+    question: "How can I get technical support or ask more questions about VSD?",
+    answer: "For technical assistance, further questions, or to engage with our community, please join our official channels such as Discord (developer channels) or Telegram (links can be found on the <a href='/developers#community' class='text-primary hover:underline'>Developer Portal</a>). Our team and community members are active and ready to help with smart contract integrations, SDK usage, and general protocol inquiries."
   },
   {
-    id: "contribute-to-ecosystem",
+    id: "contribute-to-ecosystem-crypto",
     question: "How can I contribute to the VSD Network ecosystem?",
-    answer: "There are numerous ways to contribute: <br />- **Develop Applications:** Build applications that integrate VSD or create tools for the ecosystem. <br />- **Provide Liquidity/Support:** Supply VSD to liquidity pools on exchanges or support platform operations. <br />- **Participate in Governance:** Engage in discussions and vote on governance proposals. <br />- **Community Building:** Help educate new users, translate documentation, or create content. <br />- **Security Research:** Participate in bug bounty programs (if active) by responsibly disclosing vulnerabilities. <br />Visit our <a href='/developers' class='text-primary hover:underline'>Developer Portal</a> for more ideas and resources."
+    answer: "There are numerous ways to contribute: <br />- **Develop dApps & Integrations:** Build applications that integrate VSD or create tools for the ecosystem. <br />- **Provide Liquidity:** Supply VSD to liquidity pools on DEXs or participate in yield farming. <br />- **Participate in Governance (DAO):** Engage in discussions and vote on governance proposals if you hold VSD or governance tokens. <br />- **Community Building & Evangelism:** Help educate new users, translate documentation, or create content about VSD. <br />- **Security Research:** Participate in bug bounty programs by responsibly disclosing vulnerabilities in our smart contracts. <br />Visit our <a href='/developers' class='text-primary hover:underline'>Developer Portal</a> for more ideas and resources."
   },
 ];
 
@@ -106,7 +106,7 @@ export default function FaqPage() {
         <HelpCircle className="h-16 w-16 text-primary mx-auto mb-4" />
         <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary">Frequently Asked Questions</h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mt-4">
-          Your questions about the VSD Network, VSD platform, and our ecosystem, answered.
+          Your questions about the VSD Network, VSD stablecoin, its technology, DeFi integration, and security, answered.
         </p>
       </header>
 
@@ -120,7 +120,7 @@ export default function FaqPage() {
                 </AccordionTrigger>
                 <AccordionContent
                   className="text-base md:text-lg text-muted-foreground prose prose-invert max-w-none prose-a:text-primary hover:prose-a:text-primary/80"
-                  htmlString={faq.answer.replace(/\n<br \/>/g, '<br />').replace(/\n/g, '<br />')}
+                  htmlString={faq.answer}
                 />
               </AccordionItem>
             ))}
@@ -136,7 +136,7 @@ export default function FaqPage() {
             </CardHeader>
             <CardContent>
                 <p className="text-muted-foreground mb-4 max-w-md mx-auto">
-                If your question isn't covered here, please dive into our detailed <Link href="/developers/documentation" className="text-primary hover:underline">documentation</Link> or connect with our vibrant community.
+                If your question isn't covered here, please dive into our detailed <Link href="/developers/documentation" className="text-primary hover:underline">technical documentation</Link> or connect with our vibrant Web3 community.
                 </p>
                 <Link href="/developers#community">
                   <Button variant="outline">

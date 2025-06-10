@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowUpRightSquare } from "lucide-react";
 import type { Metadata } from 'next';
-import Image from 'next/image'; // Replaced AIImage
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'VSD Ecosystem Projects',
-  description: 'Explore the diverse range of projects and applications building on and integrating the VSD platform.',
+  description: 'Explore the diverse range of DeFi, Web3, and dApp projects building on and integrating the VSD stablecoin.',
 };
 
 interface Project {
@@ -16,63 +16,63 @@ interface Project {
   name: string;
   description: string;
   imageUrl: string;
-  imageHint?: string; // Kept for potential future use or if manual hints are desired
+  imageHint?: string;
   projectUrl?: string;
-  category: string;
+  category: string; // e.g., DeFi, NFT, DAO, Gaming
 }
 
 const projects: Project[] = [
   {
     id: "1",
     name: "Lending Protocol X",
-    description: "A decentralized lending and borrowing platform utilizing VSD as a primary stable asset for loans and backing.",
+    description: "A decentralized lending and borrowing platform utilizing VSD as a primary stable asset for loans and collateral.",
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "secure vault", 
+    imageHint: "secure vault crypto",
     projectUrl: "#",
-    category: "Finance",
+    category: "DeFi",
   },
   {
     id: "2",
-    name: "Digital Marketplace Prime",
-    description: "Trade unique digital collectibles and art, with VSD as a stable currency for bids and payments.",
+    name: "NFT Marketplace Prime",
+    description: "Trade unique digital collectibles and art (NFTs), with VSD as a stable currency for bids, payments, and royalties.",
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "digital art", 
+    imageHint: "nft digital art",
     projectUrl: "#",
-    category: "Collectibles",
+    category: "NFT / Collectibles",
   },
   {
     id: "3",
     name: "Yield Aggregator Z",
-    description: "Optimize your yield strategies across multiple protocols, with VSD-based liquidity pools.",
+    description: "Optimize your yield farming strategies across multiple DeFi protocols, with VSD-based stablecoin liquidity pools.",
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "financial farming", 
+    imageHint: "defi farming chart",
     projectUrl: "#",
-    category: "Finance",
+    category: "DeFi",
   },
   {
     id: "4",
-    name: "Global Pay Solutions",
-    description: "Facilitating seamless cross-border payments and remittances using VSD for low-cost, fast transactions.",
+    name: "Decentralized Payments Gateway",
+    description: "Facilitating seamless cross-border payments and remittances using VSD for low-cost, fast, and censorship-resistant transactions.",
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "fast payments", 
-    category: "Payments",
+    imageHint: "global crypto payments",
+    category: "Payments / Infrastructure",
   },
   {
     id: "5",
-    name: "Community Governance Hub",
-    description: "A platform for decentralized organizations to manage proposals and voting, often using VSD for treasury management.",
+    name: "VSD Governance DAO Hub",
+    description: "The official platform for VSD token holders to participate in governance, vote on proposals, and manage the DAO treasury.",
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "community governance", 
+    imageHint: "dao governance community",
     projectUrl: "#",
-    category: "Governance",
+    category: "DAO / Governance",
   },
   {
     id: "6",
-    name: "Gaming Universe X",
-    description: "An immersive online game where VSD is the in-game currency for assets and rewards.",
+    name: "Metaverse Gaming Universe X",
+    description: "An immersive online game where VSD is the in-game currency for virtual land, assets, and play-to-earn rewards.",
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "virtual items", 
-    category: "Gaming",
+    imageHint: "metaverse game items",
+    category: "Gaming / Metaverse",
   },
 ];
 
@@ -82,7 +82,7 @@ export default function EcosystemPage() {
       <header className="text-center">
         <h1 className="font-headline text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Ecosystem</h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Explore the vibrant and growing ecosystem of projects, platforms, and services building with and integrating VSD.
+          Explore the vibrant and growing ecosystem of decentralized applications (dApps), DeFi protocols, and Web3 services building with and integrating the VSD stablecoin.
         </p>
       </header>
 
@@ -92,11 +92,11 @@ export default function EcosystemPage() {
             <CardHeader>
               <div className="aspect-video relative mb-4">
                 <Image
-                  src={project.imageUrl} // was initialSrc
+                  src={project.imageUrl}
                   alt={project.name}
                   fill
                   className="rounded-t-lg object-cover"
-                  data-ai-hint={project.imageHint} // data-ai-hint can be kept if needed for other purposes
+                  data-ai-hint={project.imageHint}
                 />
               </div>
               <CardTitle className="font-headline text-2xl">{project.name}</CardTitle>

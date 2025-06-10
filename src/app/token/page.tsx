@@ -1,13 +1,14 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle, BarChart2, Users, Shield, Target, Briefcase, ShoppingCart, Repeat, Gamepad2, FileText, Mic2 } from "lucide-react";
-import Image from "next/image"; // Replaced AIImage with next/image
+import { CheckCircle, BarChart2, Users, Shield, Target, Briefcase, ShoppingCart, Repeat, Gamepad2, FileText, Mic2, DollarSign, GitBranch, Aperture } from "lucide-react";
+import Image from "next/image";
 import type { Metadata } from 'next';
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: 'VSD Product Information',
-  description: 'Detailed information about the VSD platform, its features, metrics, and business use cases.',
+  title: 'VSD Token Information',
+  description: 'Detailed information about the VSD stablecoin, its features, tokenomics, and use cases.',
 };
 
 const FeatureItem = ({ icon: Icon, title, children }: { icon: React.ElementType, title: string, children: React.ReactNode }) => (
@@ -32,14 +33,14 @@ const UseCaseCard = ({ icon: Icon, title, children }: { icon: React.ElementType,
     </Card>
 );
 
-
-export default function ProductPage() { // Renamed from TokenPage
+export default function TokenPage() {
   return (
     <div className="space-y-12 py-8">
       <header className="text-center">
-        <h1 className="font-headline text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Product Details</h1>
+        <DollarSign className="h-16 w-16 text-primary mx-auto mb-4" />
+        <h1 className="font-headline text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Token Details</h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Discover the core aspects of VSD, the platform designed for reliability and utility in the digital economy.
+          Discover the core aspects of VSD, the decentralized stablecoin designed for reliability and utility in the digital economy.
         </p>
       </header>
 
@@ -50,10 +51,10 @@ export default function ProductPage() { // Renamed from TokenPage
         <Card className="shadow-lg">
           <CardContent className="p-8 text-lg">
             <p className="mb-4">
-              VSD is a decentralized platform providing a stable and reliable medium for digital interactions and value exchange. It is designed to offer consistent value, benchmarked against traditional measures.
+              VSD is a decentralized, asset-backed stablecoin designed to maintain a value peg, typically to a major fiat currency like the US Dollar. It serves as a reliable medium of exchange, store of value, and unit of account within the VSD Network and the broader DeFi (Decentralized Finance) ecosystem.
             </p>
             <p>
-              Built on transparent and auditable systems, VSD aims to provide a resilient alternative to conventional digital value systems, empowering users with control and access to innovative services.
+              Built on transparent and auditable smart contracts, VSD aims to provide a resilient alternative to traditional financial systems, empowering users with greater control, efficiency, and access to innovative financial services.
             </p>
           </CardContent>
         </Card>
@@ -65,16 +66,22 @@ export default function ProductPage() { // Renamed from TokenPage
         <h2 className="font-headline text-3xl font-semibold text-center">Key Features</h2>
         <div className="grid md:grid-cols-2 gap-8">
           <FeatureItem icon={Target} title="Decentralized & Resilient">
-            VSD operates on a distributed infrastructure, ensuring high availability and resistance to single points of failure.
+            VSD operates on a public blockchain, ensuring high availability and resistance to single points of failure or censorship. Smart contracts govern its core logic.
           </FeatureItem>
-          <FeatureItem icon={Shield} title="Value Stability">
-            Maintains its value proposition through a system of backing and automated adjustments, managed by its core logic.
+          <FeatureItem icon={Shield} title="Value Stability (Pegged)">
+            Maintains its value peg through a combination of over-collateralization, algorithmic adjustments, and arbitrage incentives, managed by its smart contracts.
           </FeatureItem>
-          <FeatureItem icon={Users} title="Community Guided">
-            Key parameters and upgrades to the VSD platform can be influenced by its community of users and stakeholders.
+          <FeatureItem icon={Users} title="Community Governed (DAO)">
+            Key parameters, upgrades, and risk management of the VSD platform are typically governed by VSD token holders through a Decentralized Autonomous Organization (DAO).
           </FeatureItem>
           <FeatureItem icon={BarChart2} title="Transparent & Auditable">
-            All platform activities and value metrics are publicly verifiable, fostering trust and accountability.
+            All transactions, collateral backing, and smart contract logic are publicly verifiable on the blockchain, fostering trust and accountability.
+          </FeatureItem>
+          <FeatureItem icon={GitBranch} title="Permissionless & Composable">
+            VSD can be freely held, transferred, and integrated into various DeFi protocols and dApps without requiring permission from a central authority.
+          </FeatureItem>
+          <FeatureItem icon={Aperture} title="Collateral-Backed">
+            VSD tokens are typically generated by locking up approved digital assets as collateral in smart contract vaults, ensuring each VSD is backed by sufficient value.
           </FeatureItem>
         </div>
       </section>
@@ -82,28 +89,46 @@ export default function ProductPage() { // Renamed from TokenPage
       <Separator />
 
       <section className="space-y-8">
-        <h2 className="font-headline text-3xl font-semibold text-center">Platform Metrics Overview</h2>
+        <h2 className="font-headline text-3xl font-semibold text-center">Tokenomics Overview</h2>
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">Understanding VSD's Operational Model</CardTitle>
-             <CardDescription>VSD's operational model is designed for stability, utility, and ecosystem growth.</CardDescription>
+            <CardTitle className="font-headline text-2xl">Understanding VSD's Economic Model</CardTitle>
+             <CardDescription>VSD's tokenomics are designed for stability, utility, and ecosystem growth within the decentralized economy.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-muted-foreground">
-              The operational model of VSD focuses on maintaining its value, ensuring sufficient backing where applicable, and incentivizing participation across its ecosystem. This includes mechanisms for accessing VSD services and potential governance input for stakeholders. (Specific details like total units, distribution, and value-adjustment mechanisms should be detailed here based on VSD's actual design).
-            </p>
+          <CardContent className="space-y-6">
+            <div>
+                <h4 className="text-xl font-semibold mb-2">Total Supply & Minting</h4>
+                <p className="text-muted-foreground">
+                The total supply of VSD is dynamic, expanding or contracting based on user demand. New VSD is minted when users deposit approved collateral assets into the platform's smart contract vaults. Conversely, VSD is burned when users repay their positions and withdraw their collateral.
+                </p>
+            </div>
+            <div>
+                <h4 className="text-xl font-semibold mb-2">Collateralization</h4>
+                <p className="text-muted-foreground">
+                VSD is over-collateralized, meaning the value of the locked collateral exceeds the value of the minted VSD. This provides a buffer against collateral price volatility and ensures the solvency of the system. Accepted collateral types and collateralization ratios are typically managed by governance.
+                </p>
+            </div>
+            <div>
+                <h4 className="text-xl font-semibold mb-2">Utility & Use Cases</h4>
+                <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                    <li><strong>Medium of Exchange:</strong> Used for payments and transfers within the VSD ecosystem and integrated dApps.</li>
+                    <li><strong>Store of Value:</strong> Offers a stable alternative to volatile cryptocurrencies.</li>
+                    <li><strong>DeFi Integration:</strong> Can be used as collateral in lending protocols, for liquidity provision in DEXs, yield farming, and other DeFi applications.</li>
+                    <li><strong>Governance:</strong> VSD (or an associated governance token) may grant holders voting rights in the VSD DAO.</li>
+                </ul>
+            </div>
             <div className="bg-muted/30 p-6 rounded-lg">
               <Image 
-                src="https://placehold.co/800x400.png" // Was initialSrc
-                alt="Platform metrics chart placeholder"
+                src="https://placehold.co/800x400.png"
+                alt="Tokenomics chart placeholder"
                 width={800}
                 height={400}
                 className="rounded-md mx-auto shadow-md"
-                data-ai-hint="financial chart graph"
+                data-ai-hint="tokenomics crypto chart"
               />
             </div>
             <p className="text-sm text-muted-foreground text-center pt-2">
-              (Example: A chart showing asset backing ratios, or VSD unit dynamics.)
+              (Example: A chart showing collateral distribution, VSD supply over time, or utility breakdown.)
             </p>
           </CardContent>
         </Card>
@@ -111,26 +136,26 @@ export default function ProductPage() { // Renamed from TokenPage
       
       <Separator />
        <section className="space-y-8">
-        <h2 className="font-headline text-3xl font-semibold text-center">Use Cases for Businesses</h2>
-        <p className="text-muted-foreground text-center max-w-2xl mx-auto">VSD offers a stable and efficient digital solution for a variety of commercial applications.</p>
+        <h2 className="font-headline text-3xl font-semibold text-center">Use Cases in Web3 & DeFi</h2>
+        <p className="text-muted-foreground text-center max-w-2xl mx-auto">VSD offers a stable and efficient digital asset for a variety of decentralized applications.</p>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <UseCaseCard icon={ShoppingCart} title="E-commerce Transactions">
-                Accept VSD for online sales. Benefit from potentially lower fees, faster settlement, and reduced reversal risk compared to traditional methods.
+            <UseCaseCard icon={ShoppingCart} title="Decentralized Commerce">
+                Accept VSD for payments in dApps and NFT marketplaces, offering a stable medium of exchange.
             </UseCaseCard>
-            <UseCaseCard icon={Repeat} title="Subscription Services">
-                Implement VSD for recurring billing in SaaS, content platforms, or memberships, offering customers a stable and predictable payment method.
+            <UseCaseCard icon={Repeat} title="Lending & Borrowing">
+                Use VSD as collateral to borrow other crypto assets or lend VSD to earn interest in DeFi protocols.
             </UseCaseCard>
-            <UseCaseCard icon={Gamepad2} title="In-App & In-Service Purchases">
-                Utilize VSD as a stable in-app or in-service unit for digital goods, services, or virtual assets, simplifying microtransactions.
+            <UseCaseCard icon={Gamepad2} title="Play-to-Earn (P2E) Gaming">
+                Integrate VSD as an in-game currency or reward mechanism in blockchain-based games.
             </UseCaseCard>
-            <UseCaseCard icon={Briefcase} title="B2B Transactions">
-                Streamline business-to-business payments, especially cross-border, with VSD's efficiency and transparency.
+            <UseCaseCard icon={Briefcase} title="DAO Treasury Management">
+                DAOs can hold VSD in their treasuries for stable value preservation and operational expenses.
             </UseCaseCard>
-            <UseCaseCard icon={FileText} title="Invoice Payments">
-                Settle invoices quickly and securely using VSD, reducing administrative overhead and processing times.
+            <UseCaseCard icon={FileText} title="Yield Farming & Staking">
+                Provide liquidity with VSD in decentralized exchanges (DEXs) or stake VSD to earn rewards.
             </UseCaseCard>
-            <UseCaseCard icon={Mic2} title="Creator & Freelancer Payouts">
-                 Enable direct and stable payments to content creators, artists, and freelancers globally, bypassing traditional banking delays.
+            <UseCaseCard icon={Mic2} title="Creator Economy">
+                 Enable direct and stable payments in VSD for content creators, artists, and freelancers in the Web3 space.
             </UseCaseCard>
         </div>
       </section>
@@ -138,25 +163,28 @@ export default function ProductPage() { // Renamed from TokenPage
       <Separator />
 
       <section className="space-y-8">
-        <h2 className="font-headline text-3xl font-semibold text-center">How to Get VSD</h2>
+        <h2 className="font-headline text-3xl font-semibold text-center">How to Get VSD Tokens</h2>
          <Card className="shadow-lg">
           <CardContent className="p-8">
             <p className="text-lg text-muted-foreground">
-              VSD units can typically be acquired through several avenues within the digital ecosystem:
+              VSD tokens can typically be acquired through several avenues within the decentralized ecosystem:
             </p>
             <ul className="list-disc list-inside space-y-3 mt-4 text-lg text-muted-foreground pl-4">
               <li>
-                <strong>Platform Access:</strong> Users can obtain VSD units by interacting with the VSD platform's core services. (Refer to our <a href="/developers/documentation#core-logic" className="text-primary hover:underline">Core Logic documentation</a> for details).
+                <strong>Minting:</strong> Users can generate new VSD tokens by depositing approved collateral assets into the VSD platform's smart contract vaults. (Refer to our <Link href="/developers/documentation#core-logic-modules" className="text-primary hover:underline">Core Logic documentation</Link> for details).
               </li>
               <li>
-                <strong>Partner Exchanges:</strong> VSD may be available for exchange on various partner platforms. (Check our <a href="/ecosystem" className="text-primary hover:underline">Ecosystem page</a> for listed platforms).
+                <strong>Decentralized Exchanges (DEXs):</strong> VSD can be swapped for other cryptocurrencies on various DEXs where liquidity pools exist.
               </li>
               <li>
-                <strong>Ecosystem Participation:</strong> Some projects within the VSD ecosystem might offer VSD as rewards or incentives for certain activities.
+                <strong>Centralized Exchanges (CEXs):</strong> VSD may be listed on select centralized exchanges for trading. (Check our <Link href="/ecosystem" className="text-primary hover:underline">Ecosystem page</Link> for listed platforms).
+              </li>
+              <li>
+                <strong>Ecosystem Participation:</strong> Some projects within the VSD ecosystem might offer VSD as rewards or incentives for activities like liquidity provision or staking.
               </li>
             </ul>
             <p className="mt-6 text-sm text-center text-primary font-medium">
-              Always ensure you are interacting with official VSD platform interfaces and reputable exchanges. Verify platform details before any transaction.
+              Always ensure you are interacting with official VSD smart contracts and reputable exchanges. Verify contract addresses before any transaction. DYOR (Do Your Own Research).
             </p>
           </CardContent>
         </Card>

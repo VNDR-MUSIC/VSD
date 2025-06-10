@@ -1,17 +1,16 @@
 
 import type { NavItem } from '@/types/nav';
-import { LayoutDashboard, CircleDollarSign, Network, Code, Briefcase, HelpCircle } from 'lucide-react'; // Removed Sparkles
+import { LayoutDashboard, CircleDollarSign, Network, Code, Briefcase, HelpCircle } from 'lucide-react';
 
 export const siteConfig = {
   name: "VSD Network",
-  description: "Centralized dashboard for VSD product information, ecosystem projects, and developer resources.",
+  description: "Centralized dashboard for VSD token information, ecosystem projects, and developer resources.",
   mainNav: [
     { title: "Dashboard", href: "/", icon: LayoutDashboard },
-    { title: "Product", href: "/token", icon: CircleDollarSign }, // Changed "Token" to "Product"
+    { title: "Token", href: "/token", icon: CircleDollarSign }, // Changed "Product" back to "Token"
     { title: "Ecosystem", href: "/ecosystem", icon: Network },
     { title: "For Businesses", href: "/for-businesses", icon: Briefcase },
     { title: "Developers", href: "/developers", icon: Code },
-    // Removed "AI Contract Gen"
     { title: "FAQ", href: "/faq", icon: HelpCircle },
   ] satisfies NavItem[],
   footerNav: [
