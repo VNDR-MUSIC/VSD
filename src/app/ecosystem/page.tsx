@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowUpRightSquare } from "lucide-react";
 import type { Metadata } from 'next';
-import { AIImage } from "@/components/ai/AIImage";
+import Image from 'next/image'; // Replaced AIImage
 
 export const metadata: Metadata = {
   title: 'VSD Ecosystem Projects',
-  description: 'Explore the diverse range of projects and applications building on and integrating the VSD stablecoin.',
+  description: 'Explore the diverse range of projects and applications building on and integrating the VSD platform.',
 };
 
 interface Project {
@@ -16,7 +16,7 @@ interface Project {
   name: string;
   description: string;
   imageUrl: string;
-  imageHint: string;
+  imageHint?: string; // Kept for potential future use or if manual hints are desired
   projectUrl?: string;
   category: string;
 }
@@ -24,34 +24,34 @@ interface Project {
 const projects: Project[] = [
   {
     id: "1",
-    name: "DeFiLend Protocol",
-    description: "A decentralized lending and borrowing platform utilizing VSD as a primary stable asset for loans and collateral.",
+    name: "Lending Protocol X",
+    description: "A decentralized lending and borrowing platform utilizing VSD as a primary stable asset for loans and backing.",
     imageUrl: "https://placehold.co/600x400.png",
     imageHint: "secure vault", 
     projectUrl: "#",
-    category: "DeFi",
+    category: "Finance",
   },
   {
     id: "2",
-    name: "NFT Marketplace Prime",
+    name: "Digital Marketplace Prime",
     description: "Trade unique digital collectibles and art, with VSD as a stable currency for bids and payments.",
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "crypto art", 
+    imageHint: "digital art", 
     projectUrl: "#",
-    category: "NFTs",
+    category: "Collectibles",
   },
   {
     id: "3",
-    name: "YieldFarm Aggregator",
-    description: "Optimize your yield farming strategies across multiple protocols, with VSD-based liquidity pools.",
+    name: "Yield Aggregator Z",
+    description: "Optimize your yield strategies across multiple protocols, with VSD-based liquidity pools.",
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "crypto farming", 
+    imageHint: "financial farming", 
     projectUrl: "#",
-    category: "DeFi",
+    category: "Finance",
   },
   {
     id: "4",
-    name: "CrossChain Pay",
+    name: "Global Pay Solutions",
     description: "Facilitating seamless cross-border payments and remittances using VSD for low-cost, fast transactions.",
     imageUrl: "https://placehold.co/600x400.png",
     imageHint: "fast payments", 
@@ -59,19 +59,19 @@ const projects: Project[] = [
   },
   {
     id: "5",
-    name: "DAO Governance Hub",
+    name: "Community Governance Hub",
     description: "A platform for decentralized organizations to manage proposals and voting, often using VSD for treasury management.",
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "token governance", 
+    imageHint: "community governance", 
     projectUrl: "#",
-    category: "DAO",
+    category: "Governance",
   },
   {
     id: "6",
     name: "Gaming Universe X",
-    description: "An immersive blockchain-based game where VSD is the in-game currency for assets and rewards.",
+    description: "An immersive online game where VSD is the in-game currency for assets and rewards.",
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "virtual coins", 
+    imageHint: "virtual items", 
     category: "Gaming",
   },
 ];
@@ -91,12 +91,12 @@ export default function EcosystemPage() {
           <Card key={project.id} className="flex flex-col shadow-lg hover:shadow-primary/20 transition-shadow duration-300">
             <CardHeader>
               <div className="aspect-video relative mb-4">
-                <AIImage
-                  initialSrc={project.imageUrl}
+                <Image
+                  src={project.imageUrl} // was initialSrc
                   alt={project.name}
                   fill
                   className="rounded-t-lg object-cover"
-                  hint={project.imageHint}
+                  data-ai-hint={project.imageHint} // data-ai-hint can be kept if needed for other purposes
                 />
               </div>
               <CardTitle className="font-headline text-2xl">{project.name}</CardTitle>

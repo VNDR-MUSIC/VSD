@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Code, Library, Workflow, Cpu, GitBranch, HelpCircle, BookOpenText, Layers, CreditCard } from "lucide-react";
-import { AIImage } from "@/components/ai/AIImage";
+import Image from 'next/image'; // Replaced AIImage
 import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'VSD Network Documentation',
-  description: 'Comprehensive guide to VSD Network architecture, smart contracts, APIs, and integration.',
+  description: 'Comprehensive guide to VSD Network architecture, core logic, APIs, and integration.',
 };
 
 const SectionCard = ({ icon: Icon, title, description, children }: { icon: React.ElementType, title: string, description?: string, children: React.ReactNode }) => (
@@ -42,12 +42,12 @@ export default function DocumentationPage() {
       <Separator />
 
       <SectionCard icon={Library} title="Introduction" description="Understanding the VSD Network and its goals.">
-        <p>The VSD Network is a decentralized financial ecosystem centered around the VSD stablecoin. Our mission is to provide a transparent, stable, and accessible digital currency that can be seamlessly integrated into various applications and platforms.</p>
+        <p>The VSD Network is a decentralized digital ecosystem centered around the VSD platform. Our mission is to provide a transparent, stable, and accessible digital value system that can be seamlessly integrated into various applications and platforms.</p>
         <p>This documentation serves as a comprehensive resource for developers, partners, and community members looking to:
         </p>
         <ul>
-          <li>Understand the underlying architecture and mechanics of the VSD stablecoin.</li>
-          <li>Interact with VSD smart contracts.</li>
+          <li>Understand the underlying architecture and mechanics of the VSD platform.</li>
+          <li>Interact with VSD core logic modules.</li>
           <li>Integrate VSD into their applications using our APIs and SDKs.</li>
           <li>Participate in the governance of the VSD Network.</li>
         </ul>
@@ -58,37 +58,37 @@ export default function DocumentationPage() {
 
       <SectionCard icon={Workflow} title="Architecture Overview" description="A high-level look at the components of the VSD Network.">
         <p>The VSD Network is composed of several key layers and components working in concert to ensure stability, security, and decentralization:</p>
-        <AIImage
-          initialSrc="https://placehold.co/800x400.png"
+        <Image
+          src="https://placehold.co/800x400.png" // was initialSrc
           alt="VSD Network Architecture Diagram Placeholder"
           width={800}
           height={400}
           className="rounded-md my-6 shadow-md mx-auto"
-          hint="network architecture diagram"
+          data-ai-hint="network architecture diagram"
         />
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="item-1">
-            <AccordionTrigger className="text-xl hover:no-underline">Core Stablecoin (VSD)</AccordionTrigger>
+            <AccordionTrigger className="text-xl hover:no-underline">Core Platform (VSD)</AccordionTrigger>
             <AccordionContent>
-              <p>The heart of the network. VSD is a decentralized, crypto-collateralized stablecoin designed to maintain a soft peg to the US Dollar. Its stability is ensured through a combination of over-collateralization, algorithmic adjustments, and arbitrage incentives.</p>
+              <p>The heart of the network. VSD is a decentralized, asset-backed value system designed to maintain a stable reference value. Its stability is ensured through a combination of asset backing, algorithmic adjustments, and arbitrage incentives.</p>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-2">
-            <AccordionTrigger className="text-xl hover:no-underline">Collateral Management System</AccordionTrigger>
+            <AccordionTrigger className="text-xl hover:no-underline">Asset Management System</AccordionTrigger>
             <AccordionContent>
-              <p>A system of smart contracts that allows users to lock up approved crypto assets (e.g., ETH, wBTC) as collateral to mint VSD. It monitors collateralization ratios and manages liquidations to protect the peg.</p>
+              <p>A system of automated modules that allows users to use approved digital assets to access VSD units. It monitors backing ratios and manages system integrity to protect value.</p>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-3">
-            <AccordionTrigger className="text-xl hover:no-underline">Governance Module (DAO)</AccordionTrigger>
+            <AccordionTrigger className="text-xl hover:no-underline">Governance Module</AccordionTrigger>
             <AccordionContent>
-              <p>The VSD Network is governed by its community through a Decentralized Autonomous Organization (DAO). Holders of the VSD governance token (if applicable, or VSD itself for certain proposals) can vote on protocol upgrades, risk parameters, and other key decisions.</p>
+              <p>The VSD Network is governed by its community. Holders of designated governance instruments (if applicable) can vote on platform upgrades, risk parameters, and other key decisions.</p>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-4">
-            <AccordionTrigger className="text-xl hover:no-underline">Oracles</AccordionTrigger>
+            <AccordionTrigger className="text-xl hover:no-underline">Data Feeds</AccordionTrigger>
             <AccordionContent>
-              <p>Reliable price feeds are crucial for a collateralized stablecoin. The VSD Network utilizes decentralized oracle solutions to obtain accurate and tamper-resistant price data for collateral assets.</p>
+              <p>Reliable price feeds are crucial for an asset-backed system. The VSD Network utilizes decentralized data solutions to obtain accurate and tamper-resistant price data for backing assets.</p>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
@@ -96,62 +96,57 @@ export default function DocumentationPage() {
 
       <Separator />
 
-      <SectionCard icon={Code} title="Smart Contracts" description="Detailed information about VSD Network's on-chain logic.">
-        <p>All core logic of the VSD Network is implemented as smart contracts on a public blockchain (e.g., Ethereum). These contracts are open-source and designed with security as a top priority. We encourage developers to review our contracts and participate in bug bounty programs.</p>
-        <p>You can also use our <Link href="/smart-contract-generator">AI Smart Contract Generator</Link> to get a head start on building compatible contracts for the ecosystem.</p>
+      <SectionCard icon={Code} title="Core Logic Modules" description="Detailed information about VSD Network's on-platform logic.">
+        <p>All core logic of the VSD Network is implemented as automated modules on a distributed ledger or secure network. These modules are open-source and designed with security as a top priority. We encourage developers to review our modules and participate in bug bounty programs.</p>
+        {/* Removed link to AI Smart Contract Generator */}
         <Accordion type="multiple" className="w-full mt-4">
-          <AccordionItem value="contract-vsd">
-            <AccordionTrigger className="text-xl hover:no-underline">VSD Token Contract (ERC20)</AccordionTrigger>
+          <AccordionItem value="module-vsd">
+            <AccordionTrigger className="text-xl hover:no-underline">VSD Unit Module</AccordionTrigger>
             <AccordionContent>
-              <p><strong>Address:</strong> <code>0xYourVSDTokenContractAddressHere</code> (Replace with actual address)</p>
-              <p><strong>Standard:</strong> ERC20</p>
+              <p><strong>Identifier:</strong> <code>VSD_Unit_Module_v1</code> (Replace with actual identifier)</p>
+              <p><strong>Standard:</strong> Based on common digital asset standards.</p>
               <p><strong>Key Functions:</strong></p>
               <ul>
-                <li><code>totalSupply()</code>: Returns the total supply of VSD.</li>
-                <li><code>balanceOf(address account)</code>: Returns the VSD balance of an account.</li>
-                <li><code>transfer(address recipient, uint256 amount)</code>: Transfers VSD tokens.</li>
-                <li><code>approve(address spender, uint256 amount)</code>: Allows a spender to withdraw VSD.</li>
-                <li><code>allowance(address owner, address spender)</code>: Checks the amount approved.</li>
-                <li><code>transferFrom(address sender, address recipient, uint256 amount)</code>: Transfers VSD on behalf of an owner (requires approval).</li>
+                <li><code>getTotalUnits()</code>: Returns the total supply of VSD units.</li>
+                <li><code>getBalance(address account)</code>: Returns the VSD balance of an account.</li>
+                <li><code>transferUnits(address recipient, uint256 amount)</code>: Transfers VSD units.</li>
+                {/* Simplified other functions */}
               </ul>
               <p><strong>Events:</strong> <code>Transfer</code>, <code>Approval</code>.</p>
-              <p><strong>Security Notes:</strong> The VSD token contract has undergone multiple audits. [Link to Audit Reports Placeholder].</p>
+              <p><strong>Security Notes:</strong> The VSD unit module has undergone multiple audits. [Link to Audit Reports Placeholder].</p>
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="contract-vault">
-            <AccordionTrigger className="text-xl hover:no-underline">Collateral Vault Manager</AccordionTrigger>
+          <AccordionItem value="module-vault">
+            <AccordionTrigger className="text-xl hover:no-underline">Asset Vault Manager</AccordionTrigger>
             <AccordionContent>
-              <p><strong>Address:</strong> <code>0xYourVaultManagerContractAddressHere</code> (Replace with actual address)</p>
-              <p>This contract (or set of contracts) manages the creation, collateralization, and liquidation of VSD positions.</p>
+              <p><strong>Identifier:</strong> <code>VSD_Vault_Manager_v1</code> (Replace with actual identifier)</p>
+              <p>This module (or set of modules) manages the creation, backing, and liquidation related to VSD positions.</p>
               <p><strong>Key User-Facing Functions:</strong></p>
               <ul>
-                <li><code>openVault(address collateralType, uint256 collateralAmount)</code>: Opens a new vault and mints VSD.</li>
-                <li><code>depositCollateral(bytes32 vaultId, uint256 amount)</code>: Adds more collateral to an existing vault.</li>
-                <li><code>withdrawCollateral(bytes32 vaultId, uint256 amount)</code>: Withdraws excess collateral.</li>
-                <li><code>repayVSD(bytes32 vaultId, uint256 vsdAmount)</code>: Repays minted VSD.</li>
-                <li><code>mintVSD(bytes32 vaultId, uint256 vsdAmount)</code>: Mints more VSD from an existing vault (if collateral allows).</li>
+                <li><code>openPosition(address assetType, uint256 assetAmount)</code>: Opens a new position and generates VSD units.</li>
+                {/* Simplified other functions */}
               </ul>
-              <p><strong>Liquidation:</strong> Vaults falling below the minimum collateralization ratio are subject to liquidation. Details of the liquidation process can be found in the contract code and whitepaper.</p>
+              <p><strong>Risk Management:</strong> Positions falling below minimum backing ratios are subject to automated risk mitigation processes. Details can be found in the module code and whitepaper.</p>
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="contract-governance">
-            <AccordionTrigger className="text-xl hover:no-underline">Governance Contract</AccordionTrigger>
+          <AccordionItem value="module-governance">
+            <AccordionTrigger className="text-xl hover:no-underline">Governance Module</AccordionTrigger>
             <AccordionContent>
-              <p><strong>Address:</strong> <code>0xYourGovernanceContractAddressHere</code> (Replace with actual address)</p>
-              <p>Handles the proposal and voting process for protocol changes.</p>
+              <p><strong>Identifier:</strong> <code>VSD_Governance_Module_v1</code> (Replace with actual identifier)</p>
+              <p>Handles the proposal and voting process for platform changes.</p>
               <p><strong>Key Functions:</strong></p>
               <ul>
-                <li><code>propose(...)</code>: Submits a new governance proposal.</li>
-                <li><code>vote(uint256 proposalId, bool support)</code>: Casts a vote on a proposal.</li>
-                <li><code>execute(uint256 proposalId)</code>: Executes an approved proposal.</li>
+                <li><code>submitProposal(...)</code>: Submits a new governance proposal.</li>
+                <li><code>castVote(uint256 proposalId, bool support)</code>: Casts a vote on a proposal.</li>
+                <li><code>executeProposal(uint256 proposalId)</code>: Executes an approved proposal.</li>
               </ul>
-              <p>Further details on proposal types, voting periods, and quorum requirements are available in the contract source and governance forum.</p>
+              <p>Further details on proposal types, voting periods, and quorum requirements are available in the module source and governance forum.</p>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
         <Button variant="outline" asChild className="mt-6">
           <Link href="#" target="_blank" rel="noopener noreferrer">
-            <GitBranch className="mr-2 h-4 w-4" /> Browse Contract Source on GitHub (Placeholder)
+            <GitBranch className="mr-2 h-4 w-4" /> Browse Module Source on GitHub (Placeholder)
           </Link>
         </Button>
       </SectionCard>
@@ -161,31 +156,31 @@ export default function DocumentationPage() {
       <SectionCard icon={Cpu} title="APIs & SDKs" description="Tools for programmatic interaction with VSD Network.">
         <p>We provide several ways for developers to integrate VSD into their applications and services.</p>
         <h4 className="text-2xl mt-6 mb-2">REST API (Coming Soon)</h4>
-        <p>A public REST API will provide access to real-time data such as VSD total supply, circulating supply, collateralization ratios, market prices (via oracles), and governance proposal statuses. This API will be essential for businesses looking to integrate VSD payment information, verify transactions, or display VSD-related data on their platforms.</p>
+        <p>A public REST API will provide access to real-time data such as VSD total units, active units, backing ratios, market prices (via data feeds), and governance proposal statuses. This API will be essential for businesses looking to integrate VSD payment information, verify transactions, or display VSD-related data on their platforms.</p>
         <ul>
           <li><strong>Endpoints (Examples for Business Integration):</strong>
             <ul>
-              <li><code>/token/info</code>: General VSD token metrics.</li>
+              <li><code>/platform/info</code>: General VSD platform metrics.</li>
               <li><code>/transaction/{'{txHash}'}</code>: Verify transaction status and details.</li>
               <li><code>/address/{'{address}'}/balance</code>: Check VSD balance of an address.</li>
-              <li><code>/collateral/stats</code></li>
+              <li><code>/asset/stats</code></li>
               <li><code>/governance/proposals</code></li>
             </ul>
           </li>
           <li><strong>Authentication:</strong> API key based for rate-limited endpoints.</li>
           <li><strong>Rate Limits:</strong> Generous free tier, with options for higher limits.</li>
         </ul>
-        <AIImage
-          initialSrc="https://placehold.co/700x350.png"
+        <Image
+          src="https://placehold.co/700x350.png" // was initialSrc
           alt="API Interaction Diagram Placeholder"
           width={700}
           height={350}
           className="rounded-md my-6 shadow-md mx-auto"
-          hint="API data flow"
+          data-ai-hint="API data flow"
         />
 
         <h4 className="text-2xl mt-8 mb-2">JavaScript SDK (Alpha)</h4>
-        <p>Our JavaScript/TypeScript SDK simplifies interaction with VSD smart contracts and planned REST API endpoints. It's ideal for both frontend and backend development when integrating VSD payments or functionalities.</p>
+        <p>Our JavaScript/TypeScript SDK simplifies interaction with VSD core logic modules and planned REST API endpoints. It's ideal for both frontend and backend development when integrating VSD payments or functionalities.</p>
         <pre className="bg-muted/50 p-4 rounded-md overflow-x-auto my-4">
           <code>
 {`// Installation
@@ -197,19 +192,19 @@ yarn add @vsdnetwork/sdk
 import { VSDSDK, Networks } from '@vsdnetwork/sdk';
 
 async function checkVsdBalance(userAddress) {
-  const sdk = new VSDSDK({ network: Networks.Mainnet }); // Or your testnet
-  const balance = await sdk.vsdToken.balanceOf(userAddress);
-  console.log('VSD Balance:', sdk.utils.formatUnits(balance, 18));
+  const sdk = new VSDSDK({ network: Networks.Main }); // Or your testnet
+  const balance = await sdk.vsdModule.getBalance(userAddress);
+  console.log('VSD Balance:', sdk.utils.formatUnits(balance, 18)); // Assuming 18 decimal places
   return balance;
 }
 
 // Example: Initiating a VSD payment (conceptual)
 async function initiateVsdPayment(sdk, recipientAddress, amount) {
-  // This would involve interacting with a user's wallet (e.g., MetaMask)
+  // This would involve interacting with a user's wallet system
   // or a backend wallet system to sign and send a transaction.
   // The SDK would provide helper functions for constructing the transaction.
   console.log(\`Preparing to send \${amount} VSD to \${recipientAddress}\`);
-  // const tx = await sdk.vsdToken.transfer(recipientAddress, sdk.utils.parseUnits(amount, 18));
+  // const tx = await sdk.vsdModule.transfer(recipientAddress, sdk.utils.parseUnits(amount, 18));
   // console.log('Transaction sent:', tx.hash);
   // return tx;
 }
@@ -233,11 +228,11 @@ async function initiateVsdPayment(sdk, recipientAddress, amount) {
             <AccordionTrigger className="text-xl hover:no-underline">Typical Payment Flow</AccordionTrigger>
             <AccordionContent>
               <ol className="list-decimal pl-5 space-y-2">
-                <li><strong>Display Price in VSD:</strong> Convert your product/service price from fiat to VSD (usually 1 VSD = $1 USD, but always confirm).</li>
+                <li><strong>Display Price in VSD:</strong> Convert your product/service price from fiat to VSD (e.g., 1 VSD = $1 USD, but confirm current reference).</li>
                 <li><strong>Provide Payment Address:</strong> Present a unique VSD deposit address for each transaction or a static address for your business.</li>
-                <li><strong>User Initiates Transfer:</strong> The customer sends the VSD amount from their wallet to your address.</li>
-                <li><strong>Monitor Blockchain:</strong> Your backend system (or a third-party payment processor) monitors the blockchain for incoming transactions to your address. Our upcoming REST API's <code>/address/{'{address}'}/transactions</code> endpoint will be useful here.</li>
-                <li><strong>Confirm Transaction:</strong> Wait for a sufficient number of block confirmations to consider the transaction final. This varies by blockchain.</li>
+                <li><strong>User Initiates Transfer:</strong> The customer sends the VSD amount from their wallet/account to your address.</li>
+                <li><strong>Monitor Network:</strong> Your backend system (or a third-party payment processor) monitors the network for incoming transactions to your address. Our upcoming REST API's <code>/address/{'{address}'}/transactions</code> endpoint will be useful here.</li>
+                <li><strong>Confirm Transaction:</strong> Wait for a sufficient number of network confirmations to consider the transaction final.</li>
                 <li><strong>Fulfill Order:</strong> Once confirmed, process the order or grant access to the service.</li>
               </ol>
             </AccordionContent>
@@ -246,25 +241,25 @@ async function initiateVsdPayment(sdk, recipientAddress, amount) {
             <AccordionTrigger className="text-xl hover:no-underline">Integration Methods</AccordionTrigger>
             <AccordionContent>
               <h5 className="text-lg font-semibold mt-2 mb-1">Direct Integration:</h5>
-              <p>Use our <Link href="/developers/sdks-tools">SDKs</Link> (JavaScript for frontend/Node.js, upcoming Python/Go for backend) to interact with the VSD token contract directly. This gives you full control but requires more development effort.</p>
+              <p>Use our <Link href="/developers/sdks-tools">SDKs</Link> (JavaScript for frontend/Node.js, upcoming Python/Go for backend) to interact with the VSD core logic directly. This gives you full control but requires more development effort.</p>
               <ul className="list-disc pl-5 space-y-1">
                 <li>Generate deposit addresses.</li>
-                <li>Query balances and transaction history (via SDK or directly on-chain).</li>
-                <li>Securely manage private keys for your business wallet if holding VSD.</li>
+                <li>Query balances and transaction history (via SDK or directly on the network).</li>
+                <li>Securely manage private keys/credentials for your business wallet/account if holding VSD.</li>
               </ul>
               <h5 className="text-lg font-semibold mt-4 mb-1">Using Payment Processors (Future):</h5>
-              <p>As the VSD ecosystem grows, we anticipate third-party payment processors will add support for VSD. These services simplify accepting crypto by handling wallet management, transaction monitoring, and conversion to fiat if needed. Keep an eye on our <Link href="/ecosystem">Ecosystem page</Link> for partners.</p>
+              <p>As the VSD ecosystem grows, we anticipate third-party payment processors will add support for VSD. These services simplify accepting VSD by handling wallet management, transaction monitoring, and conversion to fiat if needed. Keep an eye on our <Link href="/ecosystem">Ecosystem page</Link> for partners.</p>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="best-practices">
             <AccordionTrigger className="text-xl hover:no-underline">Best Practices</AccordionTrigger>
             <AccordionContent>
               <ul className="list-disc pl-5 space-y-1">
-                <li><strong>Security:</strong> Prioritize the security of your wallet's private keys. Use hardware wallets or multi-signature solutions for significant funds.</li>
-                <li><strong>Transaction Confirmations:</strong> Determine an appropriate number of block confirmations before considering a payment final to mitigate risks of block reorganizations.</li>
-                <li><strong>User Experience:</strong> Provide clear instructions to your customers on how to pay with VSD. Include QR codes for addresses, expected amounts, and links to block explorers for transaction tracking.</li>
+                <li><strong>Security:</strong> Prioritize the security of your account's credentials. Use secure storage solutions for significant funds/access.</li>
+                <li><strong>Transaction Confirmations:</strong> Determine an appropriate number of network confirmations before considering a payment final to mitigate risks.</li>
+                <li><strong>User Experience:</strong> Provide clear instructions to your customers on how to pay with VSD. Include QR codes for addresses, expected amounts, and links to network explorers for transaction tracking.</li>
                 <li><strong>Refunds:</strong> Plan how you will handle refunds in VSD.</li>
-                <li><strong>Compliance:</strong> Understand and adhere to any local regulations regarding cryptocurrency transactions and KYC/AML requirements if applicable to your business.</li>
+                <li><strong>Compliance:</strong> Understand and adhere to any local regulations regarding digital asset transactions and KYC/AML requirements if applicable to your business.</li>
               </ul>
             </AccordionContent>
           </AccordionItem>
@@ -277,43 +272,43 @@ async function initiateVsdPayment(sdk, recipientAddress, amount) {
       <SectionCard icon={GitBranch} title="Integration Guides" description="Step-by-step instructions for common integrations.">
         <Accordion type="multiple" className="w-full">
           <AccordionItem value="wallet-integration">
-            <AccordionTrigger className="text-xl hover:no-underline">Wallet Integration</AccordionTrigger>
+            <AccordionTrigger className="text-xl hover:no-underline">Wallet/Account Integration</AccordionTrigger>
             <AccordionContent>
-              <p>To add VSD to most EVM-compatible wallets (e.g., MetaMask, Trust Wallet):</p>
+              <p>To add VSD to most compatible wallets/account managers (e.g., MetaMask-like browser extensions, dedicated apps):</p>
               <ol>
-                <li>Open your wallet and find the option to "Add Custom Token" or "Import Token".</li>
-                <li>Select the correct network (e.g., Ethereum Mainnet).</li>
-                <li>Enter the VSD Token Contract Address: <code>0xYourVSDTokenContractAddressHere</code>.</li>
-                <li>The Token Symbol (VSD) and Decimals (18) should auto-populate. If not, enter them manually.</li>
-                <li>Confirm and add the token.</li>
+                <li>Open your wallet/app and find the option to "Add Custom Asset" or "Import Asset".</li>
+                <li>Select the correct network (e.g., Main Network).</li>
+                <li>Enter the VSD Asset Identifier: <code>VSD_Unit_Module_v1_Address_Here</code>.</li>
+                <li>The Asset Symbol (VSD) and Decimals (e.g., 18) should auto-populate. If not, enter them manually.</li>
+                <li>Confirm and add the asset.</li>
               </ol>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="dex-integration">
             <AccordionTrigger className="text-xl hover:no-underline">Decentralized Exchange (DEX) Integration</AccordionTrigger>
             <AccordionContent>
-              <p>VSD can be listed on DEXs by providing liquidity against other assets (e.g., VSD/ETH, VSD/USDC).</p>
+              <p>VSD can be listed on DEXs by providing liquidity against other assets (e.g., VSD/ETH-equivalent, VSD/USDC-equivalent).</p>
               <p><strong>For Liquidity Providers:</strong></p>
               <ul>
-                <li>Ensure you have VSD and the paired asset in your wallet.</li>
+                <li>Ensure you have VSD and the paired asset in your account.</li>
                 <li>Navigate to the "Add Liquidity" section of your chosen DEX.</li>
-                <li>Select VSD (you may need to import it using the contract address) and the other asset.</li>
-                <li>Approve token spending for both assets if prompted.</li>
-                <li>Confirm the liquidity provision. You will receive LP tokens representing your share.</li>
+                <li>Select VSD (you may need to import it using the asset identifier) and the other asset.</li>
+                <li>Approve asset spending for both assets if prompted.</li>
+                <li>Confirm the liquidity provision. You will receive LP units representing your share.</li>
               </ul>
-              <p><strong>For Traders:</strong> VSD can be swapped like any other ERC20 token on DEXs where it has liquidity pools.</p>
+              <p><strong>For Traders:</strong> VSD can be swapped like any other digital asset on DEXs where it has liquidity pools.</p>
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="defi-protocol-integration">
-            <AccordionTrigger className="text-xl hover:no-underline">DeFi Protocol Integration</AccordionTrigger>
+          <AccordionItem value="dapp-integration">
+            <AccordionTrigger className="text-xl hover:no-underline">Decentralized Application (dApp) Integration</AccordionTrigger>
             <AccordionContent>
-              <p>VSD is designed to be a robust form of collateral and a stable medium of exchange in DeFi protocols.</p>
+              <p>VSD is designed to be a robust form of collateral and a stable medium of exchange in dApps.</p>
               <ul>
-                <li><strong>As Collateral:</strong> Lending platforms can integrate VSD as an accepted collateral type. Key considerations include oracle price feeds for VSD (typically $1) and appropriate collateralization ratios.</li>
-                <li><strong>For Payments/Settlements:</strong> Use VSD for stable value transfer within your protocol.</li>
-                <li><strong>Yield Farming:</strong> VSD can be included in stablecoin pools or paired with other assets for yield farming opportunities.</li>
+                <li><strong>As Backing/Value:</strong> Lending platforms can integrate VSD as an accepted backing asset type. Key considerations include data feeds for VSD (typically its reference value) and appropriate backing ratios.</li>
+                <li><strong>For Payments/Settlements:</strong> Use VSD for stable value transfer within your application.</li>
+                <li><strong>Yield Opportunities:</strong> VSD can be included in stable value pools or paired with other assets for yield generating opportunities.</li>
               </ul>
-              <p>If you are a DeFi developer looking to integrate VSD, please refer to our Smart Contracts section and consider reaching out for technical support.</p>
+              <p>If you are a dApp developer looking to integrate VSD, please refer to our Core Logic Modules section and consider reaching out for technical support.</p>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
@@ -324,36 +319,36 @@ async function initiateVsdPayment(sdk, recipientAddress, amount) {
       <SectionCard icon={HelpCircle} title="Glossary & FAQ" description="Common terms and questions.">
         <h4 className="text-2xl mt-6 mb-2">Glossary</h4>
          <ul className="list-disc pl-5 space-y-1">
-            <li><strong>Stablecoin:</strong> A cryptocurrency designed to maintain a stable value, typically pegged to a fiat currency like the US Dollar.</li>
-            <li><strong>Collateralization:</strong> The process of backing a stablecoin with assets (e.g., other cryptocurrencies) to ensure its value.</li>
-            <li><strong>Over-collateralization:</strong> Requiring collateral value significantly higher than the value of the stablecoin minted, providing a buffer against price volatility.</li>
-            <li><strong>DAO (Decentralized Autonomous Organization):</strong> An organization represented by rules encoded as a computer program that is transparent, controlled by the organization members and not influenced by a central government.</li>
-            <li><strong>Oracle:</strong> A service that provides external data (like asset prices) to smart contracts on the blockchain.</li>
+            <li><strong>Stable Value System:</strong> A digital asset or platform designed to maintain a stable value, often pegged to a fiat currency or a basket of assets.</li>
+            <li><strong>Asset Backing:</strong> The process of supporting a digital asset's value with other assets (e.g., other digital currencies, commodities) to ensure its stability.</li>
+            <li><strong>Over-Backing:</strong> Requiring backing asset value significantly higher than the value of the digital units generated, providing a buffer against price volatility.</li>
+            <li><strong>Decentralized Governance:</strong> An organizational model where control and decision-making are distributed among its members rather than a central authority.</li>
+            <li><strong>Data Feed:</strong> A service that provides external data (like asset prices) to automated systems on a distributed network.</li>
         </ul>
         <h4 className="text-2xl mt-8 mb-2">Frequently Asked Questions</h4>
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="faq-1">
-            <AccordionTrigger className="text-lg hover:no-underline">What blockchain is VSD on?</AccordionTrigger>
+            <AccordionTrigger className="text-lg hover:no-underline">What network is VSD on?</AccordionTrigger>
             <AccordionContent>
-              <p>VSD is initially deployed on [Specify Blockchain, e.g., Ethereum Mainnet]. We are exploring cross-chain solutions for future expansion.</p>
+              <p>VSD is initially deployed on [Specify Network, e.g., Main Network X]. We are exploring cross-network solutions for future expansion.</p>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="faq-2">
-            <AccordionTrigger className="text-lg hover:no-underline">How is the VSD peg maintained?</AccordionTrigger>
+            <AccordionTrigger className="text-lg hover:no-underline">How is the VSD value maintained?</AccordionTrigger>
             <AccordionContent>
-              <p>The VSD peg to the US Dollar is maintained through a combination of over-collateralization with crypto assets, arbitrage opportunities, and protocol-managed stability mechanisms. If VSD trades above $1, arbitrageurs can mint VSD by depositing collateral and sell it for a profit. If VSD trades below $1, arbitrageurs can buy cheap VSD from the market and use it to redeem collateral at a $1 valuation or repay their debt.</p>
+              <p>The VSD reference value is maintained through a combination of asset backing, arbitrage opportunities, and platform-managed stability mechanisms. If VSD trades above its reference, arbitrageurs can generate VSD by depositing assets and sell it for a profit. If VSD trades below, arbitrageurs can buy cheap VSD from the market and use it to redeem assets at the reference valuation or repay their positions.</p>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="faq-3">
-            <AccordionTrigger className="text-lg hover:no-underline">Where can I get VSD?</AccordionTrigger>
+            <AccordionTrigger className="text-lg hover:no-underline">Where can I get VSD units?</AccordionTrigger>
             <AccordionContent>
-              <p>VSD can be minted by depositing collateral into the VSD protocol, or acquired from decentralized exchanges (DEXs) where liquidity pools exist. See our <Link href="/ecosystem">Ecosystem page</Link> for partner platforms.</p>
+              <p>VSD units can be generated by depositing assets into the VSD platform, or acquired from exchanges where liquidity pools exist. See our <Link href="/ecosystem">Ecosystem page</Link> for partner platforms.</p>
             </AccordionContent>
           </AccordionItem>
            <AccordionItem value="faq-4">
-            <AccordionTrigger className="text-lg hover:no-underline">Are the VSD smart contracts audited?</AccordionTrigger>
+            <AccordionTrigger className="text-lg hover:no-underline">Are the VSD core modules audited?</AccordionTrigger>
             <AccordionContent>
-              <p>Yes, security is our top priority. The VSD smart contracts have undergone [mention number if known, e.g., multiple] independent security audits. Links to audit reports will be made available here: [Placeholder for Audit Links]. We also run an ongoing bug bounty program.</p>
+              <p>Yes, security is our top priority. The VSD core logic modules have undergone [mention number if known, e.g., multiple] independent security audits. Links to audit reports will be made available here: [Placeholder for Audit Links]. We also run an ongoing bug bounty program.</p>
             </AccordionContent>
           </AccordionItem>
         </Accordion>

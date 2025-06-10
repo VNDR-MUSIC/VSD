@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Package, Layers, TerminalSquare, GitBranch, RadioTower } from 'lucide-react'; // Using Package for overall SDKs page
+import { Package, Layers, TerminalSquare, GitBranch, RadioTower } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'SDKs & Tools | VSD Network',
@@ -42,16 +42,16 @@ export default function SdksToolsPage() {
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
           We are dedicated to providing developers with robust Software Development Kits (SDKs) and command-line interface (CLI) tools to make integration with the VSD Network seamless and efficient.
         </p>
-      </header
+      </header>
 
       <Separator />
 
       <SdkCard icon={Layers} title="JavaScript/TypeScript SDK" status="Alpha">
-        <p>A JavaScript/TypeScript SDK is available to simplify interaction with VSD smart contracts from Node.js or browser environments. Easily integrate VSD token functionalities, interact with vaults, and query network data.</p>
+        <p>A JavaScript/TypeScript SDK is available to simplify interaction with VSD core logic modules from Node.js or browser environments. Easily integrate VSD functionalities, interact with platform modules, and query network data.</p>
         <h4 className="text-xl mt-4 mb-2">Key Features:</h4>
         <ul>
-          <li>Query VSD token balance, total supply, etc.</li>
-          <li>Interact with collateral vault management functions.</li>
+          <li>Query VSD unit balance, total supply, etc.</li>
+          <li>Interact with asset management functions.</li>
           <li>Helper utilities for formatting and transactions.</li>
         </ul>
         <pre className="bg-muted/50 p-4 rounded-md overflow-x-auto my-4">
@@ -65,9 +65,9 @@ yarn add @vsdnetwork/sdk
 import { VSDSDK, Networks } from '@vsdnetwork/sdk';
 
 async function getVsdBalance() {
-  const sdk = new VSDSDK({ network: Networks.Mainnet }); // Or your testnet
-  const balance = await sdk.vsdToken.balanceOf('0xYourAccountAddress');
-  console.log('VSD Balance:', sdk.utils.formatUnits(balance, 18));
+  const sdk = new VSDSDK({ network: Networks.Main }); // Or your testnet
+  const balance = await sdk.vsdModule.getBalance('0xYourAccountAddress');
+  console.log('VSD Balance:', sdk.utils.formatUnits(balance, 18)); // Assuming 18 decimals
 }
 
 getVsdBalance();`}
@@ -81,19 +81,19 @@ getVsdBalance();`}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         <SdkCard icon={RadioTower} title="Python SDK" status="Planned">
           <p>A Python SDK is planned to cater to backend developers and data scientists looking to interact with the VSD Network. It will offer similar functionalities to the JS SDK, tailored for Pythonic environments.</p>
-          <p><strong>Expected Features:</strong> Smart contract interaction, data querying, transaction building.</p>
+          <p><strong>Expected Features:</strong> Core logic interaction, data querying, transaction building.</p>
           <p className="mt-4 text-sm">Stay tuned for updates on its development progress.</p>
         </SdkCard>
 
         <SdkCard icon={RadioTower} title="Go SDK" status="Planned">
           <p>For developers working with Go, we plan to release a Go SDK. This will be beneficial for building high-performance backend services and tools that interface with the VSD Network.</p>
-          <p><strong>Expected Features:</strong> Core protocol interactions, type-safe contract bindings.</p>
+          <p><strong>Expected Features:</strong> Core protocol interactions, type-safe module bindings.</p>
            <p className="mt-4 text-sm">Follow our announcements for availability.</p>
         </SdkCard>
 
         <SdkCard icon={TerminalSquare} title="CLI Tools" status="Planned">
           <p>Command-Line Interface (CLI) tools are on our roadmap to provide quick and easy ways to perform common tasks, query network information, and manage VSD-related operations directly from your terminal.</p>
-          <p><strong>Potential Uses:</strong> Checking balances, opening vaults, interacting with governance proposals.</p>
+          <p><strong>Potential Uses:</strong> Checking balances, managing positions, interacting with governance proposals.</p>
           <p className="mt-4 text-sm">Development will commence after core SDKs are stable.</p>
         </SdkCard>
       </div>

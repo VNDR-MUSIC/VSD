@@ -5,11 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { DollarSign, Zap, Globe, Puzzle, ArrowRight, ShieldCheck, Users } from 'lucide-react';
-import { AIImage } from '@/components/ai/AIImage';
+import Image from 'next/image'; // Replaced AIImage
 
 export const metadata: Metadata = {
   title: 'VSD for Businesses',
-  description: 'Integrate VSD stablecoin into your business for stable, efficient transactions and access to a growing digital economy.',
+  description: 'Integrate the VSD platform into your business for stable, efficient transactions and access to a growing digital economy.',
 };
 
 const BenefitCard = ({ icon: Icon, title, children }: { icon: React.ElementType, title: string, children: React.ReactNode }) => (
@@ -31,7 +31,7 @@ export default function ForBusinessesPage() {
         <DollarSign className="h-16 w-16 text-primary mx-auto mb-4" />
         <h1 className="font-headline text-4xl md:text-5xl font-bold mb-4 text-primary">Power Your Business with VSD</h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-          Discover how the VSD stablecoin can revolutionize your transactions, streamline payments, and connect you to the future of digital commerce.
+          Discover how the VSD platform can revolutionize your transactions, streamline payments, and connect you to the future of digital commerce.
         </p>
       </header>
 
@@ -41,10 +41,10 @@ export default function ForBusinessesPage() {
         <h2 className="font-headline text-3xl font-semibold text-center mb-10">Why Choose VSD for Your Business?</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           <BenefitCard icon={ShieldCheck} title="Stable Value Transactions">
-            Mitigate volatility risks associated with traditional cryptocurrencies. VSD is designed for stability, making it ideal for pricing goods and services.
+            Mitigate volatility risks associated with traditional digital assets. VSD is designed for stability, making it ideal for pricing goods and services.
           </BenefitCard>
           <BenefitCard icon={Zap} title="Efficient & Low-Cost Payments">
-            Experience faster settlement times and potentially lower transaction fees compared to traditional payment rails or other cryptocurrencies. (Actual fees depend on the underlying blockchain and network conditions).
+            Experience faster settlement times and potentially lower transaction fees compared to traditional payment rails. (Actual fees depend on the underlying network conditions).
           </BenefitCard>
           <BenefitCard icon={Globe} title="Global Reach & Accessibility">
             Tap into a global customer base. VSD enables seamless cross-border transactions without the complexities of currency conversions or intermediary banks.
@@ -53,10 +53,10 @@ export default function ForBusinessesPage() {
             Leverage our developer-friendly APIs, SDKs, and comprehensive documentation to integrate VSD payments into your existing platforms and applications.
           </BenefitCard>
           <BenefitCard icon={Users} title="Access a Growing Ecosystem">
-            Become part of the VSD Network, connecting with innovative projects, dApps, and a community focused on decentralized finance.
+            Become part of the VSD Network, connecting with innovative projects, applications, and a community focused on decentralized solutions.
           </BenefitCard>
           <BenefitCard icon={DollarSign} title="Transparent & Secure">
-            Benefit from the transparency of blockchain technology. All VSD transactions are recorded on a public ledger, and the protocol is built with security in mind.
+            Benefit from the transparency of distributed ledger technology. All VSD transactions are recorded on a public ledger, and the platform is built with security in mind.
           </BenefitCard>
         </div>
       </section>
@@ -64,13 +64,13 @@ export default function ForBusinessesPage() {
       <Separator />
 
       <section className="text-center">
-        <AIImage
-          initialSrc="https://placehold.co/800x400.png"
+        <Image
+          src="https://placehold.co/800x400.png" // was initialSrc
           alt="Businesses using VSD for transactions"
           width={800}
           height={400}
           className="rounded-md my-8 shadow-md mx-auto"
-          hint="business transaction digital"
+          data-ai-hint="business transaction digital"
         />
         <h2 className="font-headline text-3xl font-semibold mb-6">Ready to Integrate VSD?</h2>
         <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
@@ -97,8 +97,8 @@ export default function ForBusinessesPage() {
                 <CardContent><p className="text-muted-foreground">Manage recurring billing for SaaS products, content platforms, or memberships using VSD for predictable payment values.</p></CardContent>
             </Card>
             <Card className="shadow-md">
-                <CardHeader><CardTitle>In-App Purchases & Gaming</CardTitle></CardHeader>
-                <CardContent><p className="text-muted-foreground">Power your digital economy within games or applications. VSD can serve as a stable in-game currency or for purchasing digital goods.</p></CardContent>
+                <CardHeader><CardTitle>In-App Purchases & Digital Services</CardTitle></CardHeader>
+                <CardContent><p className="text-muted-foreground">Power your digital economy within applications or services. VSD can serve as a stable internal currency or for purchasing digital goods.</p></CardContent>
             </Card>
             <Card className="shadow-md">
                 <CardHeader><CardTitle>B2B Transactions & Invoicing</CardTitle></CardHeader>

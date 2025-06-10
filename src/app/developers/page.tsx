@@ -2,14 +2,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { BookOpen, Users, Github, MessageSquare, Search, Lightbulb, Code, Package } from "lucide-react"; // Added Package
-import { DocumentationSearchForm } from "@/components/ai/DocumentationSearchForm";
+import { BookOpen, Users, Github, MessageSquare, Package, Code } from "lucide-react"; // Removed Search, Lightbulb
 import { Separator } from "@/components/ui/separator";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Developer Resources',
-  description: 'Access documentation, community links, and AI-powered search for building with VSD Network.',
+  description: 'Access documentation, community links, and tools for building with VSD Network.',
 };
 
 export default function DevelopersPage() {
@@ -18,38 +17,23 @@ export default function DevelopersPage() {
       <header className="text-center">
         <h1 className="font-headline text-4xl md:text-5xl font-bold mb-4 text-primary">Developer Portal</h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Everything you need to start building with VSD. Access documentation, connect with the community, and utilize our AI search tool.
+          Everything you need to start building with VSD. Access documentation, connect with the community, and utilize our tools.
         </p>
       </header>
 
       <Separator />
 
-      <section id="ai-search" className="scroll-mt-20">
-        <Card className="shadow-xl bg-card/80 backdrop-blur-sm">
-          <CardHeader className="items-center text-center">
-            <Lightbulb className="h-12 w-12 text-primary mb-3" />
-            <CardTitle className="font-headline text-3xl">AI-Powered Documentation Search</CardTitle>
-            <CardDescription className="max-w-lg">
-              Can't find what you're looking for? Ask our AI assistant. It can search the VSD documentation and provide concise answers.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <DocumentationSearchForm />
-          </CardContent>
-        </Card>
-      </section>
+      {/* AI Search Section Removed */}
 
-      <Separator />
-
-      <section className="grid md:grid-cols-2 gap-8 items-stretch"> {/* Added items-stretch for consistent card height */}
-        <Card className="shadow-lg flex flex-col"> {/* Flex classes for footer alignment */}
+      <section className="grid md:grid-cols-2 gap-8 items-stretch">
+        <Card className="shadow-lg flex flex-col">
           <CardHeader>
             <BookOpen className="h-10 w-10 text-primary mb-3" />
             <CardTitle className="font-headline text-2xl">Documentation</CardTitle>
           </CardHeader>
-          <CardContent className="flex-grow"> {/* flex-grow to push footer down */}
+          <CardContent className="flex-grow">
             <p className="text-muted-foreground mb-4">
-              Dive into our comprehensive documentation to understand VSD's architecture, smart contracts, APIs, and integration guides.
+              Dive into our comprehensive documentation to understand VSD's architecture, core logic, APIs, and integration guides.
             </p>
           </CardContent>
           <CardFooter>
@@ -61,8 +45,8 @@ export default function DevelopersPage() {
 
         <Card className="shadow-lg flex flex-col">
           <CardHeader>
-            <Package className="h-10 w-10 text-primary mb-3" /> {/* Changed icon */}
-            <CardTitle className="font-headline text-2xl">SDKs & Tools</CardTitle> {/* Changed title */}
+            <Package className="h-10 w-10 text-primary mb-3" />
+            <CardTitle className="font-headline text-2xl">SDKs & Tools</CardTitle>
           </CardHeader>
           <CardContent className="flex-grow">
             <p className="text-muted-foreground mb-4">
