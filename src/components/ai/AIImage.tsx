@@ -5,6 +5,7 @@ import Image, { type ImageProps } from 'next/image';
 import { useState, useEffect } from 'react';
 import { generateImageFromHint, type GenerateImageFromHintInput } from '@/ai/flows/generate-image-from-hint-flow';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils'; // Added import for cn
 
 interface AIImageProps extends Omit<ImageProps, 'src' | 'alt'> {
   hint: string;
@@ -48,26 +49,22 @@ export function AIImage({ hint, alt, initialSrc, width, height, className, prior
       }
     };
 
-    // Only generate if hint is provided, otherwise stick to placeholder.
-    // This check is more for robustness, as typically this component would only be used if a hint exists.
     if (hint && hint.trim() !== '') {
         fetchAIGeneratedImage();
     } else {
-        setIsLoading(false); // No hint, so not loading AI image
+        setIsLoading(false); 
     }
     
 
     return () => {
       isMounted = false;
     };
-  }, [hint, width, height, initialSrc]); // Rerun if hint or dimensions change. initialSrc included for completeness.
+  }, [hint, width, height, initialSrc]);
 
-  if (isLoading && imageSrc === initialSrc) { // Show skeleton only when waiting for AI image and still on placeholder
+  if (isLoading && imageSrc === initialSrc) {
     return <Skeleton className={cn("rounded-md", className)} style={{ width: `${width}px`, height: `${height}px` }} />;
   }
   
-  // If there was an error, or if the imageSrc is still the placeholder (e.g. hint was empty), show initialSrc.
-  // Or show the AI generated image.
   return (
     <Image
       src={imageSrc}
@@ -75,20 +72,11 @@ export function AIImage({ hint, alt, initialSrc, width, height, className, prior
       width={width}
       height={height}
       className={className}
-      priority={priority} // Pass down priority
-      unoptimized={imageSrc.startsWith('data:')} // Important for data URIs
-      {...props} // Pass down any other ImageProps
+      priority={priority}
+      unoptimized={imageSrc.startsWith('data:')}
+      {...props}
     />
   );
 }
 
-// Helper function for cn if not globally available or for standalone component usage
-// For this project, cn is in @/lib/utils so this is just for completeness if component was isolated
-function cn(...inputs: Array<string | undefined | null | false | Record<string, boolean>>): string {
-  return inputs
-    .flat()
-    .filter(x => x && typeof x !== 'boolean')
-    .map(x => (typeof x === 'string' ? x : Object.keys(x).filter(k => x[k])))
-    .join(' ');
-}
-
+// Removed local cn function definition
