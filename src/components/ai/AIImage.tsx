@@ -44,12 +44,12 @@ export function AIImage({
 
       generateImageFromHint({ hint })
         .then((response: GenerateImageOutput) => {
-          if (isMounted && response.imageDataUri) {
+          if (isMounted && response && response.imageDataUri) {
             setCurrentImageSrc(response.imageDataUri);
           } else if (isMounted) {
-            // If imageDataUri is empty but no error thrown from flow, treat as error
-            console.error('AIImage: Image generation returned empty data URI for hint:', hint);
-            setError('Failed to generate image data.');
+            // If imageDataUri is empty/null or response itself is problematic, but no error thrown from flow
+            console.error('AIImage: Image generation returned empty or invalid data URI for hint:', hint, 'Response:', response);
+            setError('Failed to generate image: AI returned invalid data.');
             setCurrentImageSrc(initialSrc); // Fallback to initial source
           }
         })
