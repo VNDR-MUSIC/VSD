@@ -17,12 +17,12 @@ const SectionCard = ({ icon: Icon, title, description, children }: { icon: React
   <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
     <CardHeader>
       <div className="flex items-center space-x-3 mb-2">
-        <Icon className="h-8 w-8 text-primary" />
-        <CardTitle className="font-headline text-3xl">{title}</CardTitle>
+        <Icon className="h-7 w-7 sm:h-8 sm:w-8 text-primary" /> {/* Adjusted icon size */}
+        <CardTitle className="font-headline text-2xl sm:text-3xl">{title}</CardTitle> {/* Adjusted font size */}
       </div>
-      {description && <CardDescription className="text-lg">{description}</CardDescription>}
+      {description && <CardDescription className="text-base sm:text-lg">{description}</CardDescription>} {/* Adjusted font size */}
     </CardHeader>
-    <CardContent className="prose prose-invert max-w-none prose-headings:font-headline prose-headings:text-primary prose-a:text-primary hover:prose-a:text-primary/80">
+    <CardContent className="prose prose-sm sm:prose-base prose-invert max-w-none prose-headings:font-headline prose-headings:text-primary prose-a:text-primary hover:prose-a:text-primary/80"> {/* Adjusted prose size */}
       {children}
     </CardContent>
   </Card>
@@ -30,11 +30,11 @@ const SectionCard = ({ icon: Icon, title, description, children }: { icon: React
 
 export default function DocumentationPage() {
   return (
-    <div className="space-y-16 py-8">
+    <div className="space-y-12 sm:space-y-16 py-8"> {/* Adjusted spacing */}
       <header className="text-center">
-        <BookOpenText className="h-16 w-16 text-primary mx-auto mb-4" />
-        <h1 className="font-headline text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Network Documentation</h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
+        <BookOpenText className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" /> {/* Adjusted icon size */}
+        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Network Documentation</h1> {/* Adjusted font size */}
+        <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto"> {/* Adjusted font size */}
           Welcome to the official documentation for the VSD Network. This guide provides all the necessary information to understand, integrate, and build with the VSD decentralized stablecoin platform.
         </p>
       </header>
@@ -63,24 +63,24 @@ export default function DocumentationPage() {
           alt="VSD Network Architecture Diagram"
           width={800}
           height={400}
-          className="rounded-md my-6 shadow-md mx-auto"
+          className="rounded-md my-6 shadow-md mx-auto max-w-full h-auto" 
           hint="blockchain architecture diagram"
         />
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="item-1">
-            <AccordionTrigger className="text-xl hover:no-underline">Core Stablecoin (VSD)</AccordionTrigger>
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Core Stablecoin (VSD)</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent htmlString='<p>The heart of the network. VSD is a decentralized, asset-backed stablecoin designed to maintain a stable peg to a reference asset (e.g., USD). Its stability is ensured through a combination of over-collateralization, algorithmic adjustments, and arbitrage incentives, all managed by on-chain smart contracts.</p>' />
           </AccordionItem>
           <AccordionItem value="item-2">
-            <AccordionTrigger className="text-xl hover:no-underline">Collateral Vault System</AccordionTrigger>
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Collateral Vault System</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent htmlString='<p>A system of smart contracts (Vaults or CDPs - Collateralized Debt Positions) that allows users to lock up approved crypto assets as collateral to mint VSD tokens. It monitors collateralization ratios and manages liquidations to protect the system from insolvency.</p>' />
           </AccordionItem>
           <AccordionItem value="item-3">
-            <AccordionTrigger className="text-xl hover:no-underline">Governance Module (DAO)</AccordionTrigger>
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Governance Module (DAO)</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent htmlString='<p>The VSD Network is governed by its community through a Decentralized Autonomous Organization (DAO). Holders of VSD or a designated governance token can vote on protocol upgrades, risk parameters (e.g., collateral types, liquidation ratios), and other key decisions.</p>' />
           </AccordionItem>
           <AccordionItem value="item-4">
-            <AccordionTrigger className="text-xl hover:no-underline">Oracles & Data Feeds</AccordionTrigger>
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Oracles & Data Feeds</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent htmlString='<p>Reliable price feeds are crucial for an asset-backed stablecoin. The VSD Network utilizes decentralized oracle solutions to obtain accurate and tamper-resistant price data for collateral assets.</p>' />
           </AccordionItem>
         </Accordion>
@@ -92,7 +92,7 @@ export default function DocumentationPage() {
         <p>All core logic of the VSD Network is implemented as smart contracts on a public blockchain (e.g., Ethereum, Polygon). These contracts are open-source and designed with security as a top priority. We encourage developers to review our contracts and participate in bug bounty programs.</p>
         <Accordion type="multiple" className="w-full mt-4">
           <AccordionItem value="module-vsd">
-            <AccordionTrigger className="text-xl hover:no-underline">VSD Token Contract</AccordionTrigger>
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">VSD Token Contract</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent htmlString='
               <p><strong>Address:</strong> <code>0xYourVSDTokenContractAddressHere</code> (Replace with actual address)</p>
               <p><strong>Standard:</strong> ERC20 (or equivalent standard on the chosen blockchain).</p>
@@ -109,7 +109,7 @@ export default function DocumentationPage() {
             ' />
           </AccordionItem>
           <AccordionItem value="module-vault">
-            <AccordionTrigger className="text-xl hover:no-underline">Vault Manager / CDP Contract</AccordionTrigger>
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Vault Manager / CDP Contract</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent htmlString='
               <p><strong>Address:</strong> <code>0xYourVaultManagerContractAddressHere</code> (Replace with actual address)</p>
               <p>This contract (or set of contracts) manages the creation, collateralization, and liquidation of VSD positions (Vaults/CDPs).</p>
@@ -126,7 +126,7 @@ export default function DocumentationPage() {
             ' />
           </AccordionItem>
           <AccordionItem value="module-governance">
-            <AccordionTrigger className="text-xl hover:no-underline">Governance Contract (DAO)</AccordionTrigger>
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Governance Contract (DAO)</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent htmlString='
               <p><strong>Address:</strong> <code>0xYourGovernanceContractAddressHere</code> (Replace with actual address)</p>
               <p>Handles the proposal and voting process for protocol changes.</p>
@@ -151,10 +151,10 @@ export default function DocumentationPage() {
 
       <SectionCard icon={Cpu} title="APIs & SDKs" description="Tools for programmatic interaction with VSD Network.">
         <p>We provide several ways for developers to integrate VSD into their applications and services, interacting with both on-chain smart contracts and off-chain data.</p>
-        <h4 className="text-2xl mt-6 mb-2">Blockchain Interaction (Direct & SDKs)</h4>
+        <h4 className="text-xl sm:text-2xl mt-6 mb-2">Blockchain Interaction (Direct & SDKs)</h4> {/* Adjusted font size */}
         <p>Interact directly with VSD smart contracts using standard blockchain libraries (e.g., Ethers.js, Web3.js) or use our SDKs for simplified access.</p>
         
-        <h4 className="text-2xl mt-8 mb-2">REST API (Coming Soon)</h4>
+        <h4 className="text-xl sm:text-2xl mt-8 mb-2">REST API (Coming Soon)</h4> {/* Adjusted font size */}
         <p>A public REST API will provide access to aggregated on-chain data, real-time VSD metrics (total supply, circulating supply, collateralization ratios), market prices (via oracles), and governance proposal statuses. This API will be essential for off-chain applications, analytics, and monitoring.</p>
         <ul>
           <li><strong>Endpoints (Examples):</strong>
@@ -174,13 +174,13 @@ export default function DocumentationPage() {
           alt="API Interaction Diagram"
           width={700}
           height={350}
-          className="rounded-md my-6 shadow-md mx-auto"
+          className="rounded-md my-6 shadow-md mx-auto max-w-full h-auto"
           hint="API data flow blockchain"
         />
 
-        <h4 className="text-2xl mt-8 mb-2">JavaScript SDK (Alpha)</h4>
+        <h4 className="text-xl sm:text-2xl mt-8 mb-2">JavaScript SDK (Alpha)</h4> {/* Adjusted font size */}
         <p>Our JavaScript/TypeScript SDK simplifies interaction with VSD smart contracts and planned REST API endpoints. It's ideal for both frontend (dApps) and backend development.</p>
-        <pre className="bg-muted/50 p-4 rounded-md overflow-x-auto my-4">
+        <pre className="bg-muted/50 p-4 rounded-md overflow-x-auto my-4 text-xs sm:text-sm"> {/* Adjusted font size */}
           <code>
 {`// Installation
 npm install @vsdnetwork/sdk
@@ -228,7 +228,7 @@ async function mintVsd(sdk, collateralAmount, vsdToMint) {
         <p>Accepting VSD as a payment method can offer stability, efficiency, and access to the Web3 economy. Here's a general approach:</p>
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="payment-flow">
-            <AccordionTrigger className="text-xl hover:no-underline">Typical Payment Flow</AccordionTrigger>
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Typical Payment Flow</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent>
               <ol className="list-decimal pl-5 space-y-2">
                 <li><strong>Display Price in VSD:</strong> Convert your product/service price from fiat to VSD (e.g., if VSD is pegged to $1 USD, then a $10 item is 10 VSD).</li>
@@ -241,21 +241,21 @@ async function mintVsd(sdk, collateralAmount, vsdToMint) {
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="integration-methods">
-            <AccordionTrigger className="text-xl hover:no-underline">Integration Methods</AccordionTrigger>
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Integration Methods</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent>
-              <h5 className="text-lg font-semibold mt-2 mb-1">Direct Blockchain Integration:</h5>
+              <h5 className="text-md sm:text-lg font-semibold mt-2 mb-1">Direct Blockchain Integration:</h5> {/* Adjusted font size */}
               <p>Use our <Link href="/developers/sdks-tools">SDKs</Link> (JavaScript for frontend/Node.js, upcoming Python/Go for backend) or standard Web3 libraries to interact with the VSD token contract directly. This gives you full control but requires more development effort.</p>
               <ul className="list-disc pl-5 space-y-1">
                 <li>Generate deposit addresses.</li>
                 <li>Query balances and transaction history (via SDK, API, or directly on a block explorer).</li>
                 <li>Securely manage private keys for your business wallet.</li>
               </ul>
-              <h5 className="text-lg font-semibold mt-4 mb-1">Using Crypto Payment Processors (Future):</h5>
+              <h5 className="text-md sm:text-lg font-semibold mt-4 mb-1">Using Crypto Payment Processors (Future):</h5> {/* Adjusted font size */}
               <p>As the VSD ecosystem grows, we anticipate third-party crypto payment processors will add support for VSD. These services simplify accepting VSD by handling wallet management, transaction monitoring, and conversion to fiat if needed. Keep an eye on our <Link href="/ecosystem">Ecosystem page</Link> for partners.</p>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="best-practices">
-            <AccordionTrigger className="text-xl hover:no-underline">Best Practices</AccordionTrigger>
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Best Practices</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent>
               <ul className="list-disc pl-5 space-y-1">
                 <li><strong>Security:</strong> Prioritize the security of your private keys and wallet. Use hardware wallets or multi-sig solutions for significant funds.</li>
@@ -276,7 +276,7 @@ async function mintVsd(sdk, collateralAmount, vsdToMint) {
       <SectionCard icon={GitBranch} title="Integration Guides" description="Step-by-step instructions for common Web3 integrations.">
         <Accordion type="multiple" className="w-full">
           <AccordionItem value="wallet-integration">
-            <AccordionTrigger className="text-xl hover:no-underline">Wallet Integration (Adding VSD)</AccordionTrigger>
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Wallet Integration (Adding VSD)</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent htmlString='
               <p>To add VSD to most EVM-compatible wallets (e.g., MetaMask, Trust Wallet):</p>
               <ol>
@@ -289,7 +289,7 @@ async function mintVsd(sdk, collateralAmount, vsdToMint) {
             ' />
           </AccordionItem>
           <AccordionItem value="dex-integration">
-            <AccordionTrigger className="text-xl hover:no-underline">Decentralized Exchange (DEX) Integration</AccordionTrigger>
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Decentralized Exchange (DEX) Integration</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent htmlString='
               <p>VSD can be listed on DEXs by providing liquidity in pools against other assets (e.g., VSD/ETH, VSD/USDC).</p>
               <p><strong>For Liquidity Providers:</strong></p>
@@ -304,7 +304,7 @@ async function mintVsd(sdk, collateralAmount, vsdToMint) {
             ' />
           </AccordionItem>
           <AccordionItem value="dapp-integration">
-            <AccordionTrigger className="text-xl hover:no-underline">Decentralized Application (dApp) Integration</AccordionTrigger>
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Decentralized Application (dApp) Integration</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent htmlString='
               <p>VSD is designed to be a robust form of collateral and a stable medium of exchange in dApps.</p>
               <ul>
@@ -322,7 +322,7 @@ async function mintVsd(sdk, collateralAmount, vsdToMint) {
       <Separator />
       
       <SectionCard icon={HelpCircle} title="Glossary & FAQ" description="Common terms and questions related to VSD and DeFi.">
-        <h4 className="text-2xl mt-6 mb-2">Glossary</h4>
+        <h4 className="text-xl sm:text-2xl mt-6 mb-2">Glossary</h4> {/* Adjusted font size */}
          <ul className="list-disc pl-5 space-y-1">
             <li><strong>Stablecoin:</strong> A type of cryptocurrency designed to maintain a stable value, often pegged to a fiat currency (like USD) or a commodity.</li>
             <li><strong>Smart Contract:</strong> Self-executing contracts with the terms of the agreement directly written into code. They run on a blockchain, making them transparent and immutable.</li>
@@ -331,22 +331,22 @@ async function mintVsd(sdk, collateralAmount, vsdToMint) {
             <li><strong>Decentralized Finance (DeFi):</strong> An umbrella term for financial applications built on blockchain technology that operate without central intermediaries.</li>
             <li><strong>Oracle:</strong> A service that provides external data (like asset prices) to smart contracts on the blockchain.</li>
         </ul>
-        <h4 className="text-2xl mt-8 mb-2">Frequently Asked Questions</h4>
+        <h4 className="text-xl sm:text-2xl mt-8 mb-2">Frequently Asked Questions</h4> {/* Adjusted font size */}
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="faq-1">
-            <AccordionTrigger className="text-lg hover:no-underline">What blockchain is VSD on?</AccordionTrigger>
+            <AccordionTrigger className="text-md sm:text-lg hover:no-underline">What blockchain is VSD on?</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent htmlString='<p>VSD is initially deployed on [Specify Blockchain, e.g., Ethereum Mainnet, Polygon, BNB Chain]. We are exploring cross-chain solutions for future expansion. Check our official channels for the most up-to-date information.</p>' />
           </AccordionItem>
           <AccordionItem value="faq-2">
-            <AccordionTrigger className="text-lg hover:no-underline">How is the VSD peg maintained?</AccordionTrigger>
+            <AccordionTrigger className="text-md sm:text-lg hover:no-underline">How is the VSD peg maintained?</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent htmlString='<p>The VSD peg to its reference asset (e.g., $1 USD) is maintained through a combination of over-collateralization, arbitrage opportunities, and protocol-managed stability mechanisms (potentially including algorithmic elements). If VSD trades above its peg, arbitrageurs can mint VSD by depositing collateral and sell it on the market for a profit. If VSD trades below its peg, arbitrageurs can buy cheap VSD from the market and use it to redeem collateral at the peg value or repay their vaults more cheaply.</p>' />
           </AccordionItem>
           <AccordionItem value="faq-3">
-            <AccordionTrigger className="text-lg hover:no-underline">Where can I get VSD tokens?</AccordionTrigger>
+            <AccordionTrigger className="text-md sm:text-lg hover:no-underline">Where can I get VSD tokens?</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent htmlString='<p>VSD tokens can be minted by depositing collateral into the VSD platform&apos;s smart contracts, or acquired from decentralized exchanges (DEXs) and potentially centralized exchanges (CEXs) where liquidity pools exist. See our <a href="/ecosystem" class="text-primary hover:underline">Ecosystem page</a> for partner platforms.</p>' />
           </AccordionItem>
            <AccordionItem value="faq-4">
-            <AccordionTrigger className="text-lg hover:no-underline">Are the VSD smart contracts audited?</AccordionTrigger>
+            <AccordionTrigger className="text-md sm:text-lg hover:no-underline">Are the VSD smart contracts audited?</AccordionTrigger> {/* Adjusted font size */}
             <AccordionContent htmlString='<p>Yes, security is our top priority. The VSD smart contracts have undergone [mention number if known, e.g., multiple] independent security audits. Links to audit reports will be made available here: [Placeholder for Audit Links]. We also run an ongoing bug bounty program to incentivize responsible disclosure of vulnerabilities.</p>' />
           </AccordionItem>
         </Accordion>

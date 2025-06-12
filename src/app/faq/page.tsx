@@ -103,23 +103,23 @@ export default function FaqPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <header className="text-center mb-12">
-        <HelpCircle className="h-16 w-16 text-primary mx-auto mb-4" />
-        <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary">Frequently Asked Questions</h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mt-4">
+        <HelpCircle className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" /> {/* Adjusted icon size */}
+        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold text-primary">Frequently Asked Questions</h1> {/* Adjusted font size */}
+        <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto mt-4"> {/* Adjusted font size */}
           Your questions about the VSD Network, VSD stablecoin, its technology, DeFi integration, and security, answered.
         </p>
       </header>
 
       <Card className="shadow-xl bg-card/80 backdrop-blur-sm">
-        <CardContent className="p-6 md:p-8">
+        <CardContent className="p-4 sm:p-6 md:p-8"> {/* Adjusted padding */}
           <Accordion type="single" collapsible className="w-full">
             {faqs.map((faq) => (
               <AccordionItem value={faq.id} key={faq.id}>
-                <AccordionTrigger className="text-lg md:text-xl text-left hover:no-underline py-6">
+                <AccordionTrigger className="text-md sm:text-lg md:text-xl text-left hover:no-underline py-4 sm:py-6"> {/* Adjusted font size & padding */}
                   {faq.question}
                 </AccordionTrigger>
                 <AccordionContent
-                  className="text-base md:text-lg text-muted-foreground prose prose-invert max-w-none prose-a:text-primary hover:prose-a:text-primary/80"
+                  className="text-sm sm:text-base md:text-lg text-muted-foreground prose prose-sm sm:prose-base prose-invert max-w-none prose-a:text-primary hover:prose-a:text-primary/80" /* Adjusted prose & font size */
                   htmlString={faq.answer}
                 />
               </AccordionItem>
@@ -128,14 +128,14 @@ export default function FaqPage() {
         </CardContent>
       </Card>
 
-      <section className="mt-16 text-center">
-        <Card className="inline-block p-8 bg-card/70 backdrop-blur-sm shadow-lg">
+      <section className="mt-12 sm:mt-16 text-center"> {/* Adjusted margin */}
+        <Card className="inline-block p-6 sm:p-8 bg-card/70 backdrop-blur-sm shadow-lg"> {/* Adjusted padding */}
             <CardHeader>
-                <BookOpen className="h-10 w-10 text-primary mx-auto mb-3" />
-                <CardTitle className="font-headline text-2xl">Can't Find Your Answer?</CardTitle>
+                <BookOpen className="h-8 w-8 sm:h-10 sm:w-10 text-primary mx-auto mb-3" /> {/* Adjusted icon size */}
+                <CardTitle className="font-headline text-xl sm:text-2xl">Can't Find Your Answer?</CardTitle> {/* Adjusted font size */}
             </CardHeader>
             <CardContent>
-                <p className="text-muted-foreground mb-4 max-w-md mx-auto">
+                <p className="text-muted-foreground mb-4 max-w-md mx-auto text-sm sm:text-base"> {/* Adjusted font size */}
                 If your question isn't covered here, please dive into our detailed <Link href="/developers/documentation" className="text-primary hover:underline">technical documentation</Link> or connect with our vibrant Web3 community.
                 </p>
                 <Link href="/developers#community">

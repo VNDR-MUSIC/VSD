@@ -10,7 +10,7 @@ import { AIImage } from "@/components/ai/AIImage";
 export default function HomePage() {
   return (
     <div className="space-y-12">
-      <section className="text-center py-16">
+      <section className="text-center py-12 md:py-16"> {/* Adjusted padding slightly for mobile */}
         <div className="flex justify-center mb-8">
           <Image
             src="https://indiemedia.llc/vsdlogo.jpg"
@@ -21,17 +21,17 @@ export default function HomePage() {
             priority
           />
         </div>
-        <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6">
+        <h1 className="font-headline text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6"> {/* Adjusted font size */}
           Welcome to <span className="text-primary">{siteConfig.name}</span>
         </h1>
-        <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8">
+        <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8"> {/* Adjusted font size */}
           Your central hub for the VSD token. Explore token information, discover ecosystem projects, and access developer resources for our decentralized stablecoin platform.
         </p>
-        <div className="space-x-4">
-          <Button asChild size="lg" className="font-bold btn-hover-effect">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4"> {/* Adjusted layout for buttons */}
+          <Button asChild size="lg" className="font-bold btn-hover-effect w-full sm:w-auto">
             <Link href="/token">Learn about VSD Token <ArrowRight className="ml-2 h-5 w-5" /></Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="font-bold btn-hover-effect">
+          <Button asChild size="lg" variant="outline" className="font-bold btn-hover-effect w-full sm:w-auto">
             <Link href="/developers">Developer Portal <Code className="ml-2 h-5 w-5" /></Link>
           </Button>
         </div>

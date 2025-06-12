@@ -13,13 +13,13 @@ export const metadata: Metadata = {
 };
 
 const BenefitCard = ({ icon: Icon, title, children }: { icon: React.ElementType, title: string, children: React.ReactNode }) => (
-  <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
+  <Card className="shadow-lg bg-card/80 backdrop-blur-sm h-full"> {/* Added h-full for consistent card height in grid */}
     <CardHeader className="items-center text-center">
-      <Icon className="h-12 w-12 text-primary mb-3" />
-      <CardTitle className="font-headline text-2xl">{title}</CardTitle>
+      <Icon className="h-10 w-10 sm:h-12 sm:w-12 text-primary mb-3" /> {/* Adjusted icon size */}
+      <CardTitle className="font-headline text-xl sm:text-2xl">{title}</CardTitle> {/* Adjusted font size */}
     </CardHeader>
     <CardContent>
-      <p className="text-muted-foreground text-center">{children}</p>
+      <p className="text-muted-foreground text-center text-sm sm:text-base">{children}</p> {/* Adjusted font size */}
     </CardContent>
   </Card>
 );
@@ -28,9 +28,9 @@ export default function ForBusinessesPage() {
   return (
     <div className="space-y-16 py-8">
       <header className="text-center">
-        <Briefcase className="h-16 w-16 text-primary mx-auto mb-4" />
-        <h1 className="font-headline text-4xl md:text-5xl font-bold mb-4 text-primary">Power Your Business with VSD</h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
+        <Briefcase className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" /> {/* Adjusted icon size */}
+        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">Power Your Business with VSD</h1> {/* Adjusted font size */}
+        <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto"> {/* Adjusted font size */}
           Discover how the VSD stablecoin can revolutionize your transactions, streamline payments, access DeFi, and connect you to the future of decentralized commerce.
         </p>
       </header>
@@ -38,8 +38,8 @@ export default function ForBusinessesPage() {
       <Separator />
 
       <section>
-        <h2 className="font-headline text-3xl font-semibold text-center mb-10">Why Choose VSD Stablecoin for Your Business?</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center mb-10">Why Choose VSD Stablecoin for Your Business?</h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"> {/* Adjusted gap */}
           <BenefitCard icon={ShieldCheck} title="Stable Value Transactions">
             Mitigate volatility risks associated with other cryptocurrencies. VSD is designed for stability, making it ideal for pricing goods, services, and managing treasury.
           </BenefitCard>
@@ -72,8 +72,8 @@ export default function ForBusinessesPage() {
           className="rounded-md my-8 shadow-md mx-auto"
           hint="business crypto transaction"
         />
-        <h2 className="font-headline text-3xl font-semibold mb-6">Ready to Integrate VSD?</h2>
-        <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
+        <h2 className="font-headline text-2xl sm:text-3xl font-semibold mb-6">Ready to Integrate VSD?</h2>
+        <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto mb-8"> {/* Adjusted font size */}
           Our developer portal provides all the resources you need to get started. Explore our SDKs, smart contract documentation, and integration guides.
         </p>
         <Button asChild size="lg" className="font-bold btn-hover-effect">
@@ -86,40 +86,40 @@ export default function ForBusinessesPage() {
       <Separator />
 
       <section>
-        <h2 className="font-headline text-3xl font-semibold text-center mb-10">Use Cases for VSD in Business</h2>
-        <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-8">
+        <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center mb-10">Use Cases for VSD in Business</h2>
+        <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8"> {/* Adjusted gap */}
             <Card className="shadow-md">
-                <CardHeader><CardTitle>E-commerce & Online Sales</CardTitle></CardHeader>
-                <CardContent><p className="text-muted-foreground">Accept VSD for online sales, offering customers a stable cryptocurrency payment option. Reduce chargebacks and settlement delays associated with traditional payments.</p></CardContent>
+                <CardHeader><CardTitle className="text-lg sm:text-xl">E-commerce & Online Sales</CardTitle></CardHeader> {/* Adjusted font size */}
+                <CardContent><p className="text-muted-foreground text-sm sm:text-base">Accept VSD for online sales, offering customers a stable cryptocurrency payment option. Reduce chargebacks and settlement delays associated with traditional payments.</p></CardContent> {/* Adjusted font size */}
             </Card>
             <Card className="shadow-md">
-                <CardHeader><CardTitle>Subscription Services & SaaS</CardTitle></CardHeader>
-                <CardContent><p className="text-muted-foreground">Manage recurring billing for SaaS products, content platforms, or memberships using VSD for predictable payment values in crypto.</p></CardContent>
+                <CardHeader><CardTitle className="text-lg sm:text-xl">Subscription Services & SaaS</CardTitle></CardHeader> {/* Adjusted font size */}
+                <CardContent><p className="text-muted-foreground text-sm sm:text-base">Manage recurring billing for SaaS products, content platforms, or memberships using VSD for predictable payment values in crypto.</p></CardContent> {/* Adjusted font size */}
             </Card>
             <Card className="shadow-md">
-                <CardHeader><CardTitle>Global Payroll & Contractor Payments</CardTitle></CardHeader>
-                <CardContent><p className="text-muted-foreground">Pay global employees and contractors quickly and efficiently using VSD, minimizing currency conversion hassles and banking delays.</p></CardContent>
+                <CardHeader><CardTitle className="text-lg sm:text-xl">Global Payroll & Contractor Payments</CardTitle></CardHeader> {/* Adjusted font size */}
+                <CardContent><p className="text-muted-foreground text-sm sm:text-base">Pay global employees and contractors quickly and efficiently using VSD, minimizing currency conversion hassles and banking delays.</p></CardContent> {/* Adjusted font size */}
             </Card>
             <Card className="shadow-md">
-                <CardHeader><CardTitle>B2B Transactions & Invoicing</CardTitle></CardHeader>
-                <CardContent><p className="text-muted-foreground">Streamline payments between businesses, especially internationally. VSD offers faster, more transparent, and potentially cheaper settlements than traditional B2B payment methods.</p></CardContent>
+                <CardHeader><CardTitle className="text-lg sm:text-xl">B2B Transactions & Invoicing</CardTitle></CardHeader> {/* Adjusted font size */}
+                <CardContent><p className="text-muted-foreground text-sm sm:text-base">Streamline payments between businesses, especially internationally. VSD offers faster, more transparent, and potentially cheaper settlements than traditional B2B payment methods.</p></CardContent> {/* Adjusted font size */}
             </Card>
             <Card className="shadow-md">
-                <CardHeader><CardTitle>Treasury Management</CardTitle></CardHeader>
-                <CardContent><p className="text-muted-foreground">Hold a portion of your business treasury in VSD for stability within the crypto market, or for easy access to DeFi yield opportunities.</p></CardContent>
+                <CardHeader><CardTitle className="text-lg sm:text-xl">Treasury Management</CardTitle></CardHeader> {/* Adjusted font size */}
+                <CardContent><p className="text-muted-foreground text-sm sm:text-base">Hold a portion of your business treasury in VSD for stability within the crypto market, or for easy access to DeFi yield opportunities.</p></CardContent> {/* Adjusted font size */}
             </Card>
             <Card className="shadow-md">
-                <CardHeader><CardTitle>Supply Chain & Trade Finance</CardTitle></CardHeader>
-                <CardContent><p className="text-muted-foreground">Utilize VSD for transparent and efficient payments in supply chains, potentially integrating with smart contracts for automated settlements.</p></CardContent>
+                <CardHeader><CardTitle className="text-lg sm:text-xl">Supply Chain & Trade Finance</CardTitle></CardHeader> {/* Adjusted font size */}
+                <CardContent><p className="text-muted-foreground text-sm sm:text-base">Utilize VSD for transparent and efficient payments in supply chains, potentially integrating with smart contracts for automated settlements.</p></CardContent> {/* Adjusted font size */}
             </Card>
         </div>
       </section>
 
       <Separator />
 
-      <section className="text-center bg-card/70 p-8 md:p-12 rounded-lg shadow-xl">
-        <h2 className="font-headline text-3xl font-bold mb-4">Partner with VSD Network</h2>
-        <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
+      <section className="text-center bg-card/70 p-6 sm:p-8 md:p-12 rounded-lg shadow-xl"> {/* Adjusted padding */}
+        <h2 className="font-headline text-2xl sm:text-3xl font-bold mb-4">Partner with VSD Network</h2>
+        <p className="text-muted-foreground mb-6 max-w-xl mx-auto text-sm sm:text-base"> {/* Adjusted font size */}
           We are always looking for innovative businesses and projects to collaborate with. If you're interested in leveraging VSD, building on our network, or becoming a liquidity partner, let's connect.
         </p>
         <Button variant="outline" size="lg" className="btn-hover-effect">

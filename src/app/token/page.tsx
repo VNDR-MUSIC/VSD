@@ -37,9 +37,9 @@ export default function TokenPage() {
   return (
     <div className="space-y-12 py-8">
       <header className="text-center">
-        <DollarSign className="h-16 w-16 text-primary mx-auto mb-4" />
-        <h1 className="font-headline text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Token Details</h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+        <DollarSign className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" /> {/* Adjusted icon size */}
+        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Token Details</h1> {/* Adjusted font size */}
+        <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto"> {/* Adjusted font size */}
           Discover the core aspects of VSD, the decentralized stablecoin designed for reliability and utility in the digital economy.
         </p>
       </header>
@@ -47,9 +47,9 @@ export default function TokenPage() {
       <Separator />
 
       <section className="space-y-8">
-        <h2 className="font-headline text-3xl font-semibold text-center">What is VSD?</h2>
+        <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center">What is VSD?</h2>
         <Card className="shadow-lg">
-          <CardContent className="p-8 text-lg">
+          <CardContent className="p-6 sm:p-8 text-base sm:text-lg"> {/* Adjusted padding and font size */}
             <p className="mb-4">
               VSD is a decentralized, asset-backed stablecoin designed to maintain a value peg, typically to a major fiat currency like the US Dollar. It serves as a reliable medium of exchange, store of value, and unit of account within the VSD Network and the broader DeFi (Decentralized Finance) ecosystem.
             </p>
@@ -63,8 +63,8 @@ export default function TokenPage() {
       <Separator />
 
       <section className="space-y-8">
-        <h2 className="font-headline text-3xl font-semibold text-center">Key Features</h2>
-        <div className="grid md:grid-cols-2 gap-8">
+        <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center">Key Features</h2>
+        <div className="grid md:grid-cols-2 gap-6 sm:gap-8"> {/* Adjusted gap */}
           <FeatureItem icon={Target} title="Decentralized & Resilient">
             VSD operates on a public blockchain, ensuring high availability and resistance to single points of failure or censorship. Smart contracts govern its core logic.
           </FeatureItem>
@@ -89,27 +89,27 @@ export default function TokenPage() {
       <Separator />
 
       <section className="space-y-8">
-        <h2 className="font-headline text-3xl font-semibold text-center">Tokenomics Overview</h2>
+        <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center">Tokenomics Overview</h2>
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">Understanding VSD's Economic Model</CardTitle>
+            <CardTitle className="font-headline text-xl sm:text-2xl">Understanding VSD's Economic Model</CardTitle> {/* Adjusted font size */}
              <CardDescription>VSD's tokenomics are designed for stability, utility, and ecosystem growth within the decentralized economy.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
-                <h4 className="text-xl font-semibold mb-2">Total Supply & Minting</h4>
+                <h4 className="text-lg sm:text-xl font-semibold mb-2">Total Supply & Minting</h4> {/* Adjusted font size */}
                 <p className="text-muted-foreground">
                 The total supply of VSD is dynamic, expanding or contracting based on user demand. New VSD is minted when users deposit approved collateral assets into the platform's smart contract vaults. Conversely, VSD is burned when users repay their positions and withdraw their collateral.
                 </p>
             </div>
             <div>
-                <h4 className="text-xl font-semibold mb-2">Collateralization</h4>
+                <h4 className="text-lg sm:text-xl font-semibold mb-2">Collateralization</h4> {/* Adjusted font size */}
                 <p className="text-muted-foreground">
                 VSD is over-collateralized, meaning the value of the locked collateral exceeds the value of the minted VSD. This provides a buffer against collateral price volatility and ensures the solvency of the system. Accepted collateral types and collateralization ratios are typically managed by governance.
                 </p>
             </div>
             <div>
-                <h4 className="text-xl font-semibold mb-2">Utility & Use Cases</h4>
+                <h4 className="text-lg sm:text-xl font-semibold mb-2">Utility & Use Cases</h4> {/* Adjusted font size */}
                 <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
                     <li><strong>Medium of Exchange:</strong> Used for payments and transfers within the VSD ecosystem and integrated dApps.</li>
                     <li><strong>Store of Value:</strong> Offers a stable alternative to volatile cryptocurrencies.</li>
@@ -117,7 +117,7 @@ export default function TokenPage() {
                     <li><strong>Governance:</strong> VSD (or an associated governance token) may grant holders voting rights in the VSD DAO.</li>
                 </ul>
             </div>
-            <div className="bg-muted/30 p-6 rounded-lg">
+            <div className="bg-muted/30 p-4 sm:p-6 rounded-lg"> {/* Adjusted padding */}
               <AIImage
                 initialSrc="https://placehold.co/800x400.png"
                 alt="Tokenomics chart"
@@ -136,7 +136,7 @@ export default function TokenPage() {
       
       <Separator />
        <section className="space-y-8">
-        <h2 className="font-headline text-3xl font-semibold text-center">Use Cases in Web3 & DeFi</h2>
+        <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center">Use Cases in Web3 & DeFi</h2>
         <p className="text-muted-foreground text-center max-w-2xl mx-auto">VSD offers a stable and efficient digital asset for a variety of decentralized applications.</p>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             <UseCaseCard icon={ShoppingCart} title="Decentralized Commerce">
@@ -163,13 +163,13 @@ export default function TokenPage() {
       <Separator />
 
       <section className="space-y-8">
-        <h2 className="font-headline text-3xl font-semibold text-center">How to Get VSD Tokens</h2>
+        <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center">How to Get VSD Tokens</h2>
          <Card className="shadow-lg">
-          <CardContent className="p-8">
-            <p className="text-lg text-muted-foreground">
+          <CardContent className="p-6 sm:p-8"> {/* Adjusted padding */}
+            <p className="text-base sm:text-lg text-muted-foreground"> {/* Adjusted font size */}
               VSD tokens can typically be acquired through several avenues within the decentralized ecosystem:
             </p>
-            <ul className="list-disc list-inside space-y-3 mt-4 text-lg text-muted-foreground pl-4">
+            <ul className="list-disc list-inside space-y-3 mt-4 text-base sm:text-lg text-muted-foreground pl-4"> {/* Adjusted font size */}
               <li>
                 <strong>Minting:</strong> Users can generate new VSD tokens by depositing approved collateral assets into the VSD platform's smart contract vaults. (Refer to our <Link href="/developers/documentation#core-logic-modules" className="text-primary hover:underline">Core Logic documentation</Link> for details).
               </li>

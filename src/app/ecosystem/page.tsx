@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowUpRightSquare } from "lucide-react";
+import { ArrowUpRightSquare, Network } from "lucide-react"; // Added Network icon
 import type { Metadata } from 'next';
 import { AIImage } from '@/components/ai/AIImage';
 
@@ -80,13 +80,14 @@ export default function EcosystemPage() {
   return (
     <div className="space-y-12 py-8">
       <header className="text-center">
-        <h1 className="font-headline text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Ecosystem</h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+        <Network className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" /> {/* Added icon and adjusted size */}
+        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Ecosystem</h1> {/* Adjusted font size */}
+        <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto"> {/* Adjusted font size */}
           Explore the vibrant and growing ecosystem of decentralized applications (dApps), DeFi protocols, and Web3 services building with and integrating the VSD stablecoin.
         </p>
       </header>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"> {/* Adjusted gap */}
         {projects.map((project) => (
           <Card key={project.id} className="flex flex-col shadow-lg hover:shadow-primary/20 transition-shadow duration-300">
             <CardHeader>
@@ -94,15 +95,15 @@ export default function EcosystemPage() {
                 <AIImage
                   initialSrc={project.imageUrl}
                   alt={project.name}
-                  width={600} // Assuming all placeholders are 600x400, adjust if not
+                  width={600} 
                   height={400}
                   className="rounded-t-lg object-cover"
                   hint={project.imageHint}
-                  layout="fill" // This prop might be needed if parent div controls size
-                  objectFit="cover" // Ensure image covers the area
+                  layout="fill" 
+                  objectFit="cover" 
                 />
               </div>
-              <CardTitle className="font-headline text-2xl">{project.name}</CardTitle>
+              <CardTitle className="font-headline text-xl sm:text-2xl">{project.name}</CardTitle> {/* Adjusted font size */}
               <CardDescription>{project.category}</CardDescription>
             </CardHeader>
             <CardContent className="flex-grow">
