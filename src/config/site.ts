@@ -1,6 +1,6 @@
 
 import type { NavItem } from '@/types/nav';
-import { LayoutDashboard, BrainCircuit, Network, Code, Briefcase, HelpCircle, FileText, Zap } from 'lucide-react'; // Added BrainCircuit, Zap
+import { LayoutDashboard, BrainCircuit, Network, Code, Briefcase, HelpCircle, FileText, Zap, ShieldAlert } from 'lucide-react'; // Added BrainCircuit, Zap, ShieldAlert
 
 export const siteConfig = {
   name: "VSD Network",
@@ -15,9 +15,12 @@ export const siteConfig = {
     { title: "FAQ", href: "/faq", icon: HelpCircle },
   ] satisfies NavItem[],
   footerNav: [
-    { title: "Whitepaper", href: "/developers/documentation" }, // Added Whitepaper link
+    { title: "Whitepaper", href: "/developers/documentation" },
+    { title: "Compliance", href: "/compliance" }, // Added Compliance link
     { title: "Terms of Service", href: "#" }, // Placeholder
     { title: "Privacy Policy", href: "#" }, // Placeholder
     { title: "FAQ", href: "/faq" },
   ] satisfies Omit<NavItem, 'icon' | 'description'>[],
 };
+
+    
