@@ -1,6 +1,6 @@
 
 import type { NavItem } from '@/types/nav';
-import { LayoutDashboard, BrainCircuit, Network, Code, Briefcase, HelpCircle, FileText, Zap, ShieldAlert } from 'lucide-react'; // Added BrainCircuit, Zap, ShieldAlert
+import { LayoutDashboard, BrainCircuit, Network, Code, Briefcase, HelpCircle, FileText, Zap, ShieldAlert, TrendingUp } from 'lucide-react'; // Added BrainCircuit, Zap, ShieldAlert, TrendingUp
 
 export const siteConfig = {
   name: "VSD Network",
@@ -16,7 +16,8 @@ export const siteConfig = {
   ] satisfies NavItem[],
   footerNav: [
     { title: "Whitepaper", href: "/developers/documentation" },
-    { title: "Compliance", href: "/compliance" }, // Added Compliance link
+    { title: "Compliance", href: "/compliance" }, 
+    { title: "Investors", href: "/investors" }, // Added Investors link
     { title: "Terms of Service", href: "#" }, // Placeholder
     { title: "Privacy Policy", href: "#" }, // Placeholder
     { title: "FAQ", href: "/faq" },
