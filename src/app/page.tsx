@@ -6,6 +6,7 @@ import { ArrowRight, Banknote, Bot, Cpu, Network, HandCoins, FileJson } from "lu
 import Image from "next/image";
 import Link from "next/link";
 import { AIImage } from "@/components/ai/AIImage";
+import { LiveTokenData } from "@/components/home/LiveTokenData";
 
 export default function HomePage() {
   return (
@@ -36,6 +37,8 @@ export default function HomePage() {
           </Button>
         </div>
       </section>
+
+      <LiveTokenData />
 
       <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         <Card className="shadow-lg hover:shadow-primary/20 transition-shadow duration-300 bg-card/70 backdrop-blur-sm border border-white/10">
