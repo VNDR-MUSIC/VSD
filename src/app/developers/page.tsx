@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { BrainCircuit, Users, Github, MessageSquare, Package, Code } from "lucide-react"; // Changed BookOpen to BrainCircuit
+import { BrainCircuit, Users, Github, MessageSquare, Package, Code, Server } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import type { Metadata } from 'next';
 
@@ -18,13 +18,13 @@ export default function DevelopersPage() {
         <Code className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
         <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">Developer Portal</h1>
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Your gateway to building with the VSD utility token and AI-powered VSD Network. Access the Whitepaper, SDKs, and join our developer community.
+          Your gateway to building with the VSD utility token and AI-powered VSD Network. Access the Whitepaper, SDKs, API reference, and join our developer community.
         </p>
       </header>
 
       <Separator />
 
-      <section className="grid md:grid-cols-2 gap-6 sm:gap-8 items-stretch">
+      <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch">
         <Card className="shadow-lg flex flex-col bg-card/80 backdrop-blur-sm">
           <CardHeader>
             <BrainCircuit className="h-8 w-8 sm:h-10 sm:w-10 text-primary mb-3" />
@@ -49,12 +49,29 @@ export default function DevelopersPage() {
           </CardHeader>
           <CardContent className="flex-grow">
             <p className="text-muted-foreground mb-4 text-sm sm:text-base">
-              Explore Software Development Kits and tools (APIs planned) to integrate VSD token utility and AI services into your applications.
+              Explore Software Development Kits and tools to integrate VSD token utility and AI services into your applications.
             </p>
           </CardContent>
           <CardFooter>
             <Button asChild variant="outline" className="w-full">
               <Link href="/developers/sdks-tools">Explore SDKs & Tools</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <Card className="shadow-lg flex flex-col bg-card/80 backdrop-blur-sm">
+          <CardHeader>
+            <Server className="h-8 w-8 sm:h-10 sm:w-10 text-primary mb-3" />
+            <CardTitle className="font-headline text-xl sm:text-2xl">API Reference</CardTitle>
+          </CardHeader>
+          <CardContent className="flex-grow">
+            <p className="text-muted-foreground mb-4 text-sm sm:text-base">
+              Access technical documentation for our AI endpoints, like the image generation API, to integrate VSD services directly into your projects.
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button asChild variant="outline" className="w-full">
+              <Link href="/developers/api-reference">View API Docs</Link>
             </Button>
           </CardFooter>
         </Card>
