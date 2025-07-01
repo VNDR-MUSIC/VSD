@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Zap, Users, ShieldCheck, BarChart2, Cpu, PackagePlus, DollarSign, BrainCircuit, ArrowRight, CheckCircle, ListChecks, Milestone, HandCoins, PiggyBank, FileSignature } from "lucide-react";
+import { Zap, Users, ShieldCheck, BarChart2, Cpu, PackagePlus, DollarSign, BrainCircuit, ArrowRight, CheckCircle, ListChecks, Milestone, HandCoins, PiggyBank, FileSignature, TrendingUp } from "lucide-react";
 import type { Metadata } from 'next';
 import Link from "next/link";
 import { AIImage } from "@/components/ai/AIImage";
