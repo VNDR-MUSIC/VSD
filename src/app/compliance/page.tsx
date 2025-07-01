@@ -4,12 +4,12 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { Separator } from "@/components/ui/separator";
-import { ShieldAlert, Landmark, FileText, AlertTriangle } from 'lucide-react';
+import { ShieldAlert, Landmark, FileText, AlertTriangle, UserCheck, MapPin } from 'lucide-react';
 import { AIImage } from '@/components/ai/AIImage';
 
 export const metadata: Metadata = {
   title: 'Compliance & Regulatory Approach | VSD Network',
-  description: 'Understanding VSD Network\'s commitment to compliance, our token\'s utility focus, and approach to the evolving regulatory landscape, including SEC considerations.',
+  description: 'Understanding VSD Network\'s commitment to compliance, our token\'s utility focus, and our approach to the evolving regulatory landscape.',
 };
 
 const SectionCard = ({ icon: Icon, title, children }: { icon: React.ElementType, title: string, children: React.ReactNode }) => (
@@ -40,8 +40,8 @@ export default function CompliancePage() {
       <Separator />
 
       <SectionCard icon={Landmark} title="Our Commitment to a Responsible Framework">
-        <p>At VSD Network, we recognize the importance of building a sustainable and trustworthy ecosystem. We are dedicated to understanding and adhering to applicable laws and regulations in the jurisdictions where we operate or offer our services. Our approach is guided by a commitment to transparency, security, and the long-term viability of the VSD Network.</p>
-        <p>We actively monitor the evolving regulatory environment for digital assets and AI technologies to adapt our practices accordingly. While we strive to operate in a compliant manner, the regulatory landscape is dynamic and subject to change.</p>
+        <p>At VSD Network, we recognize the importance of building a sustainable and trustworthy ecosystem. We are dedicated to understanding and adhering to applicable laws and regulations. Our approach is guided by a commitment to transparency, security, and the long-term viability of the VSD Network and the IMG Banking System.</p>
+        <p>We actively monitor the evolving regulatory environment for digital assets and AI technologies to adapt our practices accordingly.</p>
          <AIImage
             initialSrc="https://placehold.co/700x350.png"
             alt="Global regulatory compliance concept"
@@ -55,28 +55,23 @@ export default function CompliancePage() {
       <Separator />
 
       <SectionCard icon={FileText} title="Understanding VSD Token: A Utility Focus">
-        <p>The VSD Token is designed primarily as a **utility token**. Its core purpose is to grant users access to services and functionalities within the VSD Network ecosystem, such as:</p>
-        <ul className="list-disc pl-5">
-          <li>Accessing AI-powered tools and "IMG Services".</li>
-          <li>Participating in platform governance through the VSD DAO.</li>
-          <li>Staking for rewards and potential platform benefits.</li>
-          <li>Unlocking exclusive features or discounts on the VSD Network and partner platforms.</li>
-        </ul>
-        <p>Consistent with guidance from various regulatory bodies, including interpretations related to instruments like the Howey Test in the United States, the VSD Token is **not intended to be marketed, offered, or sold as a security or investment contract**. Purchasers should acquire VSD Tokens for their utility within the VSD Network, not with the expectation of profit derived solely from the efforts of others.</p>
-        <p>We aim to ensure that the development, marketing, and distribution of VSD Tokens are consistent with this utility-focused approach. For a comprehensive understanding of the VSD Token's functionalities and legal considerations, please refer to our <Link href="/developers/documentation#legal">Whitepaper's Legal Disclaimer</Link>.</p>
+        <p>The VSD Token is designed primarily as a **utility token**. Its core purpose is to grant users access to services and functionalities within the VSD Network ecosystem, such as paying for AI services, participating in governance, and facilitating transactions. Consistent with guidance from various regulatory bodies, the VSD Token is **not intended to be marketed, offered, or sold as a security or investment contract**. Purchasers should acquire VSD Tokens for their utility, not with the expectation of profit derived solely from the efforts of others.</p>
+        <p>For a comprehensive understanding, please refer to our <Link href="/developers/documentation#legal">Whitepaper's Legal Disclaimer</Link>.</p>
       </SectionCard>
 
       <Separator />
 
-      <SectionCard icon={AlertTriangle} title="Navigating the Regulatory Landscape & KYC/AML">
-        <p>The regulatory framework for digital assets, cryptocurrencies, and AI-driven platforms is still developing globally, with varying approaches across different jurisdictions, including the United States under agencies like the SEC and FinCEN.</p>
-        <p>VSD Network intends to operate under the VSD Foundation (or a similar entity), which is planned for registration in a jurisdiction with a clear regulatory framework for digital assets, such as the British Virgin Islands. This choice aims to provide a stable legal foundation for our global operations.</p>
-        <p><strong>Know Your Customer (KYC) and Anti-Money Laundering (AML) Practices:</strong> To promote a secure and compliant presale environment, VSD Network will implement KYC/AML procedures for participants in the VSD token presale. These measures are designed to prevent illicit activities and adhere to recognized standards for token sales.</p>
-        <p>We are committed to taking necessary steps to comply with applicable regulations. However, participants are solely responsible for understanding and complying with the laws and regulations of their respective jurisdictions concerning the purchase, holding, and use of VSD Tokens.</p>
-      </SectionCard>
+      <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
+        <SectionCard icon={UserCheck} title="KYC/AML & User Roles">
+          <p>To promote a secure and compliant environment, VSD Network will implement Know Your Customer (KYC) and Anti-Money Laundering (AML) procedures for participants in the VSD token presale and for high-value transactions. This helps prevent illicit activities. Furthermore, our Compliance Layer allows for user role tagging (e.g., Artist, Investor, Developer) to apply appropriate access levels and permissions within the ecosystem.</p>
+        </SectionCard>
+        <SectionCard icon={MapPin} title="Geo-Fencing & Sanctions">
+          <p>The VSD platform will incorporate geo-fencing capabilities to restrict access to certain features or services in jurisdictions where they may be prohibited. We are committed to complying with international sanctions and will implement blacklist/whitelist logic for wallets to prevent interaction with flagged addresses or sanctioned regions, safeguarding the integrity of the ecosystem.</p>
+        </SectionCard>
+      </div>
+
+      <Separator />
       
-      <Separator />
-
       <Card className="bg-destructive/10 border-destructive text-destructive-foreground p-6 shadow-lg">
         <CardHeader className="!p-0">
           <div className="flex items-center space-x-3">
@@ -85,14 +80,9 @@ export default function CompliancePage() {
           </div>
         </CardHeader>
         <CardContent className="!pt-4 !px-0 !pb-0 prose prose-sm sm:prose-base max-w-none">
-          <p>The information provided on this page and throughout the VSD Network website does not constitute legal, financial, or investment advice. It is for informational purposes only.</p>
-          <p>The regulatory status of digital tokens can be uncertain and may vary by jurisdiction. You should conduct your own thorough research and consult with qualified legal, financial, and tax advisors in your jurisdiction before making any decision to acquire or use VSD Tokens.</p>
-          <p>VSD Network makes no warranties or representations regarding the regulatory treatment of VSD Tokens. By participating in the VSD ecosystem, you acknowledge and accept the inherent risks, including regulatory risks. Please refer to the full <Link href="/developers/documentation#legal" className="text-destructive hover:underline">Legal Disclaimer in our Whitepaper</Link> for more detailed information on risks and limitations.</p>
+          <p>The information provided on this page does not constitute legal, financial, or investment advice. The regulatory status of digital tokens can be uncertain and may vary by jurisdiction. You should conduct your own thorough research and consult with qualified legal, financial, and tax advisors before making any decision to acquire or use VSD Tokens.</p>
         </CardContent>
       </Card>
-
     </div>
   );
 }
-
-    

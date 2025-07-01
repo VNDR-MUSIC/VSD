@@ -5,12 +5,18 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
 import { siteConfig } from '@/config/site';
-import { Montserrat as FontSans } from 'next/font/google'; // Changed from Orbitron
+import { Orbitron, Inter } from 'next/font/google';
 import { cn } from '@/lib/utils';
 
-const fontSans = FontSans({
+const fontHeadline = Orbitron({
   subsets: ['latin'],
-  variable: '--font-sans', // Using a more generic variable name
+  variable: '--font-headline',
+  weight: ['400', '500', '600', '700', '800', '900'],
+});
+
+const fontBody = Inter({
+  subsets: ['latin'],
+  variable: '--font-body',
 });
 
 export const metadata: Metadata = {
@@ -30,22 +36,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("dark", fontSans.variable)}>
+    <html lang="en" className={cn("dark", fontHeadline.variable, fontBody.variable)}>
       <head>
       </head>
-      <body className="font-sans antialiased min-h-screen flex flex-col relative">
-        <div className="fixed inset-0 w-full h-full -z-10">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover opacity-30"
-            src="https://videos.pexels.com/video-files/4431790/4431790-uhd_2560_1440_30fps.mp4"
-            type="video/mp4"
-          />
-          <div className="absolute inset-0 bg-black/50" />
-        </div>
+      <body className="font-body antialiased min-h-screen flex flex-col relative bg-background">
+        <div className="fixed inset-0 w-full h-full -z-10 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))] opacity-70" />
         <div className="relative z-0 flex flex-col min-h-screen">
           <Header />
           <main className="flex-grow container mx-auto px-4 py-8">

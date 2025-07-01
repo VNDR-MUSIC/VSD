@@ -2,12 +2,11 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-// Input, Label, Tabs, Gift, Wallet, TrendingUp will be imported by PresaleInterface.tsx
-import { Zap, Users, ShieldCheck, BarChart2, Cpu, PackagePlus, DollarSign, BrainCircuit, ArrowRight, CheckCircle, ListChecks, Milestone } from "lucide-react";
+import { Zap, Users, ShieldCheck, BarChart2, Cpu, PackagePlus, DollarSign, BrainCircuit, ArrowRight, CheckCircle, ListChecks, Milestone, HandCoins, PiggyBank, FileSignature } from "lucide-react";
 import type { Metadata } from 'next';
 import Link from "next/link";
 import { AIImage } from "@/components/ai/AIImage";
-import { PresaleInterface } from "@/components/token/PresaleInterface"; // Import the new client component
+import { PresaleInterface } from "@/components/token/PresaleInterface";
 
 export const metadata: Metadata = {
   title: 'VSD Utility Token | Presale & Tokenomics',
@@ -24,9 +23,6 @@ const FeatureItem = ({ icon: Icon, title, children }: { icon: React.ElementType,
   </div>
 );
 
-// TokenomicsDetail component is now moved to PresaleInterface.tsx as it's primarily used there.
-// If needed elsewhere, it should be moved to a shared component file.
-
 export default function TokenPage() {
   return (
     <div className="space-y-12 sm:space-y-16 py-8">
@@ -34,7 +30,7 @@ export default function TokenPage() {
         <BrainCircuit className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
         <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Utility Token</h1>
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-          Powering a decentralized AI ecosystem. Discover VSD's utility, tokenomics, and how to participate in our vision.
+          The financial backbone of a decentralized AI ecosystem. Discover VSD's utility, tokenomics, and how to participate in our vision.
         </p>
       </header>
 
@@ -45,10 +41,10 @@ export default function TokenPage() {
         <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
           <CardContent className="p-6 sm:p-8 text-base sm:text-lg">
             <p className="mb-4">
-              VSD is a utility token at the heart of the VSD Network, a decentralized platform designed to provide accessible and powerful AI-driven tools and services. It's more than just a digital asset; VSD is your key to unlocking a new generation of AI capabilities.
+              VSD is a utility token at the heart of the VSD Network, a decentralized platform designed to provide accessible and powerful AI-driven tools and services. It's more than just a digital asset; VSD is your key to unlocking a new generation of AI capabilities and financial tools within the IMG Ecosystem.
             </p>
             <p className="mb-4">
-              Our mission is to democratize access to AI by creating a token-powered ecosystem where users can utilize cutting-edge AI for content creation (IMG services), data analysis, and more, while also participating in the platform's growth and governance.
+              Our mission is to democratize access to AI and decentralized finance by creating a token-powered ecosystem where users can utilize cutting-edge AI for content creation (IMG services), data analysis, and more, while also participating in the platform's growth and governance.
             </p>
              <AIImage
                 initialSrc="https://placehold.co/700x350.png"
@@ -67,30 +63,29 @@ export default function TokenPage() {
       <section id="key-features" className="space-y-6 sm:space-y-8">
         <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center">Core Utility & Features</h2>
         <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
-          <FeatureItem icon={Zap} title="Access AI Services">
-            Use VSD tokens to access the VSD Network's suite of AI tools, including advanced image generation (IMG services), content creation, data analytics, and more.
+          <FeatureItem icon={HandCoins} title="Royalty Payouts">
+            Receive automated royalty payments directly to your VSD wallet for your creative work within the IMG ecosystem.
           </FeatureItem>
-          <FeatureItem icon={PackagePlus} title="Staking Rewards">
-            Stake your VSD tokens to earn passive rewards (APY) and contribute to the network's security and stability. Tiered rewards for larger/longer stakes.
+           <FeatureItem icon={TrendingUp} title="Tokenized Investments">
+            Use VSD to invest in tokenized assets, music rights, or participate in fundraising for indie artists and projects.
           </FeatureItem>
-          <FeatureItem icon={Users} title="Governance & Voting">
-            VSD token holders can participate in the VSD DAO, voting on key platform proposals, feature development, and ecosystem fund allocations.
+          <FeatureItem icon={FileSignature} title="NFT Licensing">
+            Pay for and receive licenses for NFTs and other digital media using VSD, with terms encoded in smart contracts.
           </FeatureItem>
-          <FeatureItem icon={DollarSign} title="Platform Fee Mechanism">
-            A portion of fees generated from AI services on the platform will be used for token burns or distributed to stakers, creating a deflationary aspect or value accrual.
+          <FeatureItem icon={Cpu} title="Pay-per-use AI Features">
+            Access a powerful suite of IMG services and advanced AI tools on a pay-as-you-go basis with VSD tokens.
           </FeatureItem>
-          <FeatureItem icon={Cpu} title="Ecosystem Integrations">
-            VSD will be integrated with partner platforms (e.g., AiEar, PromoHub) to unlock exclusive features, discounts, or token-gated content.
+          <FeatureItem icon={PackagePlus} title="Membership Rewards & Staking">
+            Stake VSD to earn yield and unlock tiered membership rewards, including exclusive access and discounted services.
           </FeatureItem>
-           <FeatureItem icon={ShieldCheck} title="Transparent & Secure">
-            Built on audited smart contracts, ensuring transparency in token operations and platform governance on a public blockchain.
+          <FeatureItem icon={Users} title="Crowdfunding & Governance">
+            Fund new creative projects from indie artists and use your VSD stake to vote on key ecosystem and governance proposals.
           </FeatureItem>
         </div>
       </section>
 
       <Separator />
 
-      {/* Enhanced Presale Section - Now uses the imported Client Component */}
       <section id="presale" className="space-y-6 sm:space-y-8">
         <PresaleInterface />
       </section>
@@ -106,10 +101,6 @@ export default function TokenPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 text-center md:text-left">
-              {/* Re-define TokenomicsDetail here or move it to a truly shared location if used elsewhere.
-                  For now, assuming it's simple enough to be included if needed or PresaleInterface handles all its display.
-                  The current PresaleInterface includes TokenomicsDetail, so it's not needed here directly.
-              */}
               <div>
                 <h4 className="text-md sm:text-lg font-semibold text-primary">Total Supply</h4>
                 <p className="text-lg sm:text-xl font-bold">1,000,000,000 VSD</p>
@@ -120,9 +111,9 @@ export default function TokenPage() {
                 <p className="text-lg sm:text-xl font-bold">VSD</p>
               </div>
               <div>
-                <h4 className="text-md sm:text-lg font-semibold text-primary">Network</h4>
-                <p className="text-lg sm:text-xl font-bold">[Specify Blockchain, e.g., Ethereum (ERC20), Polygon]</p>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">Initially deployed on a scalable and secure blockchain.</p>
+                <h4 className="text-md sm:text-lg font-semibold text-primary">Token Standard</h4>
+                <p className="text-lg sm:text-xl font-bold">ERC20</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">Initially deployed on a scalable and secure EVM blockchain.</p>
               </div>
             </div>
             <Separator />
@@ -161,9 +152,9 @@ export default function TokenPage() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             { title: "Phase 1: Foundation & Presale", icon: Milestone, items: ["Whitepaper Release", "Private & Public Presale Rounds", "Core Smart Contract Audits", "Community Building"] },
-            { title: "Phase 2: Platform Launch", icon: Cpu, items: ["VSD AI Suite Beta (IMG Services)", "Staking dApp Launch", "Initial Governance Portal"] },
-            { title: "Phase 3: Ecosystem Expansion", icon: Users, items: ["Partner Integrations (AiEar, PromoHub)", "Developer SDKs Release", "Expanded AI Toolset"] },
-            { title: "Phase 4: Decentralization & Growth", icon: ListChecks, items: ["Full DAO Governance Implemented", "Further CEX/DEX Listings", "Ecosystem Grant Program"] },
+            { title: "Phase 2: Platform Launch", icon: Cpu, items: ["VSD Banking Suite (MVP)", "Staking dApp Launch", "Initial Governance Portal"] },
+            { title: "Phase 3: Ecosystem Expansion", icon: Users, items: ["Partner Integrations (AiEar, PromoHub)", "Developer SDKs Release", "Smart Contract Engine (Beta)"] },
+            { title: "Phase 4: Decentralization & Growth", icon: ListChecks, items: ["Full DAO Governance Implemented", "Token-to-Fiat Oracle Integration", "Ecosystem Grant Program"] },
           ].map(phase => (
             <Card key={phase.title} className="shadow-md bg-card/70 backdrop-blur-sm h-full">
               <CardHeader className="pb-3">

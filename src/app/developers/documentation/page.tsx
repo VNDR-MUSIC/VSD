@@ -4,13 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from '@/components/ui/button';
 import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { BrainCircuit, Library, Workflow, Cpu, GitBranch, HelpCircle, Layers, FileJson, Zap, Users, PackagePlus, DollarSign, Milestone, ListChecks, Aperture, ShieldCheck } from "lucide-react";
+import { BrainCircuit, Library, Workflow, Cpu, GitBranch, HelpCircle, Layers, FileJson, Zap, Users, PackagePlus, DollarSign, Milestone, ListChecks, Aperture, ShieldCheck, HandCoins, FileSignature, TrendingUp } from "lucide-react";
 import Link from 'next/link';
 import { AIImage } from '@/components/ai/AIImage';
 
 export const metadata: Metadata = {
   title: 'VSD Token Whitepaper & Documentation',
-  description: 'Comprehensive VSD Utility Token Whitepaper covering vision, tokenomics, utility, presale, roadmap, and technical integration guides.',
+  description: 'Comprehensive VSD Utility Token Whitepaper covering the IMG Banking System, tokenomics, utility, presale, roadmap, and technical integration guides.',
 };
 
 const SectionCard = ({ icon: Icon, title, description, children, id }: { icon: React.ElementType, title: string, description?: string, children: React.ReactNode, id?: string }) => (
@@ -28,6 +28,14 @@ const SectionCard = ({ icon: Icon, title, description, children, id }: { icon: R
   </Card>
 );
 
+const CodeBlock = ({ children }: { children: React.ReactNode }) => (
+    <pre className="bg-muted/50 p-4 rounded-md overflow-x-auto my-4 text-xs sm:text-sm">
+        <code>
+            {children}
+        </code>
+    </pre>
+);
+
 export default function WhitepaperDocumentationPage() {
   return (
     <div className="space-y-12 sm:space-y-16 py-8">
@@ -35,94 +43,44 @@ export default function WhitepaperDocumentationPage() {
         <BrainCircuit className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
         <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Utility Token Whitepaper</h1>
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-          An in-depth overview of the VSD Token, its utility within the AI-powered VSD Network, tokenomics, presale plan, roadmap, and technical details for developers.
+          An in-depth overview of the VSD Token as the financial backbone for the IMG Banking System, its utility, tokenomics, presale, and roadmap.
         </p>
-        <p className="text-xs text-muted-foreground mt-2">Version 1.0 - [Current Date Placeholder, e.g., July 2024]</p>
+        <p className="text-xs text-muted-foreground mt-2">Version 2.0 - [Current Date Placeholder]</p>
       </header>
 
       <Separator />
 
-      <SectionCard icon={Library} title="1. Introduction: The VSD Vision" description="Democratizing AI through a token-powered ecosystem." id="introduction">
-        <p>The digital landscape is rapidly evolving, with Artificial Intelligence (AI) at the forefront of innovation. However, access to powerful AI tools and the ability to participate in their development often remains centralized and complex. The VSD Network aims to change this paradigm by creating a decentralized ecosystem centered around the VSD utility token.</p>
-        <p><strong>Our Mission:</strong> To empower individuals and businesses by providing accessible, high-quality AI services (such as advanced content and image generation via "IMG Services"), fostering a collaborative community, and enabling decentralized governance. VSD is the key to unlocking this ecosystem.</p>
-        <p>This whitepaper outlines the VSD Token's utility, the underlying tokenomics, our strategic roadmap, the planned presale, and how developers can build and integrate with the VSD Network. We invite you to join us in building the future of decentralized AI.</p>
+      <SectionCard icon={Library} title="1. Introduction: The VSD Vision" description="Powering a decentralized economy for AI and creative assets." id="introduction">
+        <p>The digital landscape is rapidly converging around Artificial Intelligence (AI) and decentralized technologies. The VSD Network stands at this intersection, providing a robust financial infrastructure—the IMG Banking System—powered by the VSD utility token. Our mission is to create a secure, transparent, and efficient ecosystem for creators, developers, and investors to transact, collaborate, and innovate.</p>
+        <p>This whitepaper details the comprehensive utility of the VSD token, the tokenomics that sustain the ecosystem, our strategic roadmap, the planned presale, and the technical architecture that makes it all possible. We invite you to join us in building the future of the decentralized creative economy.</p>
         <AIImage
           initialSrc="https://placehold.co/800x400.png"
-          alt="VSD Network Vision for AI"
+          alt="VSD Network Vision for AI Banking"
           width={800}
           height={400}
           className="rounded-md my-6 shadow-md mx-auto max-w-full h-auto" 
-          hint="AI future vision"
+          hint="AI finance future"
         />
       </SectionCard>
 
       <Separator />
 
-      <SectionCard icon={Zap} title="2. VSD Token Utility" description="The core functions and benefits of holding and using VSD tokens." id="utility">
-        <p>The VSD token is an integral component of the VSD Network, designed with multiple utilities to drive platform adoption and user engagement:</p>
-        <Accordion type="multiple" className="w-full mt-4">
-          <AccordionItem value="util-ai">
-            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Access AI Services (IMG Services & More)</AccordionTrigger>
-            <AccordionContent>
-              <p>The primary utility of VSD is to pay for and access a growing suite of AI-powered tools and services on the VSD Network. This includes, but is not limited to:</p>
-              <ul className="list-disc pl-5">
-                <li><strong>IMG Services:</strong> Advanced AI for image generation, editing, and enhancement.</li>
-                <li>AI-driven content creation (articles, scripts, marketing copy).</li>
-                <li>Data analysis and insight generation tools.</li>
-                <li>Future AI models and specialized services as the platform evolves.</li>
-              </ul>
-              <p>VSD tokens will be used in a pay-as-you-go model or for subscription tiers, offering flexibility for various user needs.</p>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="util-staking">
-            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Staking for Rewards</AccordionTrigger>
-            <AccordionContent>
-              <p>Users can stake their VSD tokens to earn passive rewards (APY). Staking contributes to the ecosystem's stability and user commitment. Key aspects include:</p>
-              <ul className="list-disc pl-5">
-                <li><strong>Tiered APY:</strong> Rewards may vary based on the amount staked and the duration of the lock-up period.</li>
-                <li><strong>Network Participation:</strong> Staked tokens might also grant priority access or discounted rates for AI services.</li>
-                <li><strong>Reward Distribution:</strong> Rewards will be distributed periodically from the designated Staking Rewards pool within the token allocation.</li>
-              </ul>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="util-governance">
-            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Governance & DAO Participation</AccordionTrigger>
-            <AccordionContent>
-              <p>VSD token holders will have the power to shape the future of the VSD Network through a Decentralized Autonomous Organization (DAO). Voting rights include:</p>
-              <ul className="list-disc pl-5">
-                <li>Proposing and voting on platform upgrades and new features.</li>
-                <li>Influencing the allocation of the Ecosystem Development Fund.</li>
-                <li>Adjusting certain platform parameters (e.g., fee structures for AI services, staking reward rates).</li>
-              </ul>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="util-discounts">
-            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Discounts & Premium Features</AccordionTrigger>
-            <AccordionContent>
-              <p>Holding or using VSD tokens can unlock discounts on AI service fees, provide access to premium features, or grant exclusive entry to token-gated content and communities on the VSD Network and partner platforms (e.g., AiEar, PromoHub).</p>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="util-burn">
-            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Token Burn Mechanism</AccordionTrigger>
-            <AccordionContent>
-              <p>A portion of the VSD tokens collected from platform service fees (e.g., IMG services) will be programmatically burned. This deflationary mechanism is designed to reduce the total circulating supply over time, potentially increasing the token's scarcity and value for holders.</p>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+      <SectionCard icon={Zap} title="2. VSD Token Utility" description="The multifaceted role of VSD within the IMG Banking System." id="utility">
+        <p>The VSD token is the lifeblood of the VSD Network, designed with multiple utilities to drive a vibrant and self-sustaining economy:</p>
+        <ul className="list-disc pl-5 mt-4 space-y-2">
+            <li><strong><HandCoins className="inline-block h-5 w-5 mr-2 text-primary" />Royalty Payouts:</strong> Automated, transparent, and instant royalty distributions for artists and creators, executed via smart contracts.</li>
+            <li><strong><TrendingUp className="inline-block h-5 w-5 mr-2 text-primary" />Tokenized Investments:</strong> The primary vehicle for investing in ecosystem projects, purchasing fractional ownership of creative assets, and participating in artist fundraising.</li>
+            <li><strong><FileSignature className="inline-block h-5 w-5 mr-2 text-primary" />NFT Licensing & Payments:</strong> The standard currency for licensing media, purchasing NFTs, and settling transactions for digital goods.</li>
+            <li><strong><Cpu className="inline-block h-5 w-5 mr-2 text-primary" />Pay-per-Use AI Services:</strong> Access to the VSD Network's proprietary IMG services, AI-powered tools, and APIs, with usage fees paid in VSD.</li>
+            <li><strong><PackagePlus className="inline-block h-5 w-5 mr-2 text-primary" />Membership & Staking Rewards:</strong> Staking VSD tokens to secure the network, earn yield, and unlock tiered membership benefits like reduced fees and exclusive access.</li>
+            <li><strong><Users className="inline-block h-5 w-5 mr-2 text-primary" />Crowdfunding & Governance:</strong> Powering community-driven funding for new projects and enabling VSD holders to vote on key decisions that shape the ecosystem's future.</li>
+        </ul>
       </SectionCard>
 
       <Separator />
 
       <SectionCard icon={FileJson} title="3. Tokenomics & Presale" description="Detailed breakdown of VSD token distribution, supply, and presale plan." id="tokenomics">
         <p>The VSD tokenomics are structured to ensure a balanced distribution, incentivize long-term holding, fund ongoing development, and foster a vibrant community. For full details including presale stages, pricing, and accepted currencies, please visit the <Link href="/token#tokenomics">VSD Token Page</Link>.</p>
-        
-        <h4 className="text-xl sm:text-2xl mt-6 mb-2">Key Tokenomics Figures:</h4>
-        <ul className="list-disc pl-5 mb-4">
-          <li><strong>Total Supply:</strong> 1,000,000,000 VSD (One Billion)</li>
-          <li><strong>Token Symbol:</strong> VSD</li>
-          <li><strong>Network:</strong> [Specify Blockchain, e.g., Ethereum (ERC20), Polygon]</li>
-        </ul>
-
         <h4 className="text-xl sm:text-2xl mt-6 mb-2">Token Allocation:</h4>
         <AIImage
             initialSrc="https://placehold.co/700x450.png"
@@ -133,180 +91,128 @@ export default function WhitepaperDocumentationPage() {
             hint="token allocation chart"
         />
         <ul className="list-disc pl-5 space-y-1">
-            <li><strong>Public Presale:</strong> 20% (200,000,000 VSD) - For early community adoption and initial funding.</li>
-            <li><strong>Private Sale:</strong> 10% (100,000,000 VSD) - For strategic partners and early backers (subject to vesting).</li>
-            <li><strong>Staking Rewards & Ecosystem Incentives:</strong> 30% (300,000,000 VSD) - Released over time to reward stakers and incentivize platform participation.</li>
-            <li><strong>Team & Advisors:</strong> 15% (150,000,000 VSD) - Subject to a vesting schedule (e.g., 3-year vesting with a 6-month cliff) to align long-term interests.</li>
-            <li><strong>Ecosystem Development Fund:</strong> 15% (150,000,000 VSD) - Managed by the DAO for future platform enhancements, R&D, developer grants, and strategic partnerships.</li>
-            <li><strong>Marketing & Liquidity:</strong> 10% (100,000,000 VSD) - For creating awareness, community engagement, and providing initial liquidity on exchanges.</li>
+            <li><strong>Public Presale:</strong> 20% (200,000,000 VSD)</li>
+            <li><strong>Private Sale:</strong> 10% (100,000,000 VSD)</li>
+            <li><strong>Staking Rewards & Ecosystem Incentives:</strong> 30% (300,000,000 VSD)</li>
+            <li><strong>Team & Advisors:</strong> 15% (150,000,000 VSD) - Vested</li>
+            <li><strong>Ecosystem Development Fund:</strong> 15% (150,000,000 VSD)</li>
+            <li><strong>Marketing & Liquidity:</strong> 10% (100,000,000 VSD)</li>
         </ul>
-
         <h4 className="text-xl sm:text-2xl mt-8 mb-2">Presale Plan Overview:</h4>
-        <p>The VSD token presale will be conducted in phases, starting with a private round for strategic investors, followed by public sale stages accessible to the wider community. The goal is to raise approximately $500,000 USD (ETH/USDT equivalent) in the initial public presale phase.</p>
-        <p>Participants in the presale will acquire VSD tokens at a preferential rate before they are listed on public exchanges. KYC/AML procedures will be implemented to ensure compliance. Funds raised will be allocated towards:</p>
-        <ul className="list-disc pl-5">
-          <li>Platform Development & AI Model Integration (IMG Services, etc.)</li>
-          <li>Marketing and Community Growth</li>
-          <li>Legal & Operational Expenses</li>
-          <li>Future Exchange Listing Fees & Liquidity Provision</li>
-        </ul>
-        <p>Detailed information on presale phases, pricing, how to participate, and vesting schedules for early participants will be available on the <Link href="/token#presale">VSD Token Page</Link> and official announcement channels.</p>
-        <div className="mt-6 text-center">
-             <Button asChild variant="default" size="lg">
-                <Link href="/token#presale">View Presale Details</Link>
-            </Button>
-        </div>
+        <p>The VSD token presale will be conducted to raise capital for development, marketing, and legal expenses. Funds will be raised via ETH/USDT. Participants will undergo KYC/AML verification. For more details on how to participate, visit the <Link href="/token#presale">VSD Token Page</Link>.</p>
       </SectionCard>
 
       <Separator />
       
-      <SectionCard icon={Workflow} title="4. VSD Network Architecture" description="High-level overview of the platform's components." id="architecture">
-        <p>The VSD Network is designed as a modular and scalable platform, with this project serving as the central hub for AI services and token utility. The backend is aware of this central role, ensuring consistent state and service delivery across all connected applications.</p>
+      <SectionCard icon={Workflow} title="4. VSD Network Architecture" description="The technical foundation of the IMG Banking System." id="architecture">
+        <p>The VSD Network is a multi-layered system designed for security, scalability, and seamless integration between on-chain and off-chain data. This project's backend is the central ledger and engine for the entire ecosystem.</p>
         <AIImage
           initialSrc="https://placehold.co/800x450.png"
-          alt="VSD Network AI Platform Architecture"
+          alt="VSD Network IMG Banking Architecture"
           width={800}
           height={450}
           className="rounded-md my-6 shadow-md mx-auto max-w-full h-auto" 
-          hint="AI platform architecture"
+          hint="blockchain banking architecture"
         />
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="arch-core">
-            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">VSD AI Core Engine (The IMG Bank)</AccordionTrigger>
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">VSDNetworkCore (Firestore Ledger)</AccordionTrigger>
             <AccordionContent>
-              <p>This is the heart of the platform and the official "IMG Bank". It integrates various AI models (including those for IMG Services, text generation, etc.), managing a centralized job queue and result delivery. It is exposed via a secure API, ensuring that all ecosystem partners pull from this single, authoritative source for AI capabilities.</p>
+              <p>The heart of the system is a secure off-chain ledger built on Firestore. It manages user wallets (linked to Firebase Auth UIDs), tracks real-time VSD balances, and records every transaction. This provides a fast and cost-effective experience for users, with periodic on-chain settlements.</p>
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="arch-token">
-            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">VSD Token Smart Contracts</AccordionTrigger>
+          <AccordionItem value="arch-engine">
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">SmartContractEngine (Cloud Functions)</AccordionTrigger>
             <AccordionContent>
-              <p>A suite of smart contracts deployed on a public blockchain serves as the definitive ledger for the VSD utility token. These contracts manage:</p>
-              <ul className="list-disc pl-5">
-                <li>The VSD utility token (ERC20 or equivalent standard) and its total supply.</li>
-                <li>Centralized staking mechanisms and reward distribution logic.</li>
-                <li>Authoritative fee collection from AI services and the token burn/redistribution mechanism.</li>
-                <li>The VSD DAO governance contracts, ensuring all voting is verified against the single source of truth.</li>
-              </ul>
-              <p>All SDKs and external applications interact with these canonical contracts.</p>
+              <p>This module, powered by Cloud Functions, dynamically generates and deploys Solidity smart contracts. When a user requests a contract (e.g., for a royalty split) via the frontend, a Firestore document is created, triggering a function like the one below. This function compiles a predefined template, deploys it to the blockchain, and saves the contract address and ABI back to Firestore.</p>
+              <h5 className="font-headline text-lg text-primary mt-4">Example Cloud Function Trigger:</h5>
+              <CodeBlock>
+{`// Trigger this function when a new contract request is added
+exports.deploySmartContract = functions.firestore
+  .document('contracts/{contractId}')
+  .onCreate(async (snap, context) => {
+    const data = snap.data();
+    const { contractType, terms, userAddress } = data;
+
+    // Logic to compile a Solidity template based on contractType and terms
+    const compiled = compileSolidityTemplate(contractType, terms);
+    
+    // Logic to deploy the contract to the blockchain
+    const deployed = await deployToBlockchain(compiled, userAddress);
+
+    // Update the Firestore document with the deployment result
+    await snap.ref.update({
+      contractAddress: deployed.address,
+      abi: deployed.abi,
+      status: 'deployed',
+      timestamp: Date.now()
+    });
+  });`}
+              </CodeBlock>
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="arch-api">
-            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">API Layer & SDKs</AccordionTrigger>
+          <AccordionItem value="arch-sync">
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">On-Chain Sync (Webhooks)</AccordionTrigger>
             <AccordionContent>
-              <p>A robust API layer provides a single, controlled gateway for all third-party developers to interact with the VSD AI Core Engine and query blockchain data. Official SDKs are provided to ensure standardized, secure, and efficient integration, reinforcing this project as the central hub for all VSD-related development.</p>
+              <p>To keep the off-chain Firestore ledger consistent with the blockchain, we use webhook listeners (e.g., via a Firebase Extension). When an on-chain event occurs (like a token transfer to a user's deposit address), the webhook calls a Cloud Function that updates the corresponding user's balance in Firestore, ensuring the dashboard reflects the true state.</p>
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="arch-dapp">
-            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">VSD dApp Suite & Governance Portal</AccordionTrigger>
+          <AccordionItem value="arch-compliance">
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Compliance Layer</AccordionTrigger>
             <AccordionContent>
-              <p>The user-facing decentralized applications (dApps) on this site are the flagship interfaces for the VSD ecosystem. They provide canonical examples of how to interact with the central services for:</p>
-              <ul className="list-disc pl-5">
-                <li>Accessing the "IMG Bank" and other AI tools.</li>
-                <li>Managing VSD tokens, staking, and claiming rewards from the official contracts.</li>
-                <li>Participating in DAO governance.</li>
-              </ul>
+              <p>Built into the core, this layer manages user identity, roles (Artist, Investor, etc.), and enforces rules based on geography or wallet status, ensuring the ecosystem remains compliant with evolving regulations.</p>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-        <p className="mt-4">Security is paramount. All smart contracts will undergo rigorous independent audits before deployment, and bug bounty programs will be established.</p>
       </SectionCard>
 
       <Separator />
 
-      <SectionCard icon={Milestone} title="5. Project Roadmap" description="Our phased approach to building the VSD Network." id="roadmap">
-        <p>The VSD Network will be developed and rolled out in distinct phases, ensuring a methodical approach to building a robust and feature-rich AI ecosystem. For the latest updates, please refer to our official announcements.</p>
+      <SectionCard icon={Milestone} title="5. Project Roadmap" description="Our phased approach to building the IMG Banking System." id="roadmap">
+        <p>The VSD Network will be developed and rolled out in distinct phases. For the latest updates, please refer to our official announcements.</p>
         <div className="grid md:grid-cols-2 gap-6 mt-6">
             <div className="p-4 border rounded-lg bg-card/50">
-                <h4 className="font-headline text-primary text-lg mb-2">Phase 1: Foundation & Presale (Q3-Q4 [Year])</h4>
+                <h4 className="font-headline text-primary text-lg mb-2">Phase 1: Foundation & Presale</h4>
                 <ul className="list-disc pl-5 space-y-1 text-sm">
-                    <li>Whitepaper v1.0 Release & Community Building Initiatives.</li>
-                    <li>Completion of Private Sale round with strategic partners.</li>
-                    <li>Launch of Public Presale (multi-stage).</li>
-                    <li>Development of core VSD token smart contracts (utility, staking).</li>
-                    <li>Security audits of core contracts.</li>
+                    <li>Whitepaper v2.0 Release & Community Building.</li>
+                    <li>Private & Public VSD Token Presale.</li>
+                    <li>Core Smart Contract (ERC20) & Staking Contract Audits.</li>
                 </ul>
             </div>
             <div className="p-4 border rounded-lg bg-card/50">
-                <h4 className="font-headline text-primary text-lg mb-2">Phase 2: Platform MVP Launch (Q1-Q2 [Year+1])</h4>
+                <h4 className="font-headline text-primary text-lg mb-2">Phase 2: Banking MVP Launch</h4>
                 <ul className="list-disc pl-5 space-y-1 text-sm">
-                    <li>Launch of VSD AI Suite (MVP) featuring initial IMG Services.</li>
-                    <li>Deployment of Staking dApp for VSD token holders.</li>
-                    <li>Initial version of the VSD Governance Portal (basic proposal/voting).</li>
-                    <li>Token Generation Event (TGE) and distribution of presale tokens.</li>
-                    <li>Initial listings on Decentralized Exchanges (DEXs).</li>
+                    <li>Launch of VSD Dashboard with Wallet & Transaction History (Firestore-based).</li>
+                    <li>Deployment of Staking dApp.</li>
+                    <li>TGE & distribution of presale tokens.</li>
+                    <li>Initial DEX listings.</li>
                 </ul>
             </div>
             <div className="p-4 border rounded-lg bg-card/50">
-                <h4 className="font-headline text-primary text-lg mb-2">Phase 3: Ecosystem Expansion (Q3-Q4 [Year+1])</h4>
+                <h4 className="font-headline text-primary text-lg mb-2">Phase 3: Smart Contract Engine</h4>
                 <ul className="list-disc pl-5 space-y-1 text-sm">
+                    <li>Beta release of the Smart Contract Engine for royalty splits.</li>
                     <li>Integration with partner platforms (AiEar, PromoHub).</li>
-                    <li>Release of Developer SDKs (JavaScript, Python planned).</li>
-                    <li>Expansion of AI toolset within the VSD AI Suite.</li>
-                    <li>Enhanced DAO functionalities and treasury management.</li>
-                    <li>Exploration of CEX listings.</li>
+                    <li>Release of Developer SDKs.</li>
                 </ul>
             </div>
             <div className="p-4 border rounded-lg bg-card/50">
-                <h4 className="font-headline text-primary text-lg mb-2">Phase 4: Decentralization & Growth (Beyond [Year+1])</h4>
+                <h4 className="font-headline text-primary text-lg mb-2">Phase 4: Full Decentralization</h4>
                 <ul className="list-disc pl-5 space-y-1 text-sm">
-                    <li>Progressive decentralization towards full DAO control over the platform.</li>
-                    <li>Establishment of an Ecosystem Grant Program for third-party developers.</li>
-                    <li>Research into new AI models and cross-chain interoperability.</li>
-                    <li>Continued global marketing and community expansion.</li>
+                    <li>Progressive decentralization towards full DAO control.</li>
+                    <li>Integration of token-to-fiat off-ramp oracles.</li>
+                    <li>Launch of Ecosystem Grant Program for third-party developers.</li>
                 </ul>
             </div>
         </div>
-        <p className="mt-4 text-xs text-muted-foreground text-center">Note: Roadmap timelines are indicative and subject to change based on development progress and market conditions.</p>
-      </SectionCard>
-
-      <Separator />
-      
-      <SectionCard icon={Layers} title="6. Developer Integration & SDKs" description="Building with VSD: APIs and tools for developers." id="sdks">
-        <p>The VSD Network is committed to fostering a strong developer community. We will provide APIs and SDKs to enable seamless integration of VSD token utility and AI services into third-party applications, dApps, and platforms.</p>
-        <h4 className="text-xl sm:text-2xl mt-6 mb-2">Planned SDKs:</h4>
-        <ul className="list-disc pl-5 space-y-2">
-            <li><strong>JavaScript/TypeScript SDK:</strong> For frontend (dApps, web integrations) and Node.js backend development. Facilitates interaction with VSD smart contracts (staking, governance) and the VSD AI API.</li>
-            <li><strong>Python SDK (Future):</strong> To cater to backend developers, data scientists, and scripters looking to leverage VSD AI services or interact with the token.</li>
-        </ul>
-        <h4 className="text-xl sm:text-2xl mt-6 mb-2">API Access:</h4>
-        <p>A secure REST API will provide access to:</p>
-        <ul className="list-disc pl-5">
-            <li>VSD AI Core Engine: Submit jobs for IMG services, text generation, etc. (requires VSD for payment).</li>
-            <li>Token Information: Query VSD token data, staking statistics, and governance proposals.</li>
-        </ul>
-        <p>Detailed API documentation, SDK guides, and code examples will be available on the <Link href="/developers">Developer Portal</Link> as they are released. The `smart-contract-generator` on this site is an early example of an AI tool that will be part of the VSD AI Suite.</p>
-        <Button variant="outline" asChild className="mt-6">
-          <Link href="/developers/sdks-tools">
-            <PackagePlus className="mr-2 h-4 w-4" /> Explore SDKs & Tools (Coming Soon)
-          </Link>
-        </Button>
       </SectionCard>
       
       <Separator />
 
-      <SectionCard icon={Users} title="7. Team & Advisors (Placeholder)" description="The minds behind VSD Network." id="team">
-          <p>The VSD Network is driven by a dedicated team of experienced blockchain developers, AI researchers, product managers, and marketing professionals. We are passionate about decentralization and the transformative potential of AI.</p>
-          <p className="italic text-muted-foreground mt-2">(Detailed team member profiles, their expertise, and links to professional profiles (e.g., LinkedIn) will be presented here. Advisors with relevant industry experience will also be highlighted.)</p>
-          <AIImage
-            initialSrc="https://placehold.co/700x300.png"
-            alt="VSD Network Team Placeholder"
-            width={700}
-            height={300}
-            className="rounded-md my-6 shadow-md mx-auto"
-            hint="professional team diverse"
-        />
-      </SectionCard>
-
-      <Separator />
-
-      <SectionCard icon={ShieldCheck} title="8. Legal Disclaimer & Risk Factors" description="Important information regarding VSD tokens and participation." id="legal">
+      <SectionCard icon={ShieldCheck} title="6. Legal Disclaimer & Risk Factors" description="Important information regarding VSD tokens and participation." id="legal">
         <p className="font-semibold">Please read this section carefully before participating in the VSD token sale or using VSD tokens.</p>
-        <p>The VSD Token is a utility token designed to grant access to services and features within the VSD Network ecosystem. VSD Tokens are not intended to constitute securities in any jurisdiction. This whitepaper, the VSD Network website, or any related materials do not constitute a prospectus or offer document of any sort and are not intended to constitute an offer of securities or a solicitation for investment in securities in any jurisdiction.</p>
-        <p>The information provided is for informational purposes only and does not constitute financial, legal, or investment advice. The purchase of VSD tokens involves significant risk, including but not limited to, risk of loss of all principal, market volatility, technological risks, and regulatory risks. You should carefully consider these risks and consult with your own independent legal, financial, tax, and other professional advisors before making any decision to purchase VSD tokens.</p>
-        <p>The VSD Network project is currently under development and its features, roadmap, and tokenomics are subject to change without notice. There is no guarantee that the project will achieve its objectives or that the VSD tokens will have any particular value or utility.</p>
-        <p>The VSD Foundation (or similar entity) is intended to be registered in a crypto-friendly jurisdiction (e.g., British Virgin Islands) and will operate in compliance with applicable local regulations. However, the regulatory landscape for digital assets is evolving and uncertain. Changes in laws or regulations could adversely affect the VSD Network or the value and utility of VSD tokens.</p>
-        <p>By purchasing, holding, or using VSD tokens, you acknowledge and agree that you have read, understood, and accepted all the terms, conditions, and risks outlined in this whitepaper and any other official VSD Network documentation. You are solely responsible for ensuring compliance with the laws of your jurisdiction. Citizens and residents of certain restricted jurisdictions (which will be specified prior to any sale) may be prohibited from participating in the VSD token sale.</p>
-        <p>Forward-looking statements in this document are based on current expectations and assumptions and are subject to risks and uncertainties that could cause actual results to differ materially.</p>
+        <p>The VSD Token is a utility token. It is not intended to constitute a security. This whitepaper does not constitute a prospectus or offer document of any sort and is not intended to constitute an offer of securities or a solicitation for investment in securities in any jurisdiction.</p>
+        <p>The purchase of VSD tokens involves significant risk. The VSD Network project is under development and its features, roadmap, and tokenomics are subject to change. There is no guarantee that the project will achieve its objectives. By purchasing, holding, or using VSD tokens, you acknowledge and agree that you have read, understood, and accepted all the terms, conditions, and risks. You are solely responsible for ensuring compliance with the laws of your jurisdiction.</p>
       </SectionCard>
 
     </div>
