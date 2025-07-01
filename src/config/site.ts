@@ -1,6 +1,6 @@
 
 import type { NavItem } from '@/types/nav';
-import { LayoutDashboard, BrainCircuit, Network, Code, Briefcase, HelpCircle, FileText, Zap, ShieldAlert, TrendingUp, HandCoins, UserSquare, Banknote } from 'lucide-react';
+import { LayoutDashboard, BrainCircuit, Network, Code, Briefcase, HelpCircle, FileText, Zap, ShieldAlert, TrendingUp, HandCoins, UserSquare, Banknote, Signal } from 'lucide-react';
 
 export const siteConfig = {
   name: "VSD Network",
@@ -8,6 +8,7 @@ export const siteConfig = {
   mainNav: [
     { title: "Home", href: "/", icon: LayoutDashboard },
     { title: "Dashboard", href: "/dashboard", icon: UserSquare, description: "Your personal banking suite" },
+    { title: "Network Status", href: "/network-status", icon: Signal, description: "Live API Connections" },
     { title: "VSD Token", href: "/token", icon: BrainCircuit, description: "Utility, Tokenomics, Presale" },
     { title: "Ecosystem", href: "/ecosystem", icon: Network, description: "AI Tools & Partner dApps" },
     { title: "For Businesses", href: "/for-businesses", icon: Briefcase, description: "Leverage VSD AI" },
@@ -16,6 +17,7 @@ export const siteConfig = {
   ] satisfies NavItem[],
   footerNav: [
     { title: "Whitepaper", href: "/developers/documentation" },
+    { title: "Network Status", href: "/network-status" },
     { title: "Compliance", href: "/compliance" },
     { title: "API Reference", href: "/developers/api-reference" },
     { title: "Terms of Service", href: "#" },
