@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { siteConfig } from '@/config/site';
 import { Orbitron, Inter } from 'next/font/google';
 import { cn } from '@/lib/utils';
+import { BackgroundVideo } from '@/components/layout/BackgroundVideo';
 
 const fontHeadline = Orbitron({
   subsets: ['latin'],
@@ -40,8 +41,8 @@ export default function RootLayout({
       <head>
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col relative bg-background">
-        <div className="fixed inset-0 w-full h-full -z-10 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))] opacity-70" />
-        <div className="relative z-0 flex flex-col min-h-screen">
+        <BackgroundVideo />
+        <div className="relative z-0 flex flex-col min-h-screen bg-black/70">
           <Header />
           <main className="flex-grow container mx-auto px-4 py-8">
             {children}
