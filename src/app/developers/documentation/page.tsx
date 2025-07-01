@@ -161,7 +161,7 @@ export default function WhitepaperDocumentationPage() {
       <Separator />
       
       <SectionCard icon={Workflow} title="4. VSD Network Architecture" description="High-level overview of the platform's components." id="architecture">
-        <p>The VSD Network is designed as a modular and scalable platform. Key components include:</p>
+        <p>The VSD Network is designed as a modular and scalable platform, with this project serving as the central hub for AI services and token utility. The backend is aware of this central role, ensuring consistent state and service delivery across all connected applications.</p>
         <AIImage
           initialSrc="https://placehold.co/800x450.png"
           alt="VSD Network AI Platform Architecture"
@@ -172,38 +172,38 @@ export default function WhitepaperDocumentationPage() {
         />
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="arch-core">
-            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">VSD AI Core Engine</AccordionTrigger>
+            <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">VSD AI Core Engine (The IMG Bank)</AccordionTrigger>
             <AccordionContent>
-              <p>This is the heart of the platform, integrating various AI models (including those for IMG Services, text generation, etc.). It handles request processing, job queuing, and result delivery. It's designed for scalability to incorporate new models and handle increasing user load.</p>
+              <p>This is the heart of the platform and the official "IMG Bank". It integrates various AI models (including those for IMG Services, text generation, etc.), managing a centralized job queue and result delivery. It is exposed via a secure API, ensuring that all ecosystem partners pull from this single, authoritative source for AI capabilities.</p>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="arch-token">
             <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">VSD Token Smart Contracts</AccordionTrigger>
             <AccordionContent>
-              <p>A suite of smart contracts deployed on a public blockchain (e.g., Ethereum, Polygon) manages:</p>
+              <p>A suite of smart contracts deployed on a public blockchain serves as the definitive ledger for the VSD utility token. These contracts manage:</p>
               <ul className="list-disc pl-5">
-                <li>The VSD utility token (ERC20 or equivalent standard).</li>
-                <li>Staking mechanisms and reward distribution.</li>
-                <li>Fee collection from AI services and token burn/redistribution logic.</li>
-                <li>Governance contracts for the VSD DAO.</li>
+                <li>The VSD utility token (ERC20 or equivalent standard) and its total supply.</li>
+                <li>Centralized staking mechanisms and reward distribution logic.</li>
+                <li>Authoritative fee collection from AI services and the token burn/redistribution mechanism.</li>
+                <li>The VSD DAO governance contracts, ensuring all voting is verified against the single source of truth.</li>
               </ul>
-              <p>These contracts ensure transparency and automated execution of token-related functions.</p>
+              <p>All SDKs and external applications interact with these canonical contracts.</p>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="arch-api">
             <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">API Layer & SDKs</AccordionTrigger>
             <AccordionContent>
-              <p>A robust API layer allows users and third-party developers to interact with the VSD AI Core Engine and query blockchain data related to VSD tokens. SDKs (JavaScript, Python planned) will simplify integration for dApps and other services looking to leverage VSD AI capabilities or token utility.</p>
+              <p>A robust API layer provides a single, controlled gateway for all third-party developers to interact with the VSD AI Core Engine and query blockchain data. Official SDKs are provided to ensure standardized, secure, and efficient integration, reinforcing this project as the central hub for all VSD-related development.</p>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="arch-dapp">
             <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">VSD dApp Suite & Governance Portal</AccordionTrigger>
             <AccordionContent>
-              <p>User-facing decentralized applications (dApps) provide intuitive interfaces for:</p>
+              <p>The user-facing decentralized applications (dApps) on this site are the flagship interfaces for the VSD ecosystem. They provide canonical examples of how to interact with the central services for:</p>
               <ul className="list-disc pl-5">
-                <li>Accessing AI tools (IMG Services, etc.).</li>
-                <li>Managing VSD tokens, staking, and claiming rewards.</li>
-                <li>Participating in DAO governance votes and proposals.</li>
+                <li>Accessing the "IMG Bank" and other AI tools.</li>
+                <li>Managing VSD tokens, staking, and claiming rewards from the official contracts.</li>
+                <li>Participating in DAO governance.</li>
               </ul>
             </AccordionContent>
           </AccordionItem>
