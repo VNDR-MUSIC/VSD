@@ -105,7 +105,7 @@ export default function FaqPage() {
                 </AccordionTrigger>
                 <AccordionContent
                   className="text-sm sm:text-base md:text-lg text-muted-foreground prose prose-sm sm:prose-base prose-invert max-w-none prose-a:text-primary hover:prose-a:text-primary/80"
-                  htmlString={faq.answer}
+                  dangerouslySetInnerHTML={{ __html: faq.answer }}
                 />
               </AccordionItem>
             ))}

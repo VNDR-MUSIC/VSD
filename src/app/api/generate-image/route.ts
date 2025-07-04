@@ -22,8 +22,8 @@ export async function POST(request: Request) {
 
     const result = await generateImageFromHint({ hint });
 
-    if (result.imageDataUri.startsWith("ERROR:")) {
-       return NextResponse.json({ error: 'AI generation failed.', details: result.imageDataUri }, { status: 500 });
+    if (!result || !result.imageDataUri) {
+       return NextResponse.json({ error: 'AI generation failed to produce an image data URI.'}, { status: 500 });
     }
 
     return NextResponse.json(result, { status: 200 });
