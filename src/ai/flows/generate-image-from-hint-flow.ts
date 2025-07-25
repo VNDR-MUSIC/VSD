@@ -76,6 +76,7 @@ const generateImageFromHintFlow = ai.defineFlow(
           NODE_ENV: process.env.NODE_ENV || 'N/A',
           FUNCTION_MEMORY_MB: process.env.FUNCTION_MEMORY_MB || 'N/A',
           PROJECT_ID: process.env.GCLOUD_PROJECT || process.env.GOOGLE_CLOUD_PROJECT || 'N/A',
+          GEMINI_API_KEY_STATUS: process.env.GEMINI_API_KEY ? 'Set' : 'Not Set',
         },
       });
       // Re-throw a more specific error or the original one
