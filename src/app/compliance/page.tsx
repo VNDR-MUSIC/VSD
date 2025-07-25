@@ -40,7 +40,7 @@ export default function CompliancePage() {
       <Separator />
 
       <SectionCard icon={Landmark} title="Our Commitment to a Responsible Framework">
-        <p>At VSD Network, we recognize the importance of building a sustainable and trustworthy ecosystem. We are dedicated to understanding and adhering to applicable laws and regulations. Our approach is guided by a commitment to transparency, security, and the long-term viability of the VSD Network and the IMG Banking System.</p>
+        <p>At VSD Network, we recognize the importance of building a sustainable and trustworthy ecosystem for the Independent Music Group (IMG) and its community. We are dedicated to understanding and adhering to applicable laws and regulations. Our approach is guided by a commitment to transparency, security, and the long-term viability of the VSD Network and the IMG Banking System.</p>
         <p>We actively monitor the evolving regulatory environment for digital assets and AI technologies to adapt our practices accordingly.</p>
          <AIImage
             initialSrc="https://placehold.co/700x350.png"

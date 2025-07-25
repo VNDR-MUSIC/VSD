@@ -10,7 +10,7 @@ import { AIImage } from '@/components/ai/AIImage';
 
 export const metadata: Metadata = {
   title: 'VSD Token Whitepaper & Documentation',
-  description: 'Comprehensive VSD Utility Token Whitepaper covering the IMG Banking System, tokenomics, utility, presale, roadmap, and technical integration guides.',
+  description: 'The official Whitepaper for the VSD utility token, the currency of the Independent Music Group (IMG), covering the IMG Banking System, tokenomics, utility, and roadmap.',
 };
 
 const SectionCard = ({ icon: Icon, title, description, children, id }: { icon: React.ElementType, title: string, description?: string, children: React.ReactNode, id?: string }) => (
@@ -43,7 +43,7 @@ export default function WhitepaperDocumentationPage() {
         <BrainCircuit className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
         <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Utility Token Whitepaper</h1>
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-          An in-depth overview of the VSD Token as the financial backbone for the IMG Banking System, its utility, tokenomics, presale, and roadmap.
+          An in-depth overview of the VSD Token as the official financial backbone for the Independent Music Group (IMG), its utility, tokenomics, and roadmap.
         </p>
         <p className="text-xs text-muted-foreground mt-2">Version 2.0 - [Current Date Placeholder]</p>
       </header>
@@ -51,7 +51,7 @@ export default function WhitepaperDocumentationPage() {
       <Separator />
 
       <SectionCard icon={Library} title="1. Introduction: The VSD Vision" description="Powering a decentralized economy for AI and creative assets." id="introduction">
-        <p>The digital landscape is rapidly converging around Artificial Intelligence (AI) and decentralized technologies. The VSD Network stands at this intersection, providing a robust financial infrastructure—the IMG Banking System—powered by the VSD utility token. Our mission is to create a secure, transparent, and efficient ecosystem for creators, developers, and investors to transact, collaborate, and innovate.</p>
+        <p>The digital landscape is rapidly converging around Artificial Intelligence (AI) and decentralized technologies. The VSD Network stands at this intersection as the official financial infrastructure for the **Independent Music Group (IMG)**. Our mission is to create a secure, transparent, and efficient ecosystem—the IMG Banking System—powered by the VSD utility token, for creators, developers, and investors to transact, collaborate, and innovate.</p>
         <p>This whitepaper details the comprehensive utility of the VSD token, the tokenomics that sustain the ecosystem, our strategic roadmap, the planned presale, and the technical architecture that makes it all possible. We invite you to join us in building the future of the decentralized creative economy.</p>
         <AIImage
           initialSrc="https://placehold.co/800x400.png"

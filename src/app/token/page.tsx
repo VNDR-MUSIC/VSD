@@ -10,7 +10,7 @@ import { PresaleInterface } from "@/components/token/PresaleInterface";
 
 export const metadata: Metadata = {
   title: 'VSD Utility Token | Presale & Tokenomics',
-  description: 'Detailed information about the VSD utility token, its tokenomics, active presale, use cases, and the VSD Network vision.',
+  description: 'Official utility token of the Independent Music Group (IMG). Detailed information about the VSD token, its tokenomics, active presale, and use cases.',
 };
 
 const FeatureItem = ({ icon: Icon, title, children }: { icon: React.ElementType, title: string, children: React.ReactNode }) => (
@@ -30,7 +30,7 @@ export default function TokenPage() {
         <BrainCircuit className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
         <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Utility Token</h1>
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-          The financial backbone of a decentralized AI ecosystem. Discover VSD's utility, tokenomics, and how to participate in our vision.
+          The financial backbone of the Independent Music Group (IMG). Discover VSD's utility, tokenomics, and how to participate in our vision.
         </p>
       </header>
 
@@ -41,18 +41,18 @@ export default function TokenPage() {
         <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
           <CardContent className="p-6 sm:p-8 text-base sm:text-lg">
             <p className="mb-4">
-              VSD is a utility token at the heart of the VSD Network, a decentralized platform designed to provide accessible and powerful AI-driven tools and services. It's more than just a digital asset; VSD is your key to unlocking a new generation of AI capabilities and financial tools within the IMG Ecosystem.
+              VSD is the official utility token for the **Independent Music Group (IMG)** and the heart of the VSD Network, a decentralized platform designed to provide accessible and powerful AI-driven tools and services. It's more than just a digital asset; VSD is your key to unlocking a new generation of AI capabilities and financial tools within the IMG Ecosystem.
             </p>
             <p className="mb-4">
-              Our mission is to democratize access to AI and decentralized finance by creating a token-powered ecosystem where users can utilize cutting-edge AI for content creation (IMG services), data analysis, and more, while also participating in the platform's growth and governance.
+              Our mission is to democratize access to AI and decentralized finance by creating a token-powered ecosystem where creators can utilize cutting-edge AI for content creation (IMG services), data analysis, and more, while also participating in the platform's growth and governance.
             </p>
              <AIImage
                 initialSrc="https://placehold.co/700x350.png"
-                alt="VSD Token powering AI services"
+                alt="VSD Token powering AI services for IMG"
                 width={700}
                 height={350}
                 className="rounded-md my-6 shadow-md mx-auto"
-                hint="AI token utility"
+                hint="AI token utility music"
             />
           </CardContent>
         </Card>

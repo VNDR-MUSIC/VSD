@@ -26,7 +26,7 @@ export default function HomePage() {
           The Future of Decentralized AI Banking
         </h1>
         <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10">
-          VSD Network provides the financial backbone for the IMG Ecosystem, powering secure wallets, instant payments, and automated smart contracts with our advanced utility token.
+          As the official currency of the Independent Music Group (IMG), VSD Network provides the financial backbone for the entire creative ecosystem, powering secure wallets, instant payments, and automated smart contracts.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Button asChild size="lg" className="font-bold btn-hover-effect w-full sm:w-auto text-lg py-7">

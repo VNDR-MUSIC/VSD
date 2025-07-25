@@ -4,7 +4,7 @@ import { LayoutDashboard, BrainCircuit, Network, Code, Briefcase, HelpCircle, Fi
 
 export const siteConfig = {
   name: "VSD Network",
-  description: "The official hub for the VSD utility token and IMG Banking System. Access your wallet, explore the ecosystem, and build the future of decentralized finance and AI.",
+  description: "The official utility token and financial infrastructure for the Independent Music Group (IMG). Access your wallet, explore the ecosystem, and build the future of decentralized finance and AI.",
   mainNav: [
     { title: "Home", href: "/", icon: LayoutDashboard },
     { title: "Dashboard", href: "/dashboard", icon: UserSquare, description: "Your personal banking suite" },
