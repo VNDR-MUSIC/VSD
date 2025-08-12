@@ -2,9 +2,11 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowUpRightSquare, Network, Zap, Users, Cpu } from "lucide-react";
+import { ArrowUpRightSquare, Network, Zap, Users, Cpu, Music } from "lucide-react";
 import type { Metadata } from 'next';
 import { AIImage } from '@/components/ai/AIImage';
+import { Separator } from "@/components/ui/separator";
+import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
   title: 'VSD Token Ecosystem',
@@ -125,6 +127,33 @@ export default function EcosystemPage() {
           </Card>
         ))}
       </div>
+
+       <Separator />
+
+      <section>
+          <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center mb-8">Ecosystem Demonstrations</h2>
+          <div className="max-w-md mx-auto">
+             <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
+                <CardHeader>
+                    <div className="flex items-center space-x-3 mb-2">
+                        <Music className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
+                        <CardTitle className="font-headline text-xl sm:text-2xl">Audio Exchange Demo</CardTitle>
+                    </div>
+                    <CardDescription>
+                        See how a partner project can leverage the VSD Bank APIs for payments, contracts, and AI services.
+                    </CardDescription>
+                </CardHeader>
+                <CardFooter>
+                     <Button asChild className="w-full">
+                        <Link href="/audio-exchange">
+                            Launch Demo <ArrowUpRightSquare className="ml-2 h-4 w-4" />
+                        </Link>
+                    </Button>
+                </CardFooter>
+             </Card>
+          </div>
+      </section>
+
        <div className="text-center mt-12">
             <p className="text-lg text-muted-foreground mb-4">Interested in building on VSD or integrating VSD utility?</p>
             <Button asChild size="lg">
