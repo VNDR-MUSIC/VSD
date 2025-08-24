@@ -9,7 +9,7 @@ import { AIImage } from '@/components/ai/AIImage';
 
 export const metadata: Metadata = {
   title: 'VSD Utility Token for Businesses',
-  description: 'Leverage the VSD utility token and AI platform to enhance your business operations, access AI tools, and engage with the Web3 economy.',
+  description: 'Leverage the VSD utility token and AI platform to enhance your business operations, access exclusive AI tools like IMG Services, and engage with the Web3 economy.',
 };
 
 const BenefitCard = ({ icon: Icon, title, children }: { icon: React.ElementType, title: string, children: React.ReactNode }) => (
@@ -31,7 +31,7 @@ export default function ForBusinessesPage() {
         <Briefcase className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
         <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">Empower Your Business with VSD Utility</h1>
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-          Discover how the VSD utility token and the VSD Network's AI platform can unlock new efficiencies, innovative solutions, and growth opportunities for your enterprise.
+          Discover how the VSD utility token and the VSD Network's AI platform can unlock new efficiencies, innovative solutions like IMG Services, and growth opportunities for your enterprise.
         </p>
       </header>
 
@@ -41,7 +41,7 @@ export default function ForBusinessesPage() {
         <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center mb-10">Why Integrate VSD Utility in Your Business?</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           <BenefitCard icon={Cpu} title="Access Cutting-Edge AI">
-            Utilize VSD tokens to access our suite of AI tools (IMG Services, content creators, analytics) to streamline workflows, enhance creativity, and gain data-driven insights.
+            Utilize VSD tokens to access our suite of AI tools, including the powerful IMG Services for content creation and analytics, to streamline workflows and gain data-driven insights.
           </BenefitCard>
           <BenefitCard icon={Sparkles} title="Drive Innovation">
             Leverage AI capabilities to develop new products, personalize customer experiences, and stay ahead of the curve in your industry.

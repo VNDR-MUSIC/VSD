@@ -30,21 +30,21 @@ export default function TokenPage() {
         <BrainCircuit className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
         <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Utility Token</h1>
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-          The financial backbone of the Independent Music Group (IMG). Discover VSD's utility, tokenomics, and how to participate in our vision.
+         The essential asset for the IMG ecosystem. Discover VSD's utility in fueling AI services, its tokenomics, and how to participate.
         </p>
       </header>
 
       <Separator />
 
       <section id="what-is-vsd" className="space-y-6 sm:space-y-8">
-        <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center">What is VSD Token?</h2>
+        <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center">The Currency for AI-Powered Services</h2>
         <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
           <CardContent className="p-6 sm:p-8 text-base sm:text-lg">
             <p className="mb-4">
-              VSD is the official utility token for the **Independent Music Group (IMG)** and the heart of the VSD Network, a decentralized platform designed to provide accessible and powerful AI-driven tools and services. It's more than just a digital asset; VSD is your key to unlocking a new generation of AI capabilities and financial tools within the IMG Ecosystem.
+              VSD is the official utility token that powers the **Independent Music Group (IMG) ecosystem**. It is the primary vehicle for accessing a decentralized platform of AI-driven tools and services, including the flagship **IMG Services** suite.
             </p>
             <p className="mb-4">
-              Our mission is to democratize access to AI and decentralized finance by creating a token-powered ecosystem where creators can utilize cutting-edge AI for content creation (IMG services), data analysis, and more, while also participating in the platform's growth and governance.
+              Our mission is to democratize access to powerful AI by creating a token-powered network where holding VSD allows users to unlock exclusive AI tools, receive discounts on premium features, and participate in the platform's growth and governance.
             </p>
              <AIImage
                 initialSrc="https://placehold.co/700x350.png"
@@ -63,23 +63,17 @@ export default function TokenPage() {
       <section id="key-features" className="space-y-6 sm:space-y-8">
         <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center">Core Utility & Features</h2>
         <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
-          <FeatureItem icon={HandCoins} title="Royalty Payouts">
-            Receive automated royalty payments directly to your VSD wallet for your creative work within the IMG ecosystem.
+           <FeatureItem icon={Cpu} title="Access IMG Services & AI Tools">
+            Use VSD as the key to unlock access to our proprietary AI platform, including the IMG Services suite for content generation, and receive discounts on usage fees.
           </FeatureItem>
-           <FeatureItem icon={TrendingUp} title="Tokenized Investments">
-            Use VSD to invest in tokenized assets, music rights, or participate in fundraising for indie artists and projects.
+           <FeatureItem icon={PiggyBank} title="Stake VSD to Earn Rewards">
+            Participate in the platform's success by staking your VSD tokens to earn rewards from a dedicated pool, contributing to network security and stability.
           </FeatureItem>
-          <FeatureItem icon={FileSignature} title="NFT Licensing">
-            Pay for and receive licenses for NFTs and other digital media using VSD, with terms encoded in smart contracts.
+          <FeatureItem icon={Users} title="Participate in Governance">
+            VSD holders can vote on key proposals that shape the future of the ecosystem, including new feature development, treasury allocation, and partnerships.
           </FeatureItem>
-          <FeatureItem icon={Cpu} title="Pay-per-use AI Features">
-            Access a powerful suite of IMG services and advanced AI tools on a pay-as-you-go basis with VSD tokens.
-          </FeatureItem>
-          <FeatureItem icon={PackagePlus} title="Membership Rewards & Staking">
-            Stake VSD to earn yield and unlock tiered membership rewards, including exclusive access and discounted services.
-          </FeatureItem>
-          <FeatureItem icon={Users} title="Crowdfunding & Governance">
-            Fund new creative projects from indie artists and use your VSD stake to vote on key ecosystem and governance proposals.
+          <FeatureItem icon={HandCoins} title="Ecosystem Transactions">
+            Utilize VSD for all transactions within the IMG ecosystem, from paying for services to potential future uses like royalty payouts and NFT licensing.
           </FeatureItem>
         </div>
       </section>
@@ -96,7 +90,7 @@ export default function TokenPage() {
         <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center">VSD Tokenomics</h2>
         <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="font-headline text-xl sm:text-2xl">Sustainable Economic Model</CardTitle>
+            <CardTitle className="font-headline text-xl sm:text-2xl">A Transparent Model for Sustainable Growth</CardTitle>
             <CardDescription className="text-sm sm:text-base">Designed for long-term growth, community incentivization, and platform development.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -104,7 +98,7 @@ export default function TokenPage() {
               <div>
                 <h4 className="text-md sm:text-lg font-semibold text-primary">Total Supply</h4>
                 <p className="text-lg sm:text-xl font-bold">1,000,000,000 VSD</p>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">Fixed total supply ensuring scarcity.</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">A fixed total supply ensures scarcity and a well-defined economic structure.</p>
               </div>
               <div>
                 <h4 className="text-md sm:text-lg font-semibold text-primary">Token Symbol</h4>
@@ -113,7 +107,7 @@ export default function TokenPage() {
               <div>
                 <h4 className="text-md sm:text-lg font-semibold text-primary">Token Standard</h4>
                 <p className="text-lg sm:text-xl font-bold">ERC20</p>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">Initially deployed on a scalable and secure EVM blockchain.</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">Deployed on a secure and scalable EVM blockchain.</p>
               </div>
             </div>
             <Separator />
@@ -124,7 +118,7 @@ export default function TokenPage() {
                     <li><strong>Private Sale:</strong> 10% (100,000,000 VSD) - For strategic partners and early backers.</li>
                     <li><strong>Staking Rewards & Ecosystem Incentives:</strong> 30% (300,000,000 VSD) - To reward stakers and incentivize platform participation.</li>
                     <li><strong>Team & Advisors:</strong> 15% (150,000,000 VSD) - Vested over 3 years with a 6-month cliff.</li>
-                    <li><strong>Ecosystem Development Fund:</strong> 15% (150,000,000 VSD) - For future platform enhancements, grants, and partnerships.</li>
+                    <li><strong>Ecosystem Development Fund:</strong> 15% (150,000,000 VSD) - For future platform enhancements, developer grants, and partnerships.</li>
                     <li><strong>Marketing & Liquidity:</strong> 10% (100,000,000 VSD) - For awareness campaigns and exchange liquidity.</li>
                 </ul>
                  <AIImage

@@ -27,7 +27,7 @@ const projects: Project[] = [
   {
     id: "1",
     name: "VSD AI Suite (IMG Services)",
-    description: "The flagship AI platform offering advanced image generation, content creation, and data analysis tools, powered by VSD tokens.",
+    description: "The flagship AI platform offering advanced image generation, content creation, and data analysis tools, with access and premium features unlocked by VSD tokens.",
     imageUrl: "https://placehold.co/600x400.png",
     imageHint: "AI tools dashboard",
     projectUrl: "/token#what-is-vsd", // Link to relevant section
@@ -45,7 +45,7 @@ const projects: Project[] = [
   {
     id: "3",
     name: "VSD Staking dApp",
-    description: "Stake your VSD tokens to earn rewards and contribute to the ecosystem's stability. Features tiered APY for long-term supporters.",
+    description: "Stake your VSD tokens to earn platform rewards and contribute to the ecosystem's stability. Features tiered APY for long-term supporters.",
     imageUrl: "https://placehold.co/600x400.png",
     imageHint: "crypto staking dashboard",
     category: "DeFi / Staking",
