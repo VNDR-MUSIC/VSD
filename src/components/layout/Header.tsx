@@ -8,7 +8,7 @@ import { Logo } from '@/components/icons/Logo';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu } from 'lucide-react';
+import { Menu, User } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,9 +18,12 @@ import {
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '@/services/firebase';
 
 export function Header() {
   const pathname = usePathname();
+  const [user, loading] = useAuthState(auth);
 
   const navItems = siteConfig.mainNav.map((item) => {
     // Special handling for the Ecosystem dropdown
@@ -77,42 +80,56 @@ export function Header() {
           {navItems}
         </nav>
 
-        {/* Mobile Navigation */}
-        <div className="md:hidden">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Toggle navigation menu</span>
+        <div className="flex items-center gap-2">
+           {loading ? (
+             <div className="h-9 w-20 animate-pulse rounded-md bg-muted" />
+           ) : user ? (
+              <Button asChild>
+                <Link href="/dashboard">Dashboard</Link>
               </Button>
-            </SheetTrigger>
-            <SheetContent side="right">
-              <Link href="/" className="mb-6 flex items-center">
-                 <Logo size={36} className="mr-2" />
-              </Link>
-              <nav className="flex flex-col space-y-4">
-                {siteConfig.mainNav.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "text-lg font-medium transition-colors hover:text-primary",
-                      pathname === item.href ? "text-primary" : "text-foreground/80"
-                    )}
-                  >
-                    {item.title}
+           ) : (
+             <Button asChild variant="outline">
+                <Link href="/login"><User className="mr-2 h-4 w-4"/>Login</Link>
+             </Button>
+           )}
+
+            {/* Mobile Navigation */}
+            <div className="md:hidden">
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Menu className="h-6 w-6" />
+                    <span className="sr-only">Toggle navigation menu</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right">
+                  <Link href="/" className="mb-6 flex items-center">
+                     <Logo size={36} className="mr-2" />
                   </Link>
-                ))}
-                 <DropdownMenuSeparator />
-                 <Link
-                    href="/audio-exchange"
-                    className="text-lg font-medium transition-colors hover:text-primary text-foreground/80"
-                  >
-                    Audio Exchange Demo
-                  </Link>
-              </nav>
-            </SheetContent>
-          </Sheet>
+                  <nav className="flex flex-col space-y-4">
+                    {siteConfig.mainNav.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                          "text-lg font-medium transition-colors hover:text-primary",
+                          pathname === item.href ? "text-primary" : "text-foreground/80"
+                        )}
+                      >
+                        {item.title}
+                      </Link>
+                    ))}
+                     <DropdownMenuSeparator />
+                     <Link
+                        href="/audio-exchange"
+                        className="text-lg font-medium transition-colors hover:text-primary text-foreground/80"
+                      >
+                        Audio Exchange Demo
+                      </Link>
+                  </nav>
+                </SheetContent>
+              </Sheet>
+            </div>
         </div>
       </div>
     </header>
