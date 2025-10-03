@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Music, FileText, ImageIcon, Send } from 'lucide-react';
 import { AIImage } from '@/components/ai/AIImage';
+import { logger } from 'firebase-functions';
 
 // Mock data for audio tracks
 const mockTracks = [
@@ -33,33 +34,86 @@ const mockTracks = [
   }
 ];
 
-// This is a MOCK component simulating API calls to the VSD Network
+// This component now makes REAL API calls to the VSD Network backend
 export default function AudioExchangePage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
-  // MOCK API call to VSD Transaction API
+  // MOCK user wallet addresses
+  const MOCK_SENDER_ADDRESS = "0xAbc...123";
+  const MOCK_RECIPIENT_ADDRESS = "0xDef...456";
+
   const handlePurchase = async (track: typeof mockTracks[0]) => {
     setIsLoading(track.id);
     console.log(`Initiating purchase for ${track.title}...`);
     
-    // 1. Call VSD Transaction API
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    toast({
-      title: "Step 1/2: Transaction Sent",
-      description: `Sent ${track.price} VSD for "${track.title}". Waiting for mock confirmation...`,
-    });
-    console.log(`Called /api/transactions to transfer ${track.price} VSD.`);
-    
-    // 2. Call VSD Smart Contract API
-    await new Promise(resolve => setTimeout(resolve, 1500));
-     toast({
-      title: "Step 2/2: License Generated",
-      description: `AI created a smart contract for your license of "${track.title}".`,
-    });
-    console.log(`Called /api/generate-contract to create a license for the audio file.`);
+    try {
+      // 1. Call VSD Transaction API
+      toast({
+        title: "Step 1/3: Sending Transaction...",
+        description: `Calling the VSD Transaction API for ${track.price} VSD.`,
+      });
 
-    setIsLoading(null);
+      const transactionResponse = await fetch('/api/transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_INTERNAL_API_KEY}`,
+        },
+        body: JSON.stringify({
+          fromAddress: MOCK_SENDER_ADDRESS,
+          toAddress: MOCK_RECIPIENT_ADDRESS,
+          amount: track.price,
+          description: `Purchase of audio license: ${track.title}`,
+        }),
+      });
+
+      if (!transactionResponse.ok) {
+        throw new Error(`Transaction API failed with status: ${transactionResponse.status}`);
+      }
+
+      const transactionResult = await transactionResponse.json();
+      console.log('Transaction successful (mock):', transactionResult);
+      
+      toast({
+        title: "Step 2/3: Transaction Confirmed!",
+        description: `Mock TXN ID: ${transactionResult.transactionId}. Now generating license...`,
+      });
+      
+      // 2. Call VSD Smart Contract API
+      const contractResponse = await fetch('/api/generate-contract', {
+         method: 'POST',
+         headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_INTERNAL_API_KEY}`,
+        },
+        body: JSON.stringify({
+          description: `Create a simple NFT license smart contract for the audio track '${track.title}' purchased by wallet ${MOCK_SENDER_ADDRESS}. The license should be non-transferable.`
+        }),
+      });
+
+      if (!contractResponse.ok) {
+        throw new Error(`Contract Generation API failed with status: ${contractResponse.status}`);
+      }
+      
+      const contractResult = await contractResponse.json();
+      console.log('Contract generation successful:', contractResult);
+
+      toast({
+        title: "Step 3/3: License Generated!",
+        description: `An AI-generated smart contract for your license has been created.`,
+      });
+
+    } catch (error: any) {
+        console.error("Purchase failed:", error);
+        toast({
+            variant: "destructive",
+            title: "Purchase Failed",
+            description: error.message || "An unknown error occurred during the purchase process.",
+        });
+    } finally {
+        setIsLoading(null);
+    }
   };
 
   return (
@@ -109,7 +163,7 @@ export default function AudioExchangePage() {
                <Button 
                 className="w-full btn-hover-effect" 
                 onClick={() => handlePurchase(track)}
-                disabled={!!isLoading}
+                disabled={!!isLoading || !process.env.NEXT_PUBLIC_INTERNAL_API_KEY}
                >
                 {isLoading === track.id ? (
                   <>
@@ -127,6 +181,11 @@ export default function AudioExchangePage() {
           </Card>
         ))}
       </div>
+       {!process.env.NEXT_PUBLIC_INTERNAL_API_KEY && (
+          <div className="text-center text-yellow-400 bg-yellow-500/10 p-4 rounded-md">
+              Note: The 'Buy' button is disabled because the internal API key is not set.
+          </div>
+      )}
     </div>
   );
 }
