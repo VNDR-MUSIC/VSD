@@ -1,6 +1,6 @@
 
 import type { NavItem } from '@/types/nav';
-import { LayoutDashboard, BrainCircuit, Network, Code, Briefcase, HelpCircle, FileText, Zap, ShieldAlert, TrendingUp, HandCoins, UserSquare, Banknote, Signal, ShoppingCart, Music } from 'lucide-react';
+import { LayoutDashboard, BrainCircuit, Network, Code, Briefcase, HelpCircle, FileText, Zap, ShieldAlert, TrendingUp, HandCoins, UserSquare, Banknote, Signal, ShoppingCart, Music, Shield } from 'lucide-react';
 
 export const siteConfig = {
   name: "VSD Network",
@@ -12,9 +12,8 @@ export const siteConfig = {
     { title: "VSD Token", href: "/token", icon: BrainCircuit, description: "Utility, Tokenomics, Presale" },
     { title: "Buy Tokens", href: "/buy", icon: ShoppingCart, description: "Purchase VSD with a card" },
     { title: "Ecosystem", href: "/ecosystem", icon: Network, description: "AI Tools & Partner dApps" },
-    { title: "For Businesses", href: "/for-businesses", icon: Briefcase, description: "Leverage VSD AI" },
     { title: "Developers", href: "/developers", icon: Code, description: "Whitepaper, SDKs, Build" },
-    { title: "FAQ", href: "/faq", icon: HelpCircle },
+    { title: "Admin", href: "/admin", icon: Shield },
   ] satisfies NavItem[],
   footerNav: [
     { title: "Whitepaper", href: "/developers/documentation" },

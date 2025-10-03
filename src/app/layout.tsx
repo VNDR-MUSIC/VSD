@@ -36,6 +36,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Use a regex to check if the path is an admin path
+  // This is a simple way to conditionally apply layouts
+  const isAdminPage = false; 
+
+  if (isAdminPage) {
+     return (
+        <html lang="en" className={cn("dark", fontHeadline.variable, fontBody.variable)}>
+          <body>{children}</body>
+        </html>
+    );
+  }
+
   return (
     <html lang="en" className={cn("dark", fontHeadline.variable, fontBody.variable)}>
       <head>
