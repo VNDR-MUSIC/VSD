@@ -1,7 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Zap, Users, ShieldCheck, BarChart2, Cpu, PackagePlus, DollarSign, BrainCircuit, ArrowRight, CheckCircle, ListChecks, Milestone, HandCoins, PiggyBank, FileSignature, TrendingUp } from "lucide-react";
+import { Zap, Users, ShieldCheck, Cpu, PackagePlus, DollarSign, BrainCircuit, ArrowRight, Milestone, HandCoins, PiggyBank } from "lucide-react";
 import type { Metadata } from 'next';
 import Link from "next/link";
 import { AIImage } from "@/components/ai/AIImage";
@@ -9,12 +10,14 @@ import { PresaleInterface } from "@/components/token/PresaleInterface";
 
 export const metadata: Metadata = {
   title: 'VSD Utility Token | Presale & Tokenomics',
-  description: 'Official utility token of the Independent Music Group (IMG). Detailed information about the VSD token, its tokenomics, active presale, and use cases.',
+  description: 'Official utility token of the Independent Music Group (IMG). Detailed information about the VSD token, its tokenomics, active presale, and use cases in the AI-powered ecosystem.',
 };
 
 const FeatureItem = ({ icon: Icon, title, children }: { icon: React.ElementType, title: string, children: React.ReactNode }) => (
   <div className="flex items-start space-x-3 sm:space-x-4">
-    <Icon className="h-7 w-7 sm:h-8 sm:w-8 text-primary mt-1 shrink-0" />
+    <div className="p-3 bg-primary/20 rounded-full border border-primary/30 mt-1">
+      <Icon className="h-6 w-6 text-primary shrink-0" />
+    </div>
     <div>
       <h3 className="text-lg sm:text-xl font-semibold mb-1 font-headline">{title}</h3>
       <p className="text-muted-foreground text-sm sm:text-base">{children}</p>
@@ -35,33 +38,30 @@ export default function TokenPage() {
 
       <Separator />
 
-      <section id="what-is-vsd" className="space-y-6 sm:space-y-8">
-        <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center">The Currency for AI-Powered Services</h2>
+      <section id="what-is-vsd" className="space-y-8">
+        <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center">The Currency for an AI-Powered Economy</h2>
         <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
-          <CardContent className="p-6 sm:p-8 text-base sm:text-lg">
-            <p className="mb-4">
-              VSD is the official utility token that powers the **Independent Music Group (IMG) ecosystem**. It is the primary vehicle for accessing a decentralized platform of AI-driven tools and services, including the flagship **IMG Services** suite.
-            </p>
-            <p className="mb-4">
-              Our mission is to democratize access to powerful AI by creating a token-powered network where holding VSD allows users to unlock exclusive AI tools, receive discounts on premium features, and participate in the platform's growth and governance.
-            </p>
+          <CardContent className="p-6 sm:p-8 grid md:grid-cols-2 gap-8 items-center">
+            <div className="space-y-4">
+               <p className="text-base sm:text-lg">
+                  VSD is the official utility token that powers the **Independent Music Group (IMG) ecosystem**. It is the primary vehicle for accessing a decentralized platform of AI-driven tools and services, including the flagship **IMG Services** suite.
+               </p>
+               <p className="text-muted-foreground">
+                  Our mission is to democratize access to powerful AI by creating a token-powered network where holding VSD allows users to unlock exclusive AI tools, receive discounts, and participate in the platform's growth and governance.
+               </p>
+            </div>
              <AIImage
                 initialSrc="https://placehold.co/700x350.png"
                 alt="VSD Token powering AI services for IMG"
                 width={700}
                 height={350}
-                className="rounded-md my-6 shadow-md mx-auto"
+                className="rounded-md shadow-md mx-auto"
                 hint="AI token utility music"
             />
           </CardContent>
         </Card>
-      </section>
 
-      <Separator />
-
-      <section id="key-features" className="space-y-6 sm:space-y-8">
-        <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center">Core Utility & Features</h2>
-        <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
+        <div className="grid md:grid-cols-2 gap-8 pt-4">
            <FeatureItem icon={Cpu} title="Access IMG Services & AI Tools">
             Use VSD as the key to unlock access to our proprietary AI platform, including the IMG Services suite for content generation, and receive discounts on usage fees.
           </FeatureItem>
@@ -79,13 +79,13 @@ export default function TokenPage() {
 
       <Separator />
 
-      <section id="presale" className="space-y-6 sm:space-y-8">
+      <section id="presale">
         <PresaleInterface />
       </section>
 
       <Separator />
 
-      <section id="tokenomics" className="space-y-6 sm:space-y-8">
+      <section id="tokenomics" className="space-y-8">
         <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center">VSD Tokenomics</h2>
         <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
           <CardHeader>
@@ -93,43 +93,45 @@ export default function TokenPage() {
             <CardDescription className="text-sm sm:text-base">Designed for long-term growth, community incentivization, and platform development.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 text-center md:text-left">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 text-center md:text-left p-4 bg-muted/50 rounded-lg">
               <div>
                 <h4 className="text-md sm:text-lg font-semibold text-primary">Total Supply</h4>
-                <p className="text-lg sm:text-xl font-bold">1,000,000,000 VSD</p>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">A fixed total supply ensures a well-defined economic structure.</p>
+                <p className="text-xl sm:text-2xl font-bold">1,000,000,000 VSD</p>
+                <p className="text-xs text-muted-foreground mt-1">A fixed supply ensures a well-defined economic structure.</p>
               </div>
               <div>
                 <h4 className="text-md sm:text-lg font-semibold text-primary">Token Symbol</h4>
-                <p className="text-lg sm:text-xl font-bold">VSD</p>
+                <p className="text-xl sm:text-2xl font-bold">VSD</p>
               </div>
               <div>
                 <h4 className="text-md sm:text-lg font-semibold text-primary">Token Standard</h4>
-                <p className="text-lg sm:text-xl font-bold">ERC20</p>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">Deployed on a secure and scalable EVM blockchain.</p>
+                <p className="text-xl sm:text-2xl font-bold">ERC20</p>
+                <p className="text-xs text-muted-foreground mt-1">Deployed on a secure and scalable EVM blockchain.</p>
               </div>
             </div>
-            <Separator />
-            <div>
-                <h4 className="text-lg sm:text-xl font-semibold mb-3 text-center sm:text-left">Token Allocation:</h4>
-                <ul className="space-y-2 text-muted-foreground text-sm sm:text-base">
-                    <li><strong>Public Presale:</strong> 20% (200,000,000 VSD) - For early community adoption and initial funding.</li>
-                    <li><strong>Private Sale:</strong> 10% (100,000,000 VSD) - For strategic partners and early backers.</li>
-                    <li><strong>Staking Rewards & Ecosystem Incentives:</strong> 30% (300,000,000 VSD) - To reward stakers and incentivize platform participation.</li>
-                    <li><strong>Team & Advisors:</strong> 15% (150,000,000 VSD) - Vested over 3 years with a 6-month cliff.</li>
-                    <li><strong>Ecosystem Development Fund:</strong> 15% (150,000,000 VSD) - For future platform enhancements, developer grants, and partnerships.</li>
-                    <li><strong>Marketing & Liquidity:</strong> 10% (100,000,000 VSD) - For awareness campaigns and exchange liquidity.</li>
-                </ul>
+            
+            <div className="grid md:grid-cols-2 gap-8 items-center pt-6">
+                <div>
+                    <h4 className="text-lg sm:text-xl font-semibold mb-4 text-center sm:text-left">Token Allocation:</h4>
+                    <ul className="space-y-3 text-muted-foreground text-sm sm:text-base">
+                        <li className="flex items-center"><strong className="text-foreground w-48">Public Presale:</strong> <span className="text-primary font-bold">20%</span></li>
+                        <li className="flex items-center"><strong className="text-foreground w-48">Private Sale:</strong> <span className="text-primary font-bold">10%</span></li>
+                        <li className="flex items-center"><strong className="text-foreground w-48">Staking & Incentives:</strong> <span className="text-primary font-bold">30%</span></li>
+                        <li className="flex items-center"><strong className="text-foreground w-48">Team & Advisors:</strong> <span className="text-primary font-bold">15%</span> (Vested)</li>
+                        <li className="flex items-center"><strong className="text-foreground w-48">Ecosystem Development:</strong> <span className="text-primary font-bold">15%</span></li>
+                        <li className="flex items-center"><strong className="text-foreground w-48">Marketing & Liquidity:</strong> <span className="text-primary font-bold">10%</span></li>
+                    </ul>
+                </div>
                  <AIImage
                     initialSrc="https://placehold.co/700x400.png"
                     alt="VSD Token Allocation Chart"
                     width={700}
                     height={400}
-                    className="rounded-md my-6 shadow-md mx-auto"
+                    className="rounded-md shadow-md mx-auto"
                     hint="token allocation pie chart"
                  />
             </div>
-            <div className="text-center">
+            <div className="text-center pt-4">
                 <Button asChild size="lg" className="font-bold btn-hover-effect">
                     <Link href="/developers/documentation#tokenomics">Read Full Tokenomics in Whitepaper <ArrowRight className="ml-2 h-5 w-5" /></Link>
                 </Button>
@@ -140,31 +142,31 @@ export default function TokenPage() {
 
       <Separator />
 
-      <section id="roadmap" className="space-y-6 sm:space-y-8">
+      <section id="roadmap" className="space-y-8">
         <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center">Project Roadmap</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             { title: "Phase 1: Foundation & Presale", icon: Milestone, items: ["Whitepaper Release", "Private & Public Presale Rounds", "Core Smart Contract Audits", "Community Building"] },
             { title: "Phase 2: Platform Launch", icon: Cpu, items: ["VSD Banking Suite (MVP)", "Staking dApp Launch", "Initial Governance Portal", "Token Generation Event (TGE)"] },
-            { title: "Phase 3: Ecosystem Expansion", icon: Users, items: ["Partner Integrations (AiEar, PromoHub)", "Developer SDKs Release", "AI Image Generation API (V1)"] },
-            { title: "Phase 4: Decentralization & Growth", icon: ListChecks, items: ["Full DAO Governance Implemented", "Token-to-Fiat Oracle Integration", "Ecosystem Grant Program", "AI Contract Studio (V2)"] },
+            { title: "Phase 3: Ecosystem Expansion", icon: Users, items: ["Partner Integrations", "Developer SDKs Release", "AI Image Generation API (V1)", "IMG Services Suite Launch"] },
+            { title: "Phase 4: Decentralization & Growth", icon: Zap, items: ["Full DAO Governance", "Token-to-Fiat Oracle", "Ecosystem Grant Program", "AI Contract Studio (V2)"] },
           ].map(phase => (
             <Card key={phase.title} className="shadow-md bg-card/70 backdrop-blur-sm h-full flex flex-col transition-all duration-300 hover:shadow-primary/20 hover:border-primary/50 border">
-              <CardHeader className="pb-3">
-                <div className="flex items-center space-x-2 mb-2">
-                  <phase.icon className="h-6 w-6 text-primary" />
+              <CardHeader className="pb-4">
+                <div className="flex items-center space-x-3 mb-2">
+                  <phase.icon className="h-7 w-7 text-primary" />
                   <CardTitle className="font-headline text-lg sm:text-xl">{phase.title}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="flex-grow">
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground text-xs sm:text-sm">
+                <ul className="list-disc list-inside space-y-1.5 text-muted-foreground text-xs sm:text-sm">
                   {phase.items.map(item => <li key={item}>{item}</li>)}
                 </ul>
               </CardContent>
             </Card>
           ))}
         </div>
-        <div className="text-center mt-6">
+        <div className="text-center mt-4">
              <Button asChild variant="outline">
                 <Link href="/developers/documentation#roadmap">
                     View Detailed Roadmap in Whitepaper <ArrowRight className="ml-2 h-4 w-4" />
@@ -175,13 +177,13 @@ export default function TokenPage() {
 
       <Separator />
 
-      <section id="legal-disclaimer" className="space-y-4">
-        <h2 className="font-headline text-xl sm:text-2xl font-semibold text-center">Legal Disclaimer</h2>
-        <Card className="shadow-md bg-card/60 backdrop-blur-sm">
+      <section id="legal-disclaimer">
+        <h2 className="font-headline text-xl sm:text-2xl font-semibold text-center mb-4">Legal Disclaimer</h2>
+        <Card className="shadow-md bg-card/60 backdrop-blur-sm border-destructive/20">
           <CardContent className="p-4 sm:p-6 text-xs sm:text-sm text-muted-foreground">
             <p className="mb-2"><strong>IMPORTANT:</strong> The VSD Token is a utility token designed to grant access to services and features within the VSD Network ecosystem. VSD Tokens are not intended to constitute securities in any jurisdiction. This website, the whitepaper, or any related materials do not constitute a prospectus or offer document of any sort and are not intended to constitute an offer of securities or a solicitation for investment in securities.</p>
             <p className="mb-2">The information herein is not advice, nor a recommendation to acquire VSD Tokens. Participation in any token sale is at your own risk. Please consult with your legal, financial, and tax advisors before making any decisions. The VSD Network project is under development and subject to change. </p>
-            <p>The VSD Foundation (or similar entity) is intended to be registered in a crypto-friendly jurisdiction (e.g., British Virgin Islands) and will operate in compliance with applicable local regulations. Citizens and residents of certain jurisdictions may be restricted from participating in the token sale. It is your responsibility to ensure compliance with the laws of your jurisdiction.</p>
+            <p>The VSD Foundation (or similar entity) is intended to be registered in a crypto-friendly jurisdiction and will operate in compliance with applicable local regulations. Citizens and residents of certain jurisdictions may be restricted from participating in the token sale. It is your responsibility to ensure compliance with the laws of your jurisdiction.</p>
           </CardContent>
         </Card>
       </section>
