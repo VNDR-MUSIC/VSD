@@ -12,6 +12,12 @@ import {
   ArrowRightLeft,
   ChevronLeft,
   ChevronRight,
+  Settings,
+  Home,
+  Users,
+  Wallet,
+  KeyRound,
+  Gift,
 } from 'lucide-react';
 import {
   Card,
@@ -48,8 +54,14 @@ import {
   SidebarProvider,
   SidebarTrigger,
   SidebarInset,
+  SidebarFooter,
+  SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/icons/Logo';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '@/services/firebase';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 
 // Mock Data
 const users = [
@@ -283,34 +295,77 @@ export default function AdminDashboardPage() {
 
 
 function AdminSidebar() {
+    const [user] = useAuthState(auth);
     return (
         <Sidebar side="left" className="border-r" collapsible="icon">
             <SidebarHeader>
-                <Logo size={28} />
+                <Button variant="ghost" size="icon" className="h-10 w-10" asChild>
+                    <a href="/"><Logo size={32} /></a>
+                </Button>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarMenu>
+                     <SidebarMenuItem>
+                        <SidebarMenuButton href="/admin" isActive tooltip="Dashboard">
+                             <Home />
+                            <span>Dashboard</span>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <SidebarMenuButton href="/admin" isActive>Dashboard</SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton href="#">Users</SidebarMenuButton>
-                    </SidebarMenuItem>
-                     <SidebarMenuItem>
-                        <SidebarMenuButton href="#">Transactions</SidebarMenuButton>
+                        <SidebarMenuButton href="#" tooltip="Users">
+                             <Users />
+                            <span>Users</span>
+                        </SidebarMenuButton>
                     </SidebarMenuItem>
                      <SidebarMenuItem>
-                        <SidebarMenuButton href="#">API Keys</SidebarMenuButton>
+                        <SidebarMenuButton href="#" tooltip="Transactions">
+                             <Wallet />
+                             <span>Transactions</span>
+                        </SidebarMenuButton>
                     </SidebarMenuItem>
                      <SidebarMenuItem>
-                        <SidebarMenuButton href="#">Promotions</SidebarMenuButton>
+                        <SidebarMenuButton href="#" tooltip="API Keys">
+                            <KeyRound />
+                             <span>API Keys</span>
+                        </SidebarMenuButton>
                     </SidebarMenuItem>
                      <SidebarMenuItem>
-                        <SidebarMenuButton href="#">Settings</SidebarMenuButton>
+                        <SidebarMenuButton href="#" tooltip="Promotions">
+                            <Gift />
+                             <span>Promotions</span>
+                        </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarContent>
+            <SidebarSeparator />
+            <SidebarFooter>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="w-full justify-start gap-2 h-12 p-2 group-data-[collapsible=icon]:h-12 group-data-[collapsible=icon]:w-12 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0">
+                           {user && (
+                                <>
+                                    <Avatar className="h-8 w-8">
+                                        <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'Admin'} />
+                                        <AvatarFallback>{user.displayName?.charAt(0) ?? 'A'}</AvatarFallback>
+                                    </Avatar>
+                                     <div className="flex flex-col items-start truncate group-data-[collapsible=icon]:hidden">
+                                        <span className="text-sm font-medium truncate">{user.displayName}</span>
+                                        <span className="text-xs text-muted-foreground truncate">Admin</span>
+                                    </div>
+                                </>
+                           )}
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="mb-2" side="right" align="start">
+                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>Settings</DropdownMenuItem>
+                        <DropdownMenuItem>Support</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>Logout</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </SidebarFooter>
         </Sidebar>
     );
 }
-
