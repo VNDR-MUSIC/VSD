@@ -1,4 +1,3 @@
-
 'use client';
 
 import './globals.css';
@@ -23,19 +22,6 @@ const fontBody = Inter({
   variable: '--font-body',
 });
 
-// Metadata is not supported in client components, so we comment it out for now
-// and will move it to specific page files as needed.
-// export const metadata: Metadata = {
-//   title: {
-//     default: siteConfig.name,
-//     template: `%s | ${siteConfig.name}`,
-//   },
-//   description: siteConfig.description,
-//   icons: {
-//     icon: 'https://indiemedia.llc/vsdlogo.jpg',
-//   }
-// };
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -47,7 +33,7 @@ export default function RootLayout({
   if (isAdminPage) {
      return (
         <html lang="en" className={cn("dark", fontHeadline.variable, fontBody.variable)}>
-          <body className="font-body antialiased">{children}</body>
+          <body>{children}</body>
         </html>
     );
   }
@@ -55,8 +41,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn("dark", fontHeadline.variable, fontBody.variable)}>
       <head>
-         <title>{siteConfig.name}</title>
-         <meta name="description" content={siteConfig.description} />
+         {/* Metadata is now handled on a per-page basis using Next.js Metadata API */}
          <link rel="icon" href="https://indiemedia.llc/vsdlogo.jpg" />
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col relative bg-background">

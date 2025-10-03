@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -8,6 +7,14 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Music, FileText, ImageIcon, Send } from 'lucide-react';
 import { AIImage } from '@/components/ai/AIImage';
 import { logger } from 'firebase-functions';
+import type { Metadata } from 'next';
+
+// Metadata is defined for reference, but this is a Client Component.
+// For SEO, this page would ideally have a Server Component parent setting the metadata.
+export const metadata: Metadata = {
+  title: 'Audio Exchange Demo | VSD Network',
+  description: 'Demonstration of a partner project using the VSD Network API for token transactions and AI-generated content, showcasing the potential of the ecosystem.',
+};
 
 // Mock data for audio tracks
 const mockTracks = [

@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -53,7 +52,14 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import type { Metadata } from 'next';
 
+// This is a client component, so we can't export metadata directly.
+// But we can define it for reference or for moving to a server component later.
+export const metadata: Metadata = {
+  title: 'Admin Dashboard | VSD Network',
+  description: 'Manage users, tenants, transactions, and system settings for the VSD Network.',
+};
 
 // Mock Data
 const users = [
@@ -113,8 +119,8 @@ export default function AdminDashboardPage() {
   return (
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
         <AdminHeader />
-        <main className="flex-1 p-4 sm:px-6 sm:py-6">
-            <div className="flex items-center justify-between mb-6">
+        <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+            <div className="flex items-center justify-between">
               <div>
                  <h1 className="font-headline text-2xl font-semibold">Admin Dashboard</h1>
                  <p className="text-muted-foreground">An overview of the VSD network.</p>
@@ -130,7 +136,7 @@ export default function AdminDashboardPage() {
             </div>
             
             {/* Stat Cards */}
-            <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4 mb-8">
+            <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total VSD Supply</CardTitle>
@@ -490,5 +496,3 @@ function AdminHeader() {
         </header>
     );
 }
-
-    

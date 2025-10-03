@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -9,6 +8,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Chrome } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import type { Metadata } from 'next';
+
+// Metadata is defined for reference, but this is a Client Component.
+// For SEO, this page would ideally have a Server Component parent setting the metadata.
+export const metadata: Metadata = {
+  title: 'Login to VSD Network',
+  description: 'Sign in to access your VSD Network dashboard, manage your tokens, and interact with the IMG ecosystem.',
+};
 
 export default function LoginPage() {
   const { toast } = useToast();

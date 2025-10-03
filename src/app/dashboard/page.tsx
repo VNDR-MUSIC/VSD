@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from 'react';
@@ -9,6 +8,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank } from "lucide-react";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { useToast } from "@/hooks/use-toast";
+import type { Metadata } from 'next';
+
+// Metadata is defined for reference, but this is a Client Component.
+// For SEO, this page would ideally have a Server Component parent setting the metadata.
+export const metadata: Metadata = {
+  title: 'My Dashboard | VSD Network',
+  description: 'Your personal VSD Network banking suite. View your VSD token balance, transaction history, staking information, and manage your assets.',
+};
+
 
 const mockWalletAddress = "0xVSD...a1B2c3D4e5F6";
 
