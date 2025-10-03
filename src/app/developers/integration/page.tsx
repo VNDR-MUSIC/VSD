@@ -1,22 +1,52 @@
 
+'use client';
+
 import type { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Share2, KeyRound, ShieldCheck, Workflow, AlertTriangle } from 'lucide-react';
+import { Share2, KeyRound, ShieldCheck, Workflow, AlertTriangle, Copy, Check } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
-export const metadata: Metadata = {
-  title: 'Project Integration | VSD Network',
-  description: 'A guide for developers on how to connect external IMG projects to the VSD Network, manage permissions, and interact with the central API services.',
+// Metadata cannot be exported from a client component.
+// It should be moved to the nearest server component parent or to a `layout.tsx` file.
+// export const metadata: Metadata = {
+//   title: 'Project Integration | VSD Network',
+//   description: 'A guide for developers on how to connect external IMG projects to the VSD Network, manage permissions, and interact with the central API services.',
+// };
+
+
+const CodeBlock = ({ children, lang = 'bash' }: { children: string; lang?: string }) => {
+    const { toast } = useToast();
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(children);
+        setCopied(true);
+        toast({
+            title: "Copied to clipboard!",
+        });
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    return (
+        <div className="relative my-4 rounded-md bg-muted/50 border">
+            <div className="flex items-center justify-between px-4 py-2 border-b">
+                <p className="text-xs font-semibold text-muted-foreground uppercase">{lang}</p>
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCopy}>
+                    {copied ? <Check className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}
+                </Button>
+            </div>
+            <pre className="p-4 overflow-x-auto text-xs sm:text-sm">
+                <code>
+                    {children}
+                </code>
+            </pre>
+        </div>
+    );
 };
-
-const CodeBlock = ({ children, lang = 'bash' }: { children: React.ReactNode; lang?: string }) => (
-    <pre className={`bg-muted/50 p-4 rounded-md overflow-x-auto my-4 text-xs sm:text-sm language-${lang}`}>
-        <code>
-            {children}
-        </code>
-    </pre>
-);
 
 export default function IntegrationPage() {
   return (
