@@ -12,7 +12,7 @@ import type { Metadata } from 'next';
 
 // Metadata is defined for reference, but this is a Client Component.
 // For SEO, this page would ideally have a Server Component parent setting the metadata.
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: 'Login to VSD Network',
   description: 'Sign in to access your VSD Network dashboard, manage your tokens, and interact with the IMG ecosystem.',
 };
