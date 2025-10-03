@@ -50,7 +50,7 @@ export default function AudioExchangePage() {
     try {
       // 1. Call VSD Transaction API
       toast({
-        title: "Step 1/3: Sending Transaction...",
+        title: "Processing Transaction...",
         description: `Calling the VSD Transaction API for ${track.price} VSD.`,
       });
 
@@ -76,34 +76,10 @@ export default function AudioExchangePage() {
       console.log('Transaction successful (mock):', transactionResult);
       
       toast({
-        title: "Step 2/3: Transaction Confirmed!",
-        description: `Mock TXN ID: ${transactionResult.transactionId}. Now generating license...`,
+        title: "Transaction Confirmed!",
+        description: `Mock TXN ID: ${transactionResult.transactionId}. Your purchase is complete.`,
       });
       
-      // 2. Call VSD Smart Contract API
-      const contractResponse = await fetch('/api/generate-contract', {
-         method: 'POST',
-         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_INTERNAL_API_KEY}`,
-        },
-        body: JSON.stringify({
-          description: `Create a simple NFT license smart contract for the audio track '${track.title}' purchased by wallet ${MOCK_SENDER_ADDRESS}. The license should be non-transferable.`
-        }),
-      });
-
-      if (!contractResponse.ok) {
-        throw new Error(`Contract Generation API failed with status: ${contractResponse.status}`);
-      }
-      
-      const contractResult = await contractResponse.json();
-      console.log('Contract generation successful:', contractResult);
-
-      toast({
-        title: "Step 3/3: License Generated!",
-        description: `An AI-generated smart contract for your license has been created.`,
-      });
-
     } catch (error: any) {
         console.error("Purchase failed:", error);
         toast({
@@ -156,7 +132,7 @@ export default function AudioExchangePage() {
                 </div>
                 <p className="text-xs text-muted-foreground flex items-center gap-2 pt-2">
                     <FileText className="h-4 w-4" />
-                    <span>Purchase includes an AI-generated license via VSD Contract API.</span>
+                    <span>Purchase includes an on-chain record via the VSD Transaction API.</span>
                 </p>
             </CardContent>
             <CardFooter>

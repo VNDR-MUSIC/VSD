@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -147,8 +146,8 @@ export default function TokenPage() {
           {[
             { title: "Phase 1: Foundation & Presale", icon: Milestone, items: ["Whitepaper Release", "Private & Public Presale Rounds", "Core Smart Contract Audits", "Community Building"] },
             { title: "Phase 2: Platform Launch", icon: Cpu, items: ["VSD Banking Suite (MVP)", "Staking dApp Launch", "Initial Governance Portal", "Token Generation Event (TGE)"] },
-            { title: "Phase 3: Ecosystem Expansion", icon: Users, items: ["Partner Integrations (AiEar, PromoHub)", "Developer SDKs Release", "Smart Contract Engine (Beta)"] },
-            { title: "Phase 4: Decentralization & Growth", icon: ListChecks, items: ["Full DAO Governance Implemented", "Token-to-Fiat Oracle Integration", "Ecosystem Grant Program", "Advanced AI Tooling"] },
+            { title: "Phase 3: Ecosystem Expansion", icon: Users, items: ["Partner Integrations (AiEar, PromoHub)", "Developer SDKs Release", "AI Image Generation API (V1)"] },
+            { title: "Phase 4: Decentralization & Growth", icon: ListChecks, items: ["Full DAO Governance Implemented", "Token-to-Fiat Oracle Integration", "Ecosystem Grant Program", "AI Contract Studio (V2)"] },
           ].map(phase => (
             <Card key={phase.title} className="shadow-md bg-card/70 backdrop-blur-sm h-full flex flex-col transition-all duration-300 hover:shadow-primary/20 hover:border-primary/50 border">
               <CardHeader className="pb-3">

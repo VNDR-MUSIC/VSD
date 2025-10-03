@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from "react";
@@ -75,25 +74,26 @@ export default function HomePage() {
                   />
               </div>
           </div>
-           <div className="grid md:grid-cols-2 gap-8 items-center animate-fade-in-up animation-delay-200">
-              <div className="relative h-80 rounded-lg shadow-2xl shadow-primary/10 border border-primary/20 p-2 md:order-last">
+
+          <div className="grid md:grid-cols-2 gap-8 items-center animate-fade-in-up">
+               <div className="relative h-80 rounded-lg shadow-2xl shadow-primary/10 border border-primary/20 p-2 md:order-2">
                    <AIImage
                       initialSrc="https://placehold.co/600x400.png"
-                      alt="AI-powered smart contract engine"
-                      hint="AI smart contract generation"
+                      alt="A decentralized network"
+                      hint="decentralized network hub"
                       layout="fill"
                       objectFit="cover"
                       className="rounded-md"
                   />
               </div>
-              <div className="space-y-4">
-                  <FileJson className="h-12 w-12 text-primary" />
-                  <h2 className="font-headline text-3xl md:text-4xl font-bold">AI Contract Studio</h2>
+              <div className="space-y-4 md:order-1">
+                  <Network className="h-12 w-12 text-primary" />
+                  <h2 className="font-headline text-3xl md:text-4xl font-bold">A Unified Banking Hub for IMG</h2>
                   <p className="text-muted-foreground text-lg">
-                      Dynamically generate and deploy Solidity smart contracts for royalty splits, licensing, and fundraising. Describe your needs in plain English and let our AI handle the code.
+                      The VSD Network serves as the centralized ledger and banking system for the Independent Music Group, featuring on-chain sync capabilities to ensure transparent and verifiable transactions across the entire ecosystem.
                   </p>
                    <Button asChild variant="link" className="text-primary text-lg p-0 h-auto">
-                    <Link href="/ai-contract-studio">Try the Studio <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                    <Link href="/developers/documentation#architecture">Learn About the Architecture <ArrowRight className="ml-2 h-5 w-5" /></Link>
                   </Button>
               </div>
           </div>

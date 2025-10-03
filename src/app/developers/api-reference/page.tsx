@@ -133,22 +133,6 @@ export default function ApiReferencePage() {
       </ApiSection>
 
       <Separator />
-
-      <ApiSection
-        icon={FileJson}
-        title="AI Smart Contract Generator API"
-        description="Generate Solidity smart contracts from a natural language description."
-        endpoint="/api/generate-contract"
-        method="POST"
-        requestParams={[
-            { name: 'description', type: 'string', required: true, description: 'A detailed description of the smart contract\'s requirements, features, and desired functionality.' }
-        ]}
-        successResponse={`{\n  "contractCode": "pragma solidity ^0.8.20;\\n\\ncontract MyToken {...",\n  "explanation": "This contract implements a basic ERC20 token..."\n}`}
-      >
-         {/* No custom children needed for this section */}
-      </ApiSection>
-
-      <Separator />
       
       <ApiSection
         icon={Banknote}
