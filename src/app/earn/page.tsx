@@ -8,10 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Coins, Video, Link as LinkIcon, ArrowRightLeft, Gift, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { siteConfig } from '@/config/site';
 
 const MOCK_LITE_BALANCE = 575.50;
 const MOCK_VSD_BALANCE = 12845.78;
-const CONVERSION_RATE = 1; // 1 VSD Lite = 1 VSD
+const { CONVERSION_RATE } = siteConfig.tokenValues; // Dynamic conversion rate
 
 const mockTasks = [
   {
@@ -88,13 +89,14 @@ export default function EarnPage() {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
 
+    const vsdReceived = amount / CONVERSION_RATE;
     setLiteBalance(prev => prev - amount);
-    setVsdBalance(prev => prev + amount);
+    setVsdBalance(prev => prev + vsdReceived);
     setConversionAmount('');
 
     toast({
       title: "Conversion Successful",
-      description: `You converted ${amount} VSD Lite to ${amount} VSD.`,
+      description: `You converted ${amount} VSD Lite to ${vsdReceived.toLocaleString()} VSD.`,
     });
     setIsConverting(false);
   };
@@ -105,7 +107,7 @@ export default function EarnPage() {
         <Gift className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
         <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">Earn & Convert VSD Tokens</h1>
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-          Complete simple tasks to earn VSD Lite tokens, then convert them to official VSD tokens at a 1:1 ratio.
+          Complete simple tasks to earn VSD Lite tokens, then convert them to official VSD tokens.
         </p>
       </header>
 
@@ -131,7 +133,7 @@ export default function EarnPage() {
         <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><ArrowRightLeft /> Convert VSD Lite to VSD</CardTitle>
-            <CardDescription>1 VSD Lite = {CONVERSION_RATE} VSD</CardDescription>
+            <CardDescription>{CONVERSION_RATE} VSD Lite = 1 VSD</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
              <div>
