@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank } from "lucide-react";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 
@@ -21,12 +21,12 @@ const mockTransactions = [
 ];
 
 const mockPortfolioData = [
-  { month: 'Jan', value: 4000 },
-  { month: 'Feb', value: 3000 },
-  { month: 'Mar', value: 5000 },
-  { month: 'Apr', value: 4500 },
-  { month: 'May', value: 6000 },
-  { month: 'Jun', value: 7500 },
+  { month: 'Jan', value: 125.00 },
+  { month: 'Feb', value: 120.50 },
+  { month: 'Mar', value: 135.20 },
+  { month: 'Apr', value: 132.80 },
+  { month: 'May', value: 145.90 },
+  { month: 'Jun', value: 155.00 },
 ];
 
 export default function DashboardPage() {
@@ -76,14 +76,14 @@ export default function DashboardPage() {
           {/* Portfolio Chart */}
           <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><BarChart className="h-6 w-6" />Portfolio Value</CardTitle>
-              <CardDescription>Your VSD portfolio value over the last 6 months (illustrative).</CardDescription>
+              <CardTitle className="flex items-center gap-2"><BarChart className="h-6 w-6" />Activity Overview</CardTitle>
+              <CardDescription>Illustrative chart of your VSD token usage over the last 6 months.</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={250}>
                 <RechartsBarChart data={mockPortfolioData}>
                   <XAxis dataKey="month" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
+                  <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value} VSD`} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "hsl(var(--card))",
@@ -91,8 +91,9 @@ export default function DashboardPage() {
                       borderRadius: "var(--radius)",
                     }}
                     cursor={{fill: 'hsl(var(--accent))', radius: 'var(--radius)'}}
+                    formatter={(value) => [`${(value as number).toFixed(2)} VSD`, 'Usage']}
                   />
-                  <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="VSD Spent" />
                 </RechartsBarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -103,8 +104,8 @@ export default function DashboardPage() {
         <div className="space-y-6">
           <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
             <CardHeader>
-              <CardTitle>Staking</CardTitle>
-              <CardDescription>Earn rewards by staking your VSD.</CardDescription>
+              <CardTitle className="flex items-center gap-2"><PiggyBank className="h-6 w-6"/>Staking</CardTitle>
+              <CardDescription>Earn rewards for participating in the network.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>

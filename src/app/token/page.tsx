@@ -67,7 +67,7 @@ export default function TokenPage() {
             Use VSD as the key to unlock access to our proprietary AI platform, including the IMG Services suite for content generation, and receive discounts on usage fees.
           </FeatureItem>
            <FeatureItem icon={PiggyBank} title="Stake VSD to Earn Rewards">
-            Participate in the platform's success by staking your VSD tokens to earn rewards from a dedicated pool, contributing to network security and stability.
+            Participate in the platform's success by staking your VSD tokens to earn rewards from a dedicated pool, as a function of network participation.
           </FeatureItem>
           <FeatureItem icon={Users} title="Participate in Governance">
             VSD holders can vote on key proposals that shape the future of the ecosystem, including new feature development, treasury allocation, and partnerships.
@@ -98,7 +98,7 @@ export default function TokenPage() {
               <div>
                 <h4 className="text-md sm:text-lg font-semibold text-primary">Total Supply</h4>
                 <p className="text-lg sm:text-xl font-bold">1,000,000,000 VSD</p>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">A fixed total supply ensures scarcity and a well-defined economic structure.</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">A fixed total supply ensures a well-defined economic structure.</p>
               </div>
               <div>
                 <h4 className="text-md sm:text-lg font-semibold text-primary">Token Symbol</h4>
@@ -181,7 +181,7 @@ export default function TokenPage() {
         <Card className="shadow-md bg-card/60 backdrop-blur-sm">
           <CardContent className="p-4 sm:p-6 text-xs sm:text-sm text-muted-foreground">
             <p className="mb-2"><strong>IMPORTANT:</strong> The VSD Token is a utility token designed to grant access to services and features within the VSD Network ecosystem. VSD Tokens are not intended to constitute securities in any jurisdiction. This website, the whitepaper, or any related materials do not constitute a prospectus or offer document of any sort and are not intended to constitute an offer of securities or a solicitation for investment in securities.</p>
-            <p className="mb-2">The information herein is not advice, nor a recommendation to purchase VSD Tokens. Participation in the token sale is at your own risk. Please consult with your legal, financial, and tax advisors before making any decisions. The VSD Network project is under development and subject to change. </p>
+            <p className="mb-2">The information herein is not advice, nor a recommendation to acquire VSD Tokens. Participation in any token sale is at your own risk. Please consult with your legal, financial, and tax advisors before making any decisions. The VSD Network project is under development and subject to change. </p>
             <p>The VSD Foundation (or similar entity) is intended to be registered in a crypto-friendly jurisdiction (e.g., British Virgin Islands) and will operate in compliance with applicable local regulations. Citizens and residents of certain jurisdictions may be restricted from participating in the token sale. It is your responsibility to ensure compliance with the laws of your jurisdiction.</p>
           </CardContent>
         </Card>
@@ -189,5 +189,3 @@ export default function TokenPage() {
     </div>
   );
 }
-
-    

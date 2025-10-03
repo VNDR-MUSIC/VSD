@@ -20,7 +20,7 @@ const faqs = [
   {
     id: "primary-utility",
     question: "What are the main uses (utility) of VSD tokens?",
-    answer: "The primary utilities are: <br/>1. **Accessing AI Services:** Holding and using VSD is the primary way to access exclusive AI tools, including IMG Services. <br/>2. **Unlocking Premium Features:** VSD holders can get discounts and unlock premium capabilities on the platform. <br/>3. **Staking:** Earn platform rewards (yield) by staking VSD tokens, which helps secure the network. <br/>4. **Governance:** Participate in DAO voting to influence key decisions about the platform's development and treasury. <br/>5. **Fee Mechanism:** A portion of platform fees may be used for token burns or redistributed to stakers."
+    answer: "The primary utilities are: <br/>1. **Accessing AI Services:** Holding and using VSD is the primary way to access exclusive AI tools, including IMG Services. <br/>2. **Unlocking Premium Features:** VSD holders can get discounts and unlock premium capabilities on the platform. <br/>3. **Staking for Rewards:** Earn platform rewards (yield) by staking VSD tokens as a reward for network participation. <br/>4. **Governance:** Participate in DAO voting to influence key decisions about the platform's development and treasury. <br/>5. **Fee Mechanism:** A portion of platform fees may be used for token burns or redistributed to stakers."
   },
   {
     id: "how-to-get-vsd",
@@ -45,12 +45,12 @@ const faqs = [
   {
     id: "is-vsd-security",
     question: "Is VSD token considered a security?",
-    answer: "VSD is designed as a utility token to access services and participate in governance on the VSD Network. It is not intended to be a security. However, regulations vary by jurisdiction. We strongly advise you to consult with your legal and financial advisors. Please read our full <a href='/developers/documentation#legal' class='text-primary hover:underline'>Legal Disclaimer</a>."
+    answer: "VSD is designed as a utility token to access services and participate in governance on the VSD Network. It is not intended to be a security. However, regulations vary by jurisdiction. We strongly advise you to consult with your own legal and financial advisors. Please read our full <a href='/developers/documentation#legal' class='text-primary hover:underline'>Legal Disclaimer</a>."
   },
   {
     id: "staking-rewards",
     question: "How do staking rewards work for VSD?",
-    answer: "As a core feature of our 'bank-like' model, VSD token holders can stake their tokens in a dedicated dApp to earn a yield, distributed from the 'Staking Rewards' allocation. This not only provides a way to grow your VSD assets but also contributes to the security and stability of the platform. Tiered rewards for larger or longer-term stakes are planned."
+    answer: "VSD token holders can stake their tokens in a dedicated dApp to earn a yield, distributed from the 'Staking Rewards' allocation, as a reward for helping to secure the network. This not only provides a way to participate more deeply in the platform but also contributes to the security and stability of the ecosystem. Tiered rewards for larger or longer-term stakes are planned."
   },
   {
     id: "governance-explained",

@@ -26,7 +26,7 @@ export default function HomePage() {
           The Utility Token for Decentralized AI
         </h1>
         <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 animate-fade-in-up animation-delay-400">
-         VSD is the official utility token of the IMG ecosystem, fueling the next generation of AI services. Acquire VSD to access exclusive tools, earn rewards, and help govern the future of AI.
+         VSD is the official utility token of the IMG ecosystem, fueling the next generation of AI services. Acquire VSD to access exclusive tools, earn rewards through participation, and help govern the future of the platform.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animation-delay-600">
           <Button asChild size="lg" className="font-bold btn-hover-effect w-full sm:w-auto text-lg py-7">

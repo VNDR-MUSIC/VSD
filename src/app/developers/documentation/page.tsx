@@ -51,7 +51,7 @@ export default function WhitepaperDocumentationPage() {
       <Separator />
 
       <SectionCard icon={Library} title="1. Introduction: The VSD Vision" description="Powering a decentralized economy for AI and creative assets." id="introduction">
-        <p>The digital landscape is rapidly converging around Artificial Intelligence (AI) and decentralized technologies. The VSD Network stands at this intersection as the official financial infrastructure for the **Independent Music Group (IMG)**. Our mission is to create a secure, transparent, and efficient ecosystem—the IMG Banking System—powered by the VSD utility token, for creators, developers, and investors to transact, collaborate, and innovate.</p>
+        <p>The digital landscape is rapidly converging around Artificial Intelligence (AI) and decentralized technologies. The VSD Network stands at this intersection as the official financial infrastructure for the **Independent Music Group (IMG)**. Our mission is to create a secure, transparent, and efficient ecosystem—the IMG Banking System—powered by the VSD utility token, for creators, developers, and platform participants to transact, collaborate, and innovate.</p>
         <p>This whitepaper details the comprehensive utility of the VSD token, the tokenomics that sustain the ecosystem, our strategic roadmap, the planned presale, and the technical architecture that makes it all possible. We invite you to join us in building the future of the decentralized creative economy.</p>
         <AIImage
           initialSrc="https://placehold.co/800x400.png"
@@ -68,19 +68,19 @@ export default function WhitepaperDocumentationPage() {
       <SectionCard icon={Zap} title="2. VSD Token Utility" description="The multifaceted role of VSD within the IMG Banking System." id="utility">
         <p>The VSD token is the lifeblood of the VSD Network, designed with multiple utilities to drive a vibrant and self-sustaining economy:</p>
         <ul className="list-disc pl-5 mt-4 space-y-2">
-            <li><strong><HandCoins className="inline-block h-5 w-5 mr-2 text-primary" />Royalty Payouts:</strong> Automated, transparent, and instant royalty distributions for artists and creators, executed via smart contracts.</li>
-            <li><strong><TrendingUp className="inline-block h-5 w-5 mr-2 text-primary" />Tokenized Investments:</strong> The primary vehicle for investing in ecosystem projects, purchasing fractional ownership of creative assets, and participating in artist fundraising.</li>
-            <li><strong><FileSignature className="inline-block h-5 w-5 mr-2 text-primary" />NFT Licensing & Payments:</strong> The standard currency for licensing media, purchasing NFTs, and settling transactions for digital goods.</li>
+            <li><strong><HandCoins className="inline-block h-5 w-5 mr-2 text-primary" />Automated Payouts:</strong> Facilitating automated, transparent, and instant royalty or service payouts for artists and creators, executed via smart contracts.</li>
+            <li><strong><TrendingUp className="inline-block h-5 w-5 mr-2 text-primary" />Platform Access & Governance:</strong> The primary vehicle for accessing ecosystem services, participating in special events, and voting on platform-wide decisions.</li>
+            <li><strong><FileSignature className="inline-block h-5 w-5 mr-2 text-primary" />Licensing & Payments:</strong> The standard currency for licensing media, purchasing NFTs, and settling transactions for digital goods within the ecosystem.</li>
             <li><strong><Cpu className="inline-block h-5 w-5 mr-2 text-primary" />Pay-per-Use AI Services:</strong> Access to the VSD Network's proprietary IMG services, AI-powered tools, and APIs, with usage fees paid in VSD.</li>
-            <li><strong><PackagePlus className="inline-block h-5 w-5 mr-2 text-primary" />Membership & Staking Rewards:</strong> Staking VSD tokens to secure the network, earn yield, and unlock tiered membership benefits like reduced fees and exclusive access.</li>
-            <li><strong><Users className="inline-block h-5 w-5 mr-2 text-primary" />Crowdfunding & Governance:</strong> Powering community-driven funding for new projects and enabling VSD holders to vote on key decisions that shape the ecosystem's future.</li>
+            <li><strong><PackagePlus className="inline-block h-5 w-5 mr-2 text-primary" />Membership & Staking Rewards:</strong> Staking VSD tokens to secure the network, earn yield as a reward for participation, and unlock tiered membership benefits like reduced fees and exclusive access.</li>
+            <li><strong><Users className="inline-block h-5 w-5 mr-2 text-primary" />Crowdfunding & Platform Governance:</strong> Powering community-driven funding for new projects and enabling VSD holders to vote on key decisions that shape the ecosystem's future.</li>
         </ul>
       </SectionCard>
 
       <Separator />
 
       <SectionCard icon={FileJson} title="3. Tokenomics & Presale" description="Detailed breakdown of VSD token distribution, supply, and presale plan." id="tokenomics">
-        <p>The VSD tokenomics are structured to ensure a balanced distribution, incentivize long-term holding, fund ongoing development, and foster a vibrant community. For full details including presale stages, pricing, and accepted currencies, please visit the <Link href="/token#tokenomics">VSD Token Page</Link>.</p>
+        <p>The VSD tokenomics are structured to ensure a balanced distribution, incentivize long-term platform participation, fund ongoing development, and foster a vibrant community. For full details including presale stages, pricing, and accepted currencies, please visit the <Link href="/token#tokenomics">VSD Token Page</Link>.</p>
         <h4 className="text-xl sm:text-2xl mt-6 mb-2">Token Allocation:</h4>
         <AIImage
             initialSrc="https://placehold.co/700x450.png"
@@ -160,7 +160,7 @@ exports.deploySmartContract = functions.firestore
           <AccordionItem value="arch-compliance">
             <AccordionTrigger className="text-lg sm:text-xl hover:no-underline">Compliance Layer</AccordionTrigger>
             <AccordionContent>
-              <p>Built into the core, this layer manages user identity, roles (Artist, Investor, etc.), and enforces rules based on geography or wallet status, ensuring the ecosystem remains compliant with evolving regulations.</p>
+              <p>Built into the core, this layer manages user identity, roles (e.g. Artist, Developer), and enforces rules based on geography or wallet status, ensuring the ecosystem remains compliant with evolving regulations.</p>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
@@ -175,13 +175,11 @@ exports.deploySmartContract = functions.firestore
       <Separator />
 
       <SectionCard icon={ShieldCheck} title="6. Legal Disclaimer & Risk Factors" description="Important information regarding VSD tokens and participation." id="legal">
-        <p className="font-semibold">Please read this section carefully before participating in the VSD token sale or using VSD tokens.</p>
-        <p>The VSD Token is a utility token. It is not intended to constitute a security. This whitepaper does not constitute a prospectus or offer document of any sort and is not intended to constitute an offer of securities or a solicitation for investment in securities in any jurisdiction.</p>
+        <p className="font-semibold">Please read this section carefully before participating in any token sale or using VSD tokens.</p>
+        <p>The VSD Token is a utility token. It is not intended to constitute a security. This whitepaper does not constitute a prospectus or offer document of any sort and is not intended to constitute an offer of securities or a solicitation for investment in securities in any jurisdiction. Acquiring VSD tokens is for the primary purpose of their utility within the VSD Network.</p>
         <p>The purchase of VSD tokens involves significant risk. The VSD Network project is under development and its features, roadmap, and tokenomics are subject to change. There is no guarantee that the project will achieve its objectives. By purchasing, holding, or using VSD tokens, you acknowledge and agree that you have read, understood, and accepted all the terms, conditions, and risks. You are solely responsible for ensuring compliance with the laws of your jurisdiction.</p>
       </SectionCard>
 
     </div>
   );
 }
-
-    

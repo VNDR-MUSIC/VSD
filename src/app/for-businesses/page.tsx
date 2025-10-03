@@ -49,7 +49,7 @@ export default function ForBusinessesPage() {
           <BenefitCard icon={Puzzle} title="Seamless Integration">
             Our planned APIs and SDKs will enable easy integration of VSD AI services and token functionalities into your existing platforms and applications.
           </BenefitCard>
-          <BenefitCard icon={Zap} title="Cost-Efficient Solutions">
+          <BenefitCard icon={Zap} title="Efficient Service Access">
             VSD tokens can offer a more predictable and potentially cost-effective way to pay for AI services compared to traditional SaaS models, especially with token-based discounts.
           </BenefitCard>
           <BenefitCard icon={Users} title="Engage with Web3 Economy">
@@ -116,7 +116,7 @@ export default function ForBusinessesPage() {
                 <CardContent><p className="text-muted-foreground text-sm sm:text-base">Developers and businesses can use VSD SDKs and APIs to build their own applications on top of the VSD AI platform, paying for AI resource consumption with VSD tokens.</p></CardContent>
             </Card>
              <Card className="shadow-md">
-                <CardHeader><CardTitle className="text-lg sm:text-xl">Corporate Treasury & Web3 Engagement</CardTitle></CardHeader>
+                <CardHeader><CardTitle className="text-lg sm:text-xl">Corporate Treasury & Web3 Participation</CardTitle></CardHeader>
                 <CardContent><p className="text-muted-foreground text-sm sm:text-base">Hold VSD as a utility asset for accessing AI services or participate in the VSD ecosystem's governance, aligning with innovative Web3 trends.</p></CardContent>
             </Card>
         </div>
