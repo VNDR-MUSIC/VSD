@@ -10,8 +10,6 @@ import {
   DollarSign,
   BarChart3,
   ArrowRightLeft,
-  ChevronLeft,
-  ChevronRight,
   Settings,
   Home,
   Users,
@@ -54,7 +52,6 @@ import {
   SidebarMenuButton,
   SidebarProvider,
   SidebarTrigger,
-  SidebarInset,
   SidebarFooter,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
@@ -62,6 +59,7 @@ import { Logo } from '@/components/icons/Logo';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/services/firebase';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 
 // Mock Data
@@ -177,116 +175,133 @@ export default function AdminDashboardPage() {
                 </Card>
             </div>
 
-            {/* Main Content Area */}
-            <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
-              <Card>
-                <CardHeader className="px-7">
-                  <CardTitle>Users</CardTitle>
-                  <CardDescription>
-                    Manage all users and their balances in the VSD ecosystem.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>User</TableHead>
-                        <TableHead className="hidden sm:table-cell">
-                          Wallet Address
-                        </TableHead>
-                        <TableHead className="hidden sm:table-cell">
-                          Status
-                        </TableHead>
-                        <TableHead className="hidden md:table-cell">
-                          Date Joined
-                        </TableHead>
-                        <TableHead className="text-right">Balance</TableHead>
-                        <TableHead><span className="sr-only">Actions</span></TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {users.map((user) => (
-                        <TableRow key={user.id}>
-                          <TableCell>
-                            <div className="font-medium">{user.name}</div>
-                            <div className="hidden text-sm text-muted-foreground md:inline">
-                              {user.email}
-                            </div>
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell font-mono">
-                            {user.wallet}
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell">
-                            <Badge className="text-xs" variant={user.status === 'Active' ? 'default' : 'destructive'}>
-                              {user.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="hidden md:table-cell">
-                            {user.joined}
-                          </TableCell>
-                          <TableCell className="text-right">{user.vsdBalance.toLocaleString()} VSD</TableCell>
-                          <TableCell className="text-right">
-                             <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button size="icon" variant="ghost">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                  <DropdownMenuItem>View Details</DropdownMenuItem>
-                                  <DropdownMenuItem>Adjust Balance</DropdownMenuItem>
-                                   <DropdownMenuItem className="text-destructive">Suspend User</DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-
-              {/* Recent Transactions */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Transactions</CardTitle>
-                   <CardDescription>
-                    An audit log of the most recent ledger activities.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                      <TableHeader>
+            {/* Main Content Area with Tabs */}
+             <Tabs defaultValue="users">
+                <div className="flex items-center">
+                    <TabsList>
+                        <TabsTrigger value="users">Users</TabsTrigger>
+                        <TabsTrigger value="transactions">Activity</TabsTrigger>
+                    </TabsList>
+                    <div className="ml-auto flex items-center gap-2">
+                        <Button size="sm" className="h-8 gap-1">
+                            <PlusCircle className="h-3.5 w-3.5" />
+                            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                                Create User
+                            </span>
+                        </Button>
+                    </div>
+                </div>
+                <TabsContent value="users">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Users</CardTitle>
+                      <CardDescription>
+                        Manage all users and their balances in the VSD ecosystem.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Table>
+                        <TableHeader>
                           <TableRow>
-                              <TableHead>User</TableHead>
-                              <TableHead>Type</TableHead>
-                              <TableHead>Status</TableHead>
-                              <TableHead>Date</TableHead>
-                              <TableHead className="text-right">Amount</TableHead>
+                            <TableHead>User</TableHead>
+                            <TableHead className="hidden sm:table-cell">
+                              Wallet Address
+                            </TableHead>
+                            <TableHead className="hidden sm:table-cell">
+                              Status
+                            </TableHead>
+                            <TableHead className="hidden md:table-cell">
+                              Date Joined
+                            </TableHead>
+                            <TableHead className="text-right">Balance</TableHead>
+                            <TableHead><span className="sr-only">Actions</span></TableHead>
                           </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                          {transactions.map(tx => (
-                               <TableRow key={tx.id}>
-                                <TableCell>
-                                    <div className="font-medium">{tx.user}</div>
-                                </TableCell>
-                                <TableCell>
-                                    <Badge variant="outline">{tx.type}</Badge>
-                                </TableCell>
-                                <TableCell>
-                                     <Badge variant={tx.status === 'Completed' ? 'default' : 'secondary'}>{tx.status}</Badge>
-                                </TableCell>
-                                <TableCell>{tx.date}</TableCell>
-                                <TableCell className="text-right">{tx.amount.toLocaleString()} VSD</TableCell>
+                        </TableHeader>
+                        <TableBody>
+                          {users.map((user) => (
+                            <TableRow key={user.id}>
+                              <TableCell>
+                                <div className="font-medium">{user.name}</div>
+                                <div className="hidden text-sm text-muted-foreground md:inline">
+                                  {user.email}
+                                </div>
+                              </TableCell>
+                              <TableCell className="hidden sm:table-cell font-mono">
+                                {user.wallet}
+                              </TableCell>
+                              <TableCell className="hidden sm:table-cell">
+                                <Badge className="text-xs" variant={user.status === 'Active' ? 'default' : 'destructive'}>
+                                  {user.status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="hidden md:table-cell">
+                                {user.joined}
+                              </TableCell>
+                              <TableCell className="text-right">{user.vsdBalance.toLocaleString()} VSD</TableCell>
+                              <TableCell className="text-right">
+                                 <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button size="icon" variant="ghost">
+                                        <MoreHorizontal className="h-4 w-4" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                      <DropdownMenuItem>View Details</DropdownMenuItem>
+                                      <DropdownMenuItem>Adjust Balance</DropdownMenuItem>
+                                      <DropdownMenuSeparator />
+                                      <DropdownMenuItem className="text-destructive">Suspend User</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                              </TableCell>
                             </TableRow>
                           ))}
-                      </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </div>
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                 <TabsContent value="transactions">
+                    <Card>
+                        <CardHeader>
+                          <CardTitle>Recent Activity</CardTitle>
+                           <CardDescription>
+                            An audit log of the most recent ledger activities.
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <Table>
+                              <TableHeader>
+                                  <TableRow>
+                                      <TableHead>User</TableHead>
+                                      <TableHead>Type</TableHead>
+                                      <TableHead>Status</TableHead>
+                                      <TableHead>Date</TableHead>
+                                      <TableHead className="text-right">Amount</TableHead>
+                                  </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                  {transactions.map(tx => (
+                                       <TableRow key={tx.id}>
+                                        <TableCell>
+                                            <div className="font-medium">{tx.user}</div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge variant="outline">{tx.type}</Badge>
+                                        </TableCell>
+                                        <TableCell>
+                                             <Badge variant={tx.status === 'Completed' ? 'default' : 'secondary'}>{tx.status}</Badge>
+                                        </TableCell>
+                                        <TableCell>{tx.date}</TableCell>
+                                        <TableCell className="text-right">{tx.amount.toLocaleString()} VSD</TableCell>
+                                    </TableRow>
+                                  ))}
+                              </TableBody>
+                          </Table>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
           </main>
         </div>
       </div>
