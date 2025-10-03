@@ -2,6 +2,7 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import {
   MoreHorizontal,
   PlusCircle,
@@ -43,23 +44,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarProvider,
-  SidebarTrigger,
-  SidebarFooter,
-  SidebarSeparator,
-} from '@/components/ui/sidebar';
 import { Logo } from '@/components/icons/Logo';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/services/firebase';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 
 // Mock Data
@@ -112,25 +103,24 @@ const transactions = [
 
 export default function AdminDashboardPage() {
   return (
-    <SidebarProvider>
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
-        <AdminSidebar />
-        <div className="flex flex-col sm:pl-14">
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-            <SidebarTrigger className="sm:hidden" />
-            <div className="relative flex-1 md:grow-0">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search..."
-                className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
-              />
+        <AdminHeader />
+        <main className="flex-1 p-4 sm:px-6 sm:py-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                 <h1 className="font-headline text-2xl font-semibold">Admin Dashboard</h1>
+                 <p className="text-muted-foreground">An overview of the VSD network.</p>
+              </div>
+                <div className="relative">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        type="search"
+                        placeholder="Search..."
+                        className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
+                    />
+                </div>
             </div>
-            <div className="flex-1">
-                <h1 className="font-headline text-xl font-semibold">Admin Dashboard</h1>
-            </div>
-          </header>
-          <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+            
             {/* Stat Cards */}
             <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4 mb-8">
                 <Card>
@@ -302,86 +292,75 @@ export default function AdminDashboardPage() {
                     </Card>
                 </TabsContent>
             </Tabs>
-          </main>
-        </div>
+        </main>
       </div>
-    </SidebarProvider>
   );
 }
 
 
-function AdminSidebar() {
+function AdminHeader() {
     const [user] = useAuthState(auth);
+    const pathname = usePathname();
+
+    const navItems = [
+        { href: "/admin", label: "Dashboard", icon: Home },
+        { href: "/admin/users", label: "Users", icon: Users },
+        { href: "/admin/transactions", label: "Transactions", icon: Wallet },
+        { href: "/admin/keys", label: "API Keys", icon: KeyRound },
+        { href: "/admin/promotions", label: "Promotions", icon: Gift },
+    ];
+
     return (
-        <Sidebar side="left" className="border-r" collapsible="icon">
-            <SidebarHeader>
-                <Button variant="ghost" size="icon" className="h-10 w-10" asChild>
-                    <a href="/"><Logo size={32} /></a>
-                </Button>
-            </SidebarHeader>
-            <SidebarContent>
-                <SidebarMenu>
-                     <SidebarMenuItem>
-                        <SidebarMenuButton href="/admin" isActive tooltip="Dashboard">
-                             <Home />
-                            <span>Dashboard</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton href="#" tooltip="Users">
-                             <Users />
-                            <span>Users</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                     <SidebarMenuItem>
-                        <SidebarMenuButton href="#" tooltip="Transactions">
-                             <Wallet />
-                             <span>Transactions</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                     <SidebarMenuItem>
-                        <SidebarMenuButton href="#" tooltip="API Keys">
-                            <KeyRound />
-                             <span>API Keys</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                     <SidebarMenuItem>
-                        <SidebarMenuButton href="#" tooltip="Promotions">
-                            <Gift />
-                             <span>Promotions</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarContent>
-            <SidebarSeparator />
-            <SidebarFooter>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="w-full justify-start gap-2 h-12 p-2 group-data-[collapsible=icon]:h-12 group-data-[collapsible=icon]:w-12 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0">
-                           {user && (
-                                <>
+        <header className="sticky top-0 z-40 w-full border-b bg-background">
+            <div className="container flex h-16 items-center px-4 sm:px-6">
+                <Link href="/" className="flex items-center gap-2 mr-6">
+                    <Logo size={32} />
+                    <span className="font-bold hidden sm:inline-block">VSD Admin</span>
+                </Link>
+                <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
+                     {navItems.map(item => (
+                         <Link 
+                            key={item.href}
+                            href={item.href}
+                            className={cn(
+                                "text-sm font-medium transition-colors hover:text-primary",
+                                pathname === item.href ? "text-primary" : "text-muted-foreground"
+                            )}
+                         >
+                            {item.label}
+                         </Link>
+                     ))}
+                </nav>
+                <div className="ml-auto flex items-center gap-4">
+                     <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                               {user && (
                                     <Avatar className="h-8 w-8">
                                         <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'Admin'} />
                                         <AvatarFallback>{user.displayName?.charAt(0) ?? 'A'}</AvatarFallback>
                                     </Avatar>
-                                     <div className="flex flex-col items-start truncate group-data-[collapsible=icon]:hidden">
-                                        <span className="text-sm font-medium truncate">{user.displayName}</span>
-                                        <span className="text-xs text-muted-foreground truncate">Admin</span>
-                                    </div>
-                                </>
-                           )}
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="mb-2" side="right" align="start">
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Settings</DropdownMenuItem>
-                        <DropdownMenuItem>Support</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Logout</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </SidebarFooter>
-        </Sidebar>
+                               )}
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56" align="end">
+                            <DropdownMenuLabel>
+                                <div className="flex flex-col space-y-1">
+                                    <p className="text-sm font-medium leading-none">{user?.displayName}</p>
+                                    <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                                </div>
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Settings</DropdownMenuItem>
+                            <DropdownMenuItem>Support</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Logout</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </div>
+        </header>
     );
 }
+
+    
