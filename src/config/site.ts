@@ -27,8 +27,8 @@ export const siteConfig = {
     { title: "Network Status", href: "/network-status" },
     { title: "Compliance", href: "/compliance" },
     { title: "API Reference", href: "/developers/api-reference" },
-    { title: "Terms of Service", href: "#" },
-    { title: "Privacy Policy", href: "#" },
+    { title: "Terms of Service", href: "/terms-of-service" },
+    { title: "Privacy Policy", href: "/privacy-policy" },
     { title: "FAQ", href: "/faq" },
   ] satisfies Omit<NavItem, 'icon' | 'description'>[],
    secondaryNav: [
