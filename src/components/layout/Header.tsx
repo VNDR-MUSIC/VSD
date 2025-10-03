@@ -7,7 +7,7 @@ import { siteConfig } from '@/config/site';
 import { Logo } from '@/components/icons/Logo';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetSeparator } from '@/components/ui/sheet';
 import { Menu, User } from 'lucide-react';
 import {
   DropdownMenu,
@@ -33,7 +33,7 @@ export function Header() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className={cn(
               "text-sm font-medium transition-colors hover:text-primary focus:bg-accent focus:text-accent-foreground",
-              pathname.startsWith('/ecosystem') || pathname.startsWith('/audio-exchange') ? "text-primary" : "text-foreground/70"
+              pathname.startsWith('/ecosystem') || pathname.startsWith('/audio-exchange') || pathname.startsWith('/earn') ? "text-primary" : "text-foreground/70"
             )}>
               {item.title}
               <ChevronDown className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180" />
@@ -47,6 +47,9 @@ export function Header() {
             </DropdownMenuItem>
              <DropdownMenuItem asChild>
                <Link href="/audio-exchange">Audio Exchange Demo</Link>
+            </DropdownMenuItem>
+             <DropdownMenuItem asChild>
+               <Link href="/earn">Earn VSD Tokens</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -119,12 +122,15 @@ export function Header() {
                       </Link>
                     ))}
                      <DropdownMenuSeparator />
-                     <Link
-                        href="/audio-exchange"
-                        className="text-lg font-medium transition-colors hover:text-primary text-foreground/80"
-                      >
-                        Audio Exchange Demo
-                      </Link>
+                     {siteConfig.secondaryNav.map((item) => (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className="text-lg font-medium transition-colors hover:text-primary text-foreground/80"
+                        >
+                            {item.title}
+                        </Link>
+                     ))}
                   </nav>
                 </SheetContent>
               </Sheet>

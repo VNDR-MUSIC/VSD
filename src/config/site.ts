@@ -1,6 +1,6 @@
 
 import type { NavItem } from '@/types/nav';
-import { LayoutDashboard, BrainCircuit, Network, Code, Briefcase, HelpCircle, FileText, Zap, ShieldAlert, TrendingUp, HandCoins, UserSquare, Banknote, Signal, ShoppingCart, Music, Shield } from 'lucide-react';
+import { LayoutDashboard, BrainCircuit, Network, Code, Briefcase, HelpCircle, FileText, Zap, ShieldAlert, TrendingUp, HandCoins, UserSquare, Banknote, Signal, ShoppingCart, Music, Shield, Gift } from 'lucide-react';
 
 export const siteConfig = {
   name: "VSD Network",
@@ -26,6 +26,6 @@ export const siteConfig = {
   ] satisfies Omit<NavItem, 'icon' | 'description'>[],
    secondaryNav: [
     { title: "Audio Exchange Demo", href: "/audio-exchange", icon: Music },
-    // You can add more secondary navigation items here
+    { title: "Earn VSD Tokens", href: "/earn", icon: Gift },
   ] satisfies NavItem[],
 };
