@@ -8,7 +8,7 @@ import { Logo } from '@/components/icons/Logo';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
-import { Menu, User, LogOut, ChevronDown, type LucideIcon } from 'lucide-react';
+import { Menu, User, LogOut, ChevronDown, type LucideIcon, ShieldAlert } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -108,7 +108,6 @@ export function Header() {
 
 
   const navItems = siteConfig.mainNav.map((item) => {
-    // Special handling for the Ecosystem dropdown
     if (item.href === "/ecosystem") {
       return (
         <DropdownMenu key={item.href}>
@@ -133,6 +132,32 @@ export function Header() {
              <DropdownMenuItem asChild>
                <Link href="/earn">Earn VSD Tokens</Link>
             </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    }
+
+    // New Dropdown for "Developers"
+    if (item.href === "/developers") {
+      return (
+        <DropdownMenu key={item.href}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className={cn(
+              "text-sm font-medium transition-colors hover:text-primary focus:bg-accent focus:text-accent-foreground",
+              pathname.startsWith('/developers') ? "text-primary" : "text-foreground/70"
+            )}>
+              {item.title}
+              <ChevronDown className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuLabel>{item.description}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild><Link href="/developers">Developer Portal</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/developers/documentation">Whitepaper</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/developers/api-reference">API Reference</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/developers/integration">Integration Guide</Link></DropdownMenuItem>
+             <DropdownMenuItem asChild><Link href="/developers/sdks-tools">SDKs & Tools</Link></DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
