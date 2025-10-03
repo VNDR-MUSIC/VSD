@@ -130,9 +130,9 @@ export default function AdminDashboardPage() {
                 <h1 className="font-headline text-xl font-semibold">Admin Dashboard</h1>
             </div>
           </header>
-          <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+          <main className="flex-1 p-4 sm:px-6 sm:py-0 md:gap-8">
             {/* Stat Cards */}
-            <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4 mb-8">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total VSD Supply</CardTitle>
