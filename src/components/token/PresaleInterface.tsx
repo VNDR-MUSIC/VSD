@@ -33,23 +33,17 @@ export const PresaleInterface = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid md:grid-cols-2 gap-6 items-center">
-          <div className="space-y-4">
-            <TokenomicsDetail title="Current Presale Phase" value="Phase 1 (Public)" description="Limited tokens available at this price." />
-            <TokenomicsDetail title="Price per VSD" value="$0.01 USD" description="Equivalent in ETH/USDT." />
-            <TokenomicsDetail title="Target Raise (Phase 1)" value="$500,000 USD" />
-            <TokenomicsDetail title="Accepted Currencies" value="ETH, USDT" />
-             <AIImage
-                initialSrc="https://placehold.co/400x250.png"
-                alt="VSD Presale Progress Bar (Conceptual)"
-                width={400}
-                height={250}
-                className="rounded-md shadow-md mx-auto mt-4"
-                hint="crypto presale progress"
-            />
+        <div className="grid md:grid-cols-1 gap-6 items-center">
+          <div className="space-y-4 text-center md:text-left">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <TokenomicsDetail title="Current Presale Phase" value="Phase 1 (Public)" description="Limited tokens available at this price." />
+                <TokenomicsDetail title="Price per VSD" value="$0.01 USD" description="Equivalent in ETH/USDT." />
+                <TokenomicsDetail title="Target Raise (Phase 1)" value="$500,000 USD" />
+                <TokenomicsDetail title="Accepted Currencies" value="ETH, USDT" />
+            </div>
           </div>
 
-          <Card className="p-6 bg-background/70 space-y-4">
+          <Card className="p-6 bg-background/70 space-y-4 w-full">
             <h4 className="font-semibold text-lg text-center">Contribute & Get VSD</h4>
             <>
               <div>
