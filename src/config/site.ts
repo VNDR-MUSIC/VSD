@@ -14,6 +14,7 @@ export const siteConfig = {
     { title: "Buy Tokens", href: "/buy", icon: ShoppingCart, description: "Purchase VSD with a card" },
     { title: "Ecosystem", href: "/ecosystem", icon: Network, description: "AI Tools & Partner dApps" },
     { title: "Developers", href: "/developers", icon: Code, description: "Whitepaper, SDKs, Build" },
+    { title: "FAQ", href: "/faq", icon: HelpCircle, description: "Frequently Asked Questions"},
     // Admin link should be conditionally shown based on user role, but for now it's here for access.
     { title: "Admin", href: "/admin", icon: Shield },
   ] satisfies NavItem[],

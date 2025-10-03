@@ -104,12 +104,12 @@ export default function DevelopersPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground text-sm sm:text-base">
-              Connect with fellow developers, ask questions, share your projects, and contribute to the VSD ecosystem.
+              Connect with fellow developers, ask questions, share your projects, and contribute to the VSD ecosystem. This is also the best place to report bugs.
             </p>
             <div className="flex flex-wrap gap-2">
               <Button asChild variant="outline">
                 <Link href="#" target="_blank" rel="noopener noreferrer">
-                  <Github className="mr-2 h-4 w-4" /> GitHub (SDKs & Smart Contracts)
+                  <Github className="mr-2 h-4 w-4" /> GitHub (Report Bugs Here)
                 </Link>
               </Button>
               <Button asChild variant="outline">
@@ -119,7 +119,7 @@ export default function DevelopersPage() {
               </Button>
                <Button asChild variant="outline">
                 <Link href="/developers/documentation#governance" target="_blank" rel="noopener noreferrer">
-                   VSD Governance Forum (Link to Whitepaper section)
+                   VSD Governance Forum
                 </Link>
               </Button>
             </div>
