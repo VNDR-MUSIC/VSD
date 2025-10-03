@@ -5,6 +5,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { HelpCircle, BrainCircuit } from 'lucide-react';
+import { siteConfig } from '@/config/site';
 
 export const metadata: Metadata = {
   title: 'FAQ | VSD Utility Token',
@@ -18,6 +19,11 @@ const faqs = [
     answer: "VSD is the official utility token for the Independent Music Group (IMG) ecosystem. It functions as the essential currency required to access a decentralized platform of AI-driven tools and services, most notably the IMG Services suite for content and image generation. VSD fuels the entire network, enabling transactions, rewarding participation, and governing the platform's future."
   },
   {
+    id: "what-is-vsd-lite",
+    question: "What are VSD Lite tokens?",
+    answer: `VSD Lite tokens are an off-chain reward point system within the VSD Network. You can earn them by completing simple tasks like watching videos or engaging with partner content on our <a href='/earn' class='text-primary hover:underline'>Earn page</a>. VSD Lite tokens are not on the blockchain and cannot be traded, but they can be converted into official, on-chain VSD tokens at a rate of ${siteConfig.tokenValues.CONVERSION_RATE} VSD Lite to 1 VSD. This system allows us to reward community engagement without incurring gas fees for small amounts.`
+  },
+  {
     id: "primary-utility",
     question: "What are the main uses (utility) of VSD tokens?",
     answer: "The primary utilities are: <br/>1. **Accessing AI Services:** Holding and using VSD is the primary way to access exclusive AI tools, including IMG Services. <br/>2. **Unlocking Premium Features:** VSD holders can get discounts and unlock premium capabilities on the platform. <br/>3. **Staking for Rewards:** Earn platform rewards (yield) by staking VSD tokens as a reward for network participation. <br/>4. **Governance:** Participate in DAO voting to influence key decisions about the platform's development and treasury. <br/>5. **Fee Mechanism:** A portion of platform fees may be used for token burns or redistributed to stakers."
@@ -25,7 +31,7 @@ const faqs = [
   {
     id: "how-to-get-vsd",
     question: "How can I acquire VSD tokens?",
-    answer: "The initial opportunity to acquire VSD tokens is through our official <a href='/token#presale' class='text-primary hover:underline'>Public Presale</a>. This is the first step to becoming a participant in the ecosystem and unlocking access to AI tools. After the presale and distribution events, VSD is planned for listing on decentralized exchanges (DEXs). Always use official links provided on this website."
+    answer: "The initial opportunity to acquire VSD tokens is through our official <a href='/token#presale' class='text-primary hover:underline'>Public Presale</a>. You can also <a href='/earn' class='text-primary hover:underline'>earn VSD Lite tokens</a> and convert them into VSD. After the presale and distribution events, VSD is planned for listing on decentralized exchanges (DEXs). Always use official links provided on this website."
   },
    {
     id: "ai-tools-access",
@@ -119,3 +125,4 @@ export default function FaqPage() {
     </div>
   );
 }
+

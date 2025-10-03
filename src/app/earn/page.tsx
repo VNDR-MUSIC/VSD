@@ -96,7 +96,7 @@ export default function EarnPage() {
 
     toast({
       title: "Conversion Successful",
-      description: `You converted ${amount} VSD Lite to ${vsdReceived.toLocaleString()} VSD.`,
+      description: `You converted ${amount.toLocaleString()} VSD Lite to ${vsdReceived.toLocaleString()} VSD.`,
     });
     setIsConverting(false);
   };
@@ -189,3 +189,4 @@ export default function EarnPage() {
     </div>
   );
 }
+
