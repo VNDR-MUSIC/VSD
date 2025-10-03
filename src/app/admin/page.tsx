@@ -55,8 +55,8 @@ import { useToast } from '@/hooks/use-toast';
 import type { Metadata } from 'next';
 
 // This is a client component, so we can't export metadata directly.
-// But we can define it for reference or for moving to a server component later.
-export const metadata: Metadata = {
+// The metadata object is kept here for reference for a potential future refactor into a server component.
+const metadata: Metadata = {
   title: 'Admin Dashboard | VSD Network',
   description: 'Manage users, tenants, transactions, and system settings for the VSD Network.',
 };
