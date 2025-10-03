@@ -8,7 +8,7 @@ import { Logo } from '@/components/icons/Logo';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-import { Menu, User, LogOut, ChevronDown, type LucideIcon, ShieldAlert } from 'lucide-react';
+import { Menu, User, LogOut, ChevronDown, type LucideIcon, ShieldAlert, Share2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -224,6 +224,12 @@ export function Header() {
                             </Link>
                         </SheetClose>
                      ))}
+                     <DropdownMenuSeparator />
+                     <SheetClose asChild>
+                        <Link href="/developers/integration" className="text-lg font-medium transition-colors hover:text-primary text-foreground/80 flex items-center">
+                            <Share2 className="mr-2 h-4 w-4" /> Integration Guide
+                        </Link>
+                    </SheetClose>
                   </nav>
                 </SheetContent>
               </Sheet>

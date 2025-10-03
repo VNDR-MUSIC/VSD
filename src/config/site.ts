@@ -1,6 +1,6 @@
 
 import type { NavItem } from '@/types/nav';
-import { LayoutDashboard, BrainCircuit, Network, Code, Briefcase, HelpCircle, FileText, Zap, ShieldAlert, TrendingUp, HandCoins, UserSquare, Banknote, Signal, ShoppingCart, Music, Shield, Gift, Settings } from 'lucide-react';
+import { LayoutDashboard, BrainCircuit, Network, Code, Briefcase, HelpCircle, FileText, Zap, ShieldAlert, TrendingUp, HandCoins, UserSquare, Banknote, Signal, ShoppingCart, Music, Shield, Gift, Settings, Share2 } from 'lucide-react';
 
 export const siteConfig = {
   name: "VSD Network",
@@ -24,9 +24,10 @@ export const siteConfig = {
   ] satisfies NavItem[],
   footerNav: [
     { title: "Whitepaper", href: "/developers/documentation" },
+    { title: "Project Integration", href: "/developers/integration" },
+    { title: "API Reference", href: "/developers/api-reference" },
     { title: "Network Status", href: "/network-status" },
     { title: "Compliance", href: "/compliance" },
-    { title: "API Reference", href: "/developers/api-reference" },
     { title: "Terms of Service", href: "/terms-of-service" },
     { title: "Privacy Policy", href: "/privacy-policy" },
     { title: "FAQ", href: "/faq" },

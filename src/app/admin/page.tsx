@@ -17,6 +17,7 @@ import {
   Wallet,
   KeyRound,
   Gift,
+  Globe,
 } from 'lucide-react';
 import {
   Card,
@@ -100,6 +101,12 @@ const transactions = [
     { id: 'txn_4', type: 'API Spend', user: 'Diana Prince', amount: 75, date: '2 days ago', status: 'Completed' },
 ];
 
+const tenants = [
+    { id: 'ten_1', name: 'Audio Exchange (AUDEX)', domain: 'audex.vsd.network', apiKey: 'vsd_key_...xyz', status: 'Active', createdAt: '2024-04-15' },
+    { id: 'ten_2', name: 'Indie Videos TV (IVTV)', domain: 'ivtv.vsd.network', apiKey: 'vsd_key_...abc', status: 'Active', createdAt: '2024-04-20' },
+    { id: 'ten_3', name: 'MIU', domain: 'miu.vsd.network', apiKey: 'vsd_key_...def', status: 'Inactive', createdAt: '2024-05-10' },
+];
+
 
 export default function AdminDashboardPage() {
   return (
@@ -155,12 +162,12 @@ export default function AdminDashboardPage() {
                 </Card>
                  <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">API Calls (24h)</CardTitle>
-                        <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-sm font-medium">Integrated Tenants</CardTitle>
+                        <Globe className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">+573</div>
-                        <p className="text-xs text-muted-foreground">Rate limit at 60% capacity</p>
+                        <div className="text-2xl font-bold">{tenants.length}</div>
+                        <p className="text-xs text-muted-foreground">Live partner integrations</p>
                     </CardContent>
                 </Card>
             </div>
@@ -170,13 +177,14 @@ export default function AdminDashboardPage() {
                 <div className="flex items-center">
                     <TabsList>
                         <TabsTrigger value="users">Users</TabsTrigger>
+                        <TabsTrigger value="tenants">Tenants</TabsTrigger>
                         <TabsTrigger value="transactions">Activity</TabsTrigger>
                     </TabsList>
                     <div className="ml-auto flex items-center gap-2">
                         <Button size="sm" className="h-8 gap-1">
                             <PlusCircle className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                Create User
+                                Add Tenant
                             </span>
                         </Button>
                     </div>
@@ -241,6 +249,63 @@ export default function AdminDashboardPage() {
                                       <DropdownMenuItem>Adjust Balance</DropdownMenuItem>
                                       <DropdownMenuSeparator />
                                       <DropdownMenuItem className="text-destructive">Suspend User</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                <TabsContent value="tenants">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Tenants</CardTitle>
+                      <CardDescription>
+                        Manage all integrated websites and their API keys.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Tenant Name</TableHead>
+                            <TableHead>Domain</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead className="hidden md:table-cell">Created At</TableHead>
+                             <TableHead><span className="sr-only">Actions</span></TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {tenants.map((tenant) => (
+                            <TableRow key={tenant.id}>
+                              <TableCell className="font-medium">{tenant.name}</TableCell>
+                              <TableCell>
+                                <a href={`https://${tenant.domain}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                    {tenant.domain}
+                                </a>
+                               </TableCell>
+                              <TableCell>
+                                <Badge variant={tenant.status === 'Active' ? 'default' : 'secondary'}>
+                                  {tenant.status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="hidden md:table-cell">{tenant.createdAt}</TableCell>
+                              <TableCell className="text-right">
+                                 <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button size="icon" variant="ghost">
+                                        <MoreHorizontal className="h-4 w-4" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                      <DropdownMenuItem>View Details</DropdownMenuItem>
+                                      <DropdownMenuItem>Rotate API Key</DropdownMenuItem>
+                                      <DropdownMenuSeparator />
+                                      <DropdownMenuItem className="text-destructive">Revoke Access</DropdownMenuItem>
                                     </DropdownMenuContent>
                                   </DropdownMenu>
                               </TableCell>
@@ -362,5 +427,3 @@ function AdminHeader() {
         </header>
     );
 }
-
-    
