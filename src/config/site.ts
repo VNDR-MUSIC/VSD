@@ -41,3 +41,5 @@ export const siteConfig = {
     { title: "Settings", href: "/settings", icon: Settings },
   ] satisfies NavItem[],
 };
+
+    

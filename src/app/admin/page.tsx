@@ -9,9 +9,7 @@ import {
   Search,
   Users2,
   DollarSign,
-  BarChart3,
   ArrowRightLeft,
-  Settings,
   Home,
   Users,
   Wallet,
@@ -52,6 +50,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 
 // Mock Data
@@ -181,12 +182,7 @@ export default function AdminDashboardPage() {
                         <TabsTrigger value="transactions">Activity</TabsTrigger>
                     </TabsList>
                     <div className="ml-auto flex items-center gap-2">
-                        <Button size="sm" className="h-8 gap-1">
-                            <PlusCircle className="h-3.5 w-3.5" />
-                            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                Add Tenant
-                            </span>
-                        </Button>
+                       <AddTenantDialog />
                     </div>
                 </div>
                 <TabsContent value="users">
@@ -363,6 +359,73 @@ export default function AdminDashboardPage() {
 }
 
 
+function AddTenantDialog() {
+  const { toast } = useToast();
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    // In a real app, you'd handle form submission to your backend here.
+    // For this demo, we'll just show a success toast and close the dialog.
+    toast({
+      title: "Tenant Created (Mock)",
+      description: "A new tenant has been registered and an API key has been generated.",
+    });
+    setIsOpen(false);
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm" className="h-8 gap-1">
+          <PlusCircle className="h-3.5 w-3.5" />
+          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+            Add Tenant
+          </span>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <form onSubmit={handleSubmit}>
+          <DialogHeader>
+            <DialogTitle>Add New Tenant</DialogTitle>
+            <DialogDescription>
+              Register a new website or service to integrate with the VSD Network. An API key will be generated upon creation.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Name
+              </Label>
+              <Input
+                id="name"
+                placeholder="e.g., Audio Exchange"
+                className="col-span-3"
+                required
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="domain" className="text-right">
+                Domain
+              </Label>
+              <Input
+                id="domain"
+                placeholder="e.g., audex.vsd.network"
+                className="col-span-3"
+                required
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="submit">Create Tenant & Generate Key</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+
 function AdminHeader() {
     const [user] = useAuthState(auth);
     const pathname = usePathname();
@@ -427,3 +490,5 @@ function AdminHeader() {
         </header>
     );
 }
+
+    
