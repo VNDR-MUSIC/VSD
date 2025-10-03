@@ -211,17 +211,17 @@ export function Header() {
                   <nav className="flex flex-col space-y-4">
                     {siteConfig.mainNav.map((item) => (
                        <SheetClose asChild key={item.href}>
-                         <MobileNavLink href={item.href} onSelect={() => setSheetOpen(false)}>
+                         <Link href={item.href} className="text-lg font-medium transition-colors hover:text-primary text-foreground/80">
                             {item.title}
-                         </MobileNavLink>
+                         </Link>
                        </SheetClose>
                     ))}
                      <DropdownMenuSeparator />
                      {siteConfig.secondaryNav.map((item) => (
                          <SheetClose asChild key={item.href}>
-                            <MobileNavLink href={item.href} onSelect={() => setSheetOpen(false)}>
+                            <Link href={item.href} className="text-lg font-medium transition-colors hover:text-primary text-foreground/80">
                                 {item.title}
-                            </MobileNavLink>
+                            </Link>
                         </SheetClose>
                      ))}
                   </nav>
