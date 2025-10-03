@@ -14,7 +14,7 @@ import type { Metadata } from 'next';
 
 // Metadata is defined for reference, but this is a Client Component.
 // For SEO, this page would ideally have a Server Component parent setting the metadata.
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: 'Buy VSD Tokens with Card | VSD Network',
   description: 'Instantly purchase VSD utility tokens using your credit or debit card via our secure Stripe integration. Get the fuel for the VSD AI ecosystem.',
 };
