@@ -84,9 +84,9 @@ export default function SmartContractGeneratorPage() {
   return (
     <div className="space-y-8 py-8">
       <header className="text-center">
-        <FileText className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" /> {/* Adjusted icon size */}
-        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-2 text-primary">AI Smart Contract Generator</h1> {/* Adjusted font size */}
-        <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto"> {/* Adjusted font size */}
+        <FileText className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
+        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-2 text-primary">AI Smart Contract Generator</h1>
+        <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto">
           Describe the smart contract you need, and our AI will generate the Solidity code and an explanation for you.
         </p>
       </header>
@@ -103,8 +103,8 @@ export default function SmartContractGeneratorPage() {
 
       <Card className="max-w-3xl mx-auto shadow-xl bg-card/80 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="text-xl sm:text-2xl">Describe Your Smart Contract</CardTitle> {/* Adjusted font size */}
-          <CardDescription className="text-sm sm:text-base"> {/* Adjusted font size */}
+          <CardTitle className="text-xl sm:text-2xl">Describe Your Smart Contract</CardTitle>
+          <CardDescription className="text-sm sm:text-base">
             Provide a detailed description of the contract's purpose, features, functions, and any specific logic (e.g., "ERC20 token with a total supply of 1 million, pausable, and mintable by owner").
           </CardDescription>
         </CardHeader>
@@ -116,16 +116,16 @@ export default function SmartContractGeneratorPage() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor="description" className="text-md sm:text-lg">Contract Description</FormLabel> {/* Adjusted font size */}
+                    <FormLabel htmlFor="description" className="text-md sm:text-lg">Contract Description</FormLabel>
                     <FormControl>
                       <Textarea
                         id="description"
                         placeholder="e.g., A simple ERC20 token called 'MyCoin' (MC) with 18 decimals and an initial supply of 1,000,000 tokens assigned to the deployer."
-                        className="min-h-[150px] text-sm sm:text-base" /* Adjusted base text size */
+                        className="min-h-[150px] text-sm sm:text-base"
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription className="text-xs sm:text-sm"> {/* Adjusted font size */}
+                    <FormDescription className="text-xs sm:text-sm">
                       The more detailed your description, the better the AI can understand your requirements.
                     </FormDescription>
                     <FormMessage />
@@ -161,10 +161,10 @@ export default function SmartContractGeneratorPage() {
       {error && (
         <Card className="max-w-3xl mx-auto mt-8 border-destructive bg-destructive/10">
           <CardHeader>
-            <CardTitle className="text-destructive text-lg sm:text-xl">Generation Error</CardTitle> {/* Adjusted font size */}
+            <CardTitle className="text-destructive text-lg sm:text-xl">Generation Error</CardTitle>
           </Header>
           <CardContent>
-            <p className="text-destructive-foreground text-sm sm:text-base">{error}</p> {/* Adjusted font size */}
+            <p className="text-destructive-foreground text-sm sm:text-base">{error}</p>
           </CardContent>
         </Card>
       )}
@@ -173,10 +173,10 @@ export default function SmartContractGeneratorPage() {
         <div className="max-w-3xl mx-auto mt-8 space-y-8">
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="font-headline text-xl sm:text-2xl text-primary">Generated Solidity Code</CardTitle> {/* Adjusted font size */}
+              <CardTitle className="font-headline text-xl sm:text-2xl text-primary">Generated Solidity Code</CardTitle>
             </CardHeader>
             <CardContent>
-              <pre className="bg-muted/50 p-4 rounded-md overflow-x-auto text-xs sm:text-sm"> {/* Adjusted font size */}
+              <pre className="bg-muted/50 p-4 rounded-md overflow-x-auto text-xs sm:text-sm">
                 <code>{result.contractCode}</code>
               </pre>
             </CardContent>
@@ -184,10 +184,10 @@ export default function SmartContractGeneratorPage() {
 
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="font-headline text-xl sm:text-2xl text-primary">Explanation</CardTitle> {/* Adjusted font size */}
+              <CardTitle className="font-headline text-xl sm:text-2xl text-primary">Explanation</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="prose prose-sm sm:prose-base prose-invert max-w-none"> {/* Adjusted prose size */}
+              <div className="prose prose-sm sm:prose-base prose-invert max-w-none">
                 <p>{result.explanation}</p>
               </div>
             </CardContent>
