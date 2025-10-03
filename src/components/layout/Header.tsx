@@ -173,16 +173,11 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
-        <Link href="/" className="flex items-center space-x-2">
+      <div className="container flex h-16 max-w-screen-2xl items-center">
+        <Link href="/" className="flex items-center space-x-2 mr-auto">
           <Logo size={36} />
         </Link>
         
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-1">
-          {navItems}
-        </nav>
-
         <div className="flex items-center gap-2">
            {loading ? (
              <div className="h-9 w-20 animate-pulse rounded-md bg-muted" />
@@ -195,7 +190,7 @@ export function Header() {
            )}
 
             {/* Mobile Navigation */}
-            <div className="md:hidden">
+            <div>
               <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon">
