@@ -141,23 +141,23 @@ export default function TokenPage() {
 
       <Separator />
 
-       <section id="roadmap" className="space-y-6 sm:space-y-8">
+      <section id="roadmap" className="space-y-6 sm:space-y-8">
         <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center">Project Roadmap</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             { title: "Phase 1: Foundation & Presale", icon: Milestone, items: ["Whitepaper Release", "Private & Public Presale Rounds", "Core Smart Contract Audits", "Community Building"] },
-            { title: "Phase 2: Platform Launch", icon: Cpu, items: ["VSD Banking Suite (MVP)", "Staking dApp Launch", "Initial Governance Portal"] },
+            { title: "Phase 2: Platform Launch", icon: Cpu, items: ["VSD Banking Suite (MVP)", "Staking dApp Launch", "Initial Governance Portal", "Token Generation Event (TGE)"] },
             { title: "Phase 3: Ecosystem Expansion", icon: Users, items: ["Partner Integrations (AiEar, PromoHub)", "Developer SDKs Release", "Smart Contract Engine (Beta)"] },
-            { title: "Phase 4: Decentralization & Growth", icon: ListChecks, items: ["Full DAO Governance Implemented", "Token-to-Fiat Oracle Integration", "Ecosystem Grant Program"] },
+            { title: "Phase 4: Decentralization & Growth", icon: ListChecks, items: ["Full DAO Governance Implemented", "Token-to-Fiat Oracle Integration", "Ecosystem Grant Program", "Advanced AI Tooling"] },
           ].map(phase => (
-            <Card key={phase.title} className="shadow-md bg-card/70 backdrop-blur-sm h-full">
+            <Card key={phase.title} className="shadow-md bg-card/70 backdrop-blur-sm h-full flex flex-col transition-all duration-300 hover:shadow-primary/20 hover:border-primary/50 border">
               <CardHeader className="pb-3">
                 <div className="flex items-center space-x-2 mb-2">
                   <phase.icon className="h-6 w-6 text-primary" />
                   <CardTitle className="font-headline text-lg sm:text-xl">{phase.title}</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-grow">
                 <ul className="list-disc list-inside space-y-1 text-muted-foreground text-xs sm:text-sm">
                   {phase.items.map(item => <li key={item}>{item}</li>)}
                 </ul>
@@ -168,7 +168,7 @@ export default function TokenPage() {
         <div className="text-center mt-6">
              <Button asChild variant="outline">
                 <Link href="/developers/documentation#roadmap">
-                    View Detailed Roadmap <ArrowRight className="ml-2 h-4 w-4" />
+                    View Detailed Roadmap in Whitepaper <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
             </Button>
         </div>
@@ -189,3 +189,5 @@ export default function TokenPage() {
     </div>
   );
 }
+
+    

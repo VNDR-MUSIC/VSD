@@ -169,42 +169,7 @@ exports.deploySmartContract = functions.firestore
       <Separator />
 
       <SectionCard icon={Milestone} title="5. Project Roadmap" description="Our phased approach to building the IMG Banking System." id="roadmap">
-        <p>The VSD Network will be developed and rolled out in distinct phases. For the latest updates, please refer to our official announcements.</p>
-        <div className="grid md:grid-cols-2 gap-6 mt-6">
-            <div className="p-4 border rounded-lg bg-card/50">
-                <h4 className="font-headline text-primary text-lg mb-2">Phase 1: Foundation & Presale</h4>
-                <ul className="list-disc pl-5 space-y-1 text-sm">
-                    <li>Whitepaper v2.0 Release & Community Building.</li>
-                    <li>Private & Public VSD Token Presale.</li>
-                    <li>Core Smart Contract (ERC20) & Staking Contract Audits.</li>
-                </ul>
-            </div>
-            <div className="p-4 border rounded-lg bg-card/50">
-                <h4 className="font-headline text-primary text-lg mb-2">Phase 2: Banking MVP Launch</h4>
-                <ul className="list-disc pl-5 space-y-1 text-sm">
-                    <li>Launch of VSD Dashboard with Wallet & Transaction History (Firestore-based).</li>
-                    <li>Deployment of Staking dApp.</li>
-                    <li>TGE & distribution of presale tokens.</li>
-                    <li>Initial DEX listings.</li>
-                </ul>
-            </div>
-            <div className="p-4 border rounded-lg bg-card/50">
-                <h4 className="font-headline text-primary text-lg mb-2">Phase 3: Smart Contract Engine</h4>
-                <ul className="list-disc pl-5 space-y-1 text-sm">
-                    <li>Beta release of the Smart Contract Engine for royalty splits.</li>
-                    <li>Integration with partner platforms (AiEar, PromoHub).</li>
-                    <li>Release of Developer SDKs.</li>
-                </ul>
-            </div>
-            <div className="p-4 border rounded-lg bg-card/50">
-                <h4 className="font-headline text-primary text-lg mb-2">Phase 4: Full Decentralization</h4>
-                <ul className="list-disc pl-5 space-y-1 text-sm">
-                    <li>Progressive decentralization towards full DAO control.</li>
-                    <li>Integration of token-to-fiat off-ramp oracles.</li>
-                    <li>Launch of Ecosystem Grant Program for third-party developers.</li>
-                </ul>
-            </div>
-        </div>
+        <p>The VSD Network will be developed and rolled out in distinct phases. For the latest updates, please refer to our official announcements or the more detailed visual roadmap on the <Link href="/token#roadmap">VSD Token page</Link>.</p>
       </SectionCard>
       
       <Separator />
@@ -218,3 +183,5 @@ exports.deploySmartContract = functions.firestore
     </div>
   );
 }
+
+    
