@@ -105,7 +105,7 @@ export default function ForBusinessesPage() {
             </Card>
             <Card className="shadow-md">
                 <CardHeader><CardTitle className="text-lg sm:text-xl">Personalized Customer Experiences</CardTitle></CardHeader>
-                <CardContent><p className="text-muted-foreground text-sm sm:text-base">Leverage AI to personalize recommendations, support interactions, or tailor service offerings based on individual customer profiles and behavior.</p></CardContent>
+                <CardContent><p className="text-muted-foreground text-sm sm:text-base">Leverage AI to personalize recommendations, support interactions, or tailor service offerings based on individual customer profiles and behavior.</p></cardContent>
             </Card>
             <Card className="shadow-md">
                 <CardHeader><CardTitle className="text-lg sm:text-xl">Data Analysis & Reporting</CardTitle></CardHeader>

@@ -85,8 +85,7 @@ export function Header() {
              <div className="h-9 w-20 animate-pulse rounded-md bg-muted" />
            ) : user ? (
               <Button asChild>
-                <Link href="/dashboard">Dashboard</Link>
-              </Button>
+                <Link href="/dashboard">Dashboard</Link>              </Button>
            ) : (
              <Button asChild variant="outline">
                 <Link href="/login"><User className="mr-2 h-4 w-4"/>Login</Link>
