@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from "react";
@@ -48,11 +49,11 @@ const Step = ({ icon: Icon, title, description, stepNumber }: { icon: React.Elem
 
 
 export default function HomePage() {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isPopupOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <PresalePopup isOpen={isPopupOpen} setIsOpen={setIsPopupOpen} />
+      <PresalePopup isOpen={isPopupOpen} setIsOpen={setIsOpen} />
       <div className="space-y-20 md:space-y-28">
         
         {/* --- Hero Section --- */}
@@ -71,7 +72,7 @@ export default function HomePage() {
             The Currency for the Creator Economy
           </h1>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 animate-fade-in-up animation-delay-400">
-            VSD is a decentralized AI and financial network for the Independent Music Group (IMG). Access exclusive AI tools, monetize your work, and shape the future of creativity.
+            VSD is a decentralized financial network for the Independent Music Group (IMG), providing access to previously gate-kept services by leveraging a user-centric ad-revenue model.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animation-delay-600">
             <Button asChild size="lg" className="font-bold btn-hover-effect w-full sm:w-auto text-lg py-7">

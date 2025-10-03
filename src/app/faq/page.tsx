@@ -19,6 +19,11 @@ const faqs = [
     answer: "VSD is the official utility token for the Independent Music Group (IMG) ecosystem. It functions as the essential currency required to access a decentralized platform of AI-driven tools and services, most notably the IMG Services suite for content and image generation. VSD fuels the entire network, enabling transactions, rewarding participation, and governing the platform's future."
   },
   {
+    id: "how-does-vsd-work",
+    question: "How does the VSD Network make services accessible?",
+    answer: "The VSD Network uses a unique model to break down financial barriers. We partner with advertisers and allow users to voluntarily engage with ads (e.g., watching videos, clicking links). The revenue generated from these ads is funneled back into the ecosystem, subsidizing the operational costs of high-value AI services. This allows us to offer access to otherwise expensive, gate-kept tools for our community, with VSD tokens acting as the key to this access."
+  },
+  {
     id: "what-is-vsd-lite",
     question: "What are VSD Lite tokens?",
     answer: `VSD Lite tokens are an off-chain reward point system within the VSD Network. You can earn them by completing simple tasks like watching videos or engaging with partner content on our <a href='/earn' class='text-primary hover:underline'>Earn page</a>. VSD Lite tokens are not on the blockchain and cannot be traded, but they can be converted into official, on-chain VSD tokens at a rate of ${siteConfig.tokenValues.CONVERSION_RATE} VSD Lite to 1 VSD. This system allows us to reward community engagement without incurring gas fees for small amounts.`
@@ -125,4 +130,3 @@ export default function FaqPage() {
     </div>
   );
 }
-

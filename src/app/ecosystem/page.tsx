@@ -145,7 +145,7 @@ export default function EcosystemPage() {
             <Network className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
             <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">The IMG Ecosystem</h1>
             <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-                Discover the self-sustaining, vertically integrated ecosystem of specialized platforms that form the Independent Music Group (IMG) Hub, all powered by VSD.
+                Discover a self-sustaining ecosystem of specialized platforms that provide access to services often gate-kept from independent creators, all powered by VSD.
             </p>
         </header>
 
@@ -222,5 +222,3 @@ export default function EcosystemPage() {
     </div>
   );
 }
-
-  

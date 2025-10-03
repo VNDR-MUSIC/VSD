@@ -105,9 +105,9 @@ export default function EarnPage() {
     <div className="space-y-12 py-8">
       <header className="text-center">
         <Gift className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
-        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">Earn & Convert VSD Tokens</h1>
+        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">Earn Your Way In</h1>
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-          Complete simple tasks to earn VSD Lite tokens, then convert them to official VSD tokens.
+          Complete tasks to earn VSD Lite tokens. Your engagement helps fund the network and provides a pathway to convert your earnings into official VSD tokens.
         </p>
       </header>
 
@@ -189,4 +189,3 @@ export default function EarnPage() {
     </div>
   );
 }
-

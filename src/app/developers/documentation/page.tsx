@@ -51,8 +51,8 @@ export default function WhitepaperDocumentationPage() {
       <Separator />
 
       <SectionCard icon={Library} title="1. Introduction: The VSD Vision" description="Powering a decentralized economy for AI and creative assets." id="introduction">
-        <p>The digital landscape is rapidly converging around Artificial Intelligence (AI) and decentralized technologies. The VSD Network stands at this intersection as the official financial infrastructure for the **Independent Music Group (IMG)**. Our mission is to create a secure, transparent, and efficient ecosystem—the IMG Banking System—powered by the VSD utility token, for creators, developers, and platform participants to transact, collaborate, and innovate.</p>
-        <p>This whitepaper details the comprehensive utility of the VSD token, the tokenomics that sustain the ecosystem, our strategic roadmap, the planned presale, and the technical architecture that makes it all possible. We invite you to join us in building the future of the decentralized creative economy.</p>
+        <p>The digital landscape is rapidly converging around Artificial Intelligence (AI) and decentralized technologies. The VSD Network stands at this intersection as the official financial infrastructure for the **Independent Music Group (IMG)**. Our mission is to democratize access to previously gate-kept services and tools by creating a secure, transparent, and user-centric ecosystem—the IMG Banking System. By leveraging VSD utility tokens and a community-driven ad-revenue model, we empower creators, developers, and platform participants to transact, collaborate, and innovate without traditional barriers.</p>
+        <p>This whitepaper details the comprehensive utility of the VSD token, the tokenomics that sustain the ecosystem, our strategic roadmap, and the technical architecture that makes it all possible. We invite you to join us in building the future of the decentralized creative economy.</p>
         <AIImage
           initialSrc="https://placehold.co/800x400.png"
           alt="VSD Network Vision for AI Banking"
