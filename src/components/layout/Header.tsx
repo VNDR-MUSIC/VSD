@@ -8,7 +8,7 @@ import { Logo } from '@/components/icons/Logo';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-import { Menu, User, LogOut, ChevronDown, type LucideIcon, ShieldAlert, Share2 } from 'lucide-react';
+import { Menu, User, LogOut, ChevronDown, type LucideIcon, ShieldAlert, Share2, Disc, PiggyBank, Briefcase, GraduationCap, Group, Search, Route } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,11 @@ import {
   DropdownMenuTrigger,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuGroup
+  DropdownMenuGroup,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/services/firebase';
@@ -120,7 +124,7 @@ export function Header() {
               <ChevronDown className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
+          <DropdownMenuContent className="w-64">
             <DropdownMenuLabel>{item.description}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
@@ -131,6 +135,87 @@ export function Header() {
             </DropdownMenuItem>
              <DropdownMenuItem asChild>
                <Link href="/earn">Earn VSD Tokens</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                    <Disc className="mr-2 h-4 w-4" />
+                    <span>Music Management</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                         <DropdownMenuItem asChild><Link href="/ecosystem#music-management-distribution">VNDR MUSIC Hub</Link></DropdownMenuItem>
+                         <DropdownMenuItem asChild><Link href="/ecosystem#music-management-distribution">Music Manager</Link></DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+            </DropdownMenuSub>
+             <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                    <PiggyBank className="mr-2 h-4 w-4" />
+                    <span>Financial Platforms</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                         <DropdownMenuItem asChild><Link href="/ecosystem#financial-monetization-platforms">Audio Exchange (AUDEX)</Link></DropdownMenuItem>
+                         <DropdownMenuItem asChild><Link href="/ecosystem#financial-monetization-platforms">Indie Videos TV (IVTV)</Link></DropdownMenuItem>
+                         <DropdownMenuItem asChild><Link href="/ecosystem#financial-monetization-platforms">ND RADIO</Link></DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+            </DropdownMenuSub>
+            <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    <span>Business Development</span>
+                </DropdownMenuSubTrigger>
+                 <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                         <DropdownMenuItem asChild><Link href="/ecosystem#business-development-innovation">Blaque Tech Ventures</Link></DropdownMenuItem>
+                         <DropdownMenuItem asChild><Link href="/ecosystem#business-development-innovation">AI Motion Design</Link></DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+            </DropdownMenuSub>
+            <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                    <GraduationCap className="mr-2 h-4 w-4" />
+                    <span>Artist Development</span>
+                </DropdownMenuSubTrigger>
+                 <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                         <DropdownMenuItem asChild><Link href="/ecosystem#education-artist-development">MIU</Link></DropdownMenuItem>
+                         <DropdownMenuItem asChild><Link href="/ecosystem#education-artist-development">Music Focus Group</Link></DropdownMenuItem>
+                         <DropdownMenuItem asChild><Link href="/ecosystem#education-artist-development">Forward Always Podcast</Link></DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+            </DropdownMenuSub>
+            <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                    <Group className="mr-2 h-4 w-4" />
+                    <span>Community & Networking</span>
+                </DropdownMenuSubTrigger>
+                 <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                         <DropdownMenuItem asChild><Link href="/ecosystem#community-networking">Indie Artist Network</Link></DropdownMenuItem>
+                         <DropdownMenuItem asChild><Link href="/ecosystem#community-networking">IMG Social</Link></DropdownMenuItem>
+                         <DropdownMenuItem asChild><Link href="/ecosystem#community-networking">Pro Files</Link></DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+            </DropdownMenuSub>
+             <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                    <Search className="mr-2 h-4 w-4" />
+                    <span>Music Discovery</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                         <DropdownMenuItem asChild><Link href="/ecosystem#music-discovery">SoundKlix</Link></DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+            </DropdownMenuSub>
+             <DropdownMenuSeparator />
+             <DropdownMenuItem asChild>
+               <Link href="/ecosystem#ecosystem-infrastructure">
+                    <Route className="mr-2 h-4 w-4" /> Vsd.Network
+                </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -240,4 +325,4 @@ export function Header() {
   );
 }
 
-    
+  

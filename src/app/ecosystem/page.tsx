@@ -21,6 +21,7 @@ interface Subsidiary {
 
 interface SubsidiaryCategory {
   category: string;
+  id: string;
   icon: React.ElementType;
   subsidiaries: Subsidiary[];
 }
@@ -28,6 +29,7 @@ interface SubsidiaryCategory {
 const imgEcosystem: SubsidiaryCategory[] = [
     {
         category: "Music Management & Distribution",
+        id: "music-management-distribution",
         icon: Disc,
         subsidiaries: [
             {
@@ -42,6 +44,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
     },
     {
         category: "Financial & Monetization Platforms",
+        id: "financial-monetization-platforms",
         icon: PiggyBank,
         subsidiaries: [
             {
@@ -60,6 +63,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
     },
     {
         category: "Business Development & Innovation",
+        id: "business-development-innovation",
         icon: Briefcase,
         subsidiaries: [
             {
@@ -74,6 +78,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
     },
     {
         category: "Education & Artist Development",
+        id: "education-artist-development",
         icon: GraduationCap,
         subsidiaries: [
             {
@@ -92,6 +97,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
     },
     {
         category: "Community & Networking",
+        id: "community-networking",
         icon: Group,
         subsidiaries: [
             {
@@ -110,6 +116,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
     },
     {
         category: "Music Discovery",
+        id: "music-discovery",
         icon: Search,
         subsidiaries: [
             {
@@ -120,6 +127,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
     },
     {
         category: "Ecosystem Infrastructure",
+        id: "ecosystem-infrastructure",
         icon: Route,
         subsidiaries: [
             {
@@ -151,7 +159,7 @@ export default function EcosystemPage() {
         />
 
         {imgEcosystem.map((category) => (
-            <section key={category.category}>
+            <section key={category.category} id={category.id}>
                 <Separator className="my-12" />
                 <div className="flex items-center gap-4 mb-8 justify-center">
                     <category.icon className="h-8 w-8 text-primary" />
@@ -215,4 +223,4 @@ export default function EcosystemPage() {
   );
 }
 
-    
+  
