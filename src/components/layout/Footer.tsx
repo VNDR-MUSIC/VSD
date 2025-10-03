@@ -3,39 +3,64 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { siteConfig } from '@/config/site';
 import { Separator } from '@/components/ui/separator';
+import { Logo } from '../icons/Logo';
 
 export function Footer() {
   return (
-    <footer className="py-8 border-t border-border/40">
-      <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-        <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-4">
-          {siteConfig.footerNav.map((item) => (
-            <Link
-              key={item.title}
-              href={item.href}
-              className="transition-colors hover:text-primary"
-            >
-              {item.title}
-            </Link>
-          ))}
-        </div>
-        <Separator className="my-4" />
-        <div className="flex justify-center items-center gap-4 mb-4">
-           <Link href="https://indiemedia.llc" target="_blank" rel="noopener noreferrer" className="opacity-70 hover:opacity-100 transition-opacity">
-            <div className="flex items-center gap-2">
-               <span className="text-xs">Official partner of</span>
-               <Image
+    <footer className="border-t border-border/40 bg-background/80 backdrop-blur-sm">
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 text-sm">
+          {/* Logo and Copyright */}
+          <div className="col-span-2 lg:col-span-1 flex flex-col items-start">
+            <div className="flex items-center gap-2 mb-4">
+              <Logo size={40} />
+              <span className="font-headline text-xl font-bold">{siteConfig.name}</span>
+            </div>
+            <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} VSD Network. All rights reserved.</p>
+            <p className="text-xs text-muted-foreground mt-1">The official banking hub for IMG.</p>
+          </div>
+
+          {/* Main Links */}
+          <div className="flex flex-col gap-2">
+            <h4 className="font-bold mb-2">Platform</h4>
+            <Link href="/dashboard" className="text-muted-foreground hover:text-primary transition-colors">Dashboard</Link>
+            <Link href="/token" className="text-muted-foreground hover:text-primary transition-colors">VSD Token</Link>
+            <Link href="/ecosystem" className="text-muted-foreground hover:text-primary transition-colors">Ecosystem</Link>
+            <Link href="/buy" className="text-muted-foreground hover:text-primary transition-colors">Buy VSD</Link>
+          </div>
+
+          {/* Developer Links */}
+          <div className="flex flex-col gap-2">
+            <h4 className="font-bold mb-2">Developers</h4>
+            {siteConfig.footerNav.slice(0, 4).map((item) => (
+               <Link key={item.href} href={item.href} className="text-muted-foreground hover:text-primary transition-colors">{item.title}</Link>
+            ))}
+          </div>
+
+          {/* Company Links */}
+          <div className="flex flex-col gap-2">
+            <h4 className="font-bold mb-2">Company</h4>
+            {siteConfig.footerNav.slice(4).map((item) => (
+              <Link key={item.href} href={item.href} className="text-muted-foreground hover:text-primary transition-colors">{item.title}</Link>
+            ))}
+          </div>
+
+          {/* Partner Link */}
+          <div className="flex flex-col items-start gap-2 col-span-2 md:col-span-1">
+             <h4 className="font-bold mb-2">Official Partner</h4>
+             <Link href="https://indiemedia.llc" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition-opacity">
+              <Image
                 src="https://indiemedia.llc/img-logo.png"
                 alt="Independent Music Group (IMG) Logo"
-                width={80}
-                height={20}
+                width={120}
+                height={30}
                 className="filter invert"
               />
-            </div>
-          </Link>
+            </Link>
+          </div>
         </div>
-        <p>&copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
-        <p className="mt-1">A decentralized vision for a stable future.</p>
+        <Separator className="my-6" />
+        <p className="text-center text-xs text-muted-foreground">The VSD Token is a utility token and is not intended to constitute a security. Please read our legal disclaimer before participating.</p>
       </div>
     </footer>
   );
