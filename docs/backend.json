@@ -1,0 +1,96 @@
+
+{
+  "entities": {
+    "Tenant": {
+      "title": "Tenant",
+      "description": "Represents a subsidiary site or partner within the IMG ecosystem.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "The official name of the tenant." },
+        "domain": { "type": "string", "description": "The primary domain of the tenant's website." },
+        "apiKeyHash": { "type": "string", "description": "A salted hash of the API key issued to the tenant." },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "domain", "apiKeyHash", "createdAt"]
+    },
+    "Account": {
+      "title": "Account",
+      "description": "Represents a user's VSD token account within the central ledger.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "The Firebase Auth UID of the user." },
+        "balance": { "type": "number", "description": "The user's VSD token balance." },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "balance", "updatedAt"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Represents a single movement of VSD tokens.",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["MINT", "BURN", "TRANSFER"] },
+        "from": { "type": "string", "description": "Sender's account ID or 'TREASURY'." },
+        "to": { "type": "string", "description": "Recipient's account ID." },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["PENDING", "COMPLETED", "FAILED"] },
+        "idempotencyKey": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "relatedId": { "type": "string", "description": "ID of related entity (e.g., Stripe charge ID)." }
+      },
+      "required": ["type", "from", "to", "amount", "status", "timestamp"]
+    },
+    "LedgerEntry": {
+        "title": "LedgerEntry",
+        "description": "An entry in the immutable, daily ledger.",
+        "type": "object",
+        "properties": {
+            "date": { "type": "string", "format": "date" },
+            "totalMinted": { "type": "number" },
+            "totalBurned": { "type": "number" },
+            "totalTransferred": { "type": "number" },
+            "closingTotalSupply": { "type": "number" }
+        },
+        "required": ["date", "closingTotalSupply"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Logs critical administrative or system actions.",
+      "type": "object",
+      "properties": {
+        "actor": { "type": "string", "description": "Who performed the action (e.g., admin UID, system function name)." },
+        "action": { "type": "string", "description": "Description of the action (e.g., 'MANUAL_MINT')." },
+        "details": { "type": "object", "description": "Contextual details of the action." },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["actor", "action", "timestamp"]
+    }
+  },
+  "auth": {
+    "providers": ["google.com"]
+  },
+  "firestore": {
+    "/tenants/{tenantId}": {
+      "schema": { "$ref": "#/entities/Tenant" },
+      "description": "Stores information about IMG subsidiary sites."
+    },
+    "/accounts/{accountId}": {
+      "schema": { "$ref": "#/entities/Account" },
+      "description": "User account balances. Should only be mutable by Cloud Functions."
+    },
+    "/transactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/Transaction" },
+      "description": "Record of all token movements. Should only be mutable by Cloud Functions."
+    },
+    "/ledgers/{ledgerId}": {
+      "schema": { "$ref": "#/entities/LedgerEntry" },
+      "description": "Daily summary of ledger activities for auditing."
+    },
+    "/audit_logs/{logId}": {
+        "schema": { "$ref": "#/entities/AuditLog" },
+        "description": "Immutable log of all critical system events."
+    }
+  }
+}
+
+    
