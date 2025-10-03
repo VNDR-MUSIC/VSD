@@ -13,7 +13,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { generateSmartContract, type GenerateSmartContractOutput } from '@/ai/flows/generate-smart-contract-flow';
-import { Loader2, FileText, Lightbulb } from 'lucide-react';
+import { Loader2, FileText, Lightbulb, Wallet } from 'lucide-react';
+
+const MOCK_VSD_BALANCE = 12845.78;
+const GENERATION_COST = 100;
 
 const formSchema = z.object({
   description: z.string().min(20, {
@@ -29,6 +32,7 @@ export default function SmartContractGeneratorPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [result, setResult] = useState<GenerateSmartContractOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [vsdBalance, setVsdBalance] = useState(MOCK_VSD_BALANCE);
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -43,12 +47,25 @@ export default function SmartContractGeneratorPage() {
     setError(null);
     setResult(null);
 
+    if (vsdBalance < GENERATION_COST) {
+      setError("Insufficient VSD balance to generate contract.");
+      toast({
+        variant: "destructive",
+        title: "Insufficient Funds",
+        description: `You need ${GENERATION_COST} VSD to generate a contract, but you only have ${vsdBalance.toLocaleString()}.`,
+      });
+      setIsLoading(false);
+      return;
+    }
+
+
     try {
       const response = await generateSmartContract({ description: data.description });
       setResult(response);
+      setVsdBalance(prev => prev - GENERATION_COST);
       toast({
         title: "Smart Contract Generated!",
-        description: "The AI has generated your smart contract and an explanation.",
+        description: `${GENERATION_COST} VSD has been deducted from your balance.`,
       });
     } catch (err) {
       console.error("Smart contract generation failed:", err);
@@ -73,6 +90,16 @@ export default function SmartContractGeneratorPage() {
           Describe the smart contract you need, and our AI will generate the Solidity code and an explanation for you.
         </p>
       </header>
+      
+      <Card className="max-w-xs mx-auto shadow-lg bg-card/80 backdrop-blur-sm">
+        <CardHeader className="flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Your VSD Balance</CardTitle>
+            <Wallet className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+            <div className="text-2xl font-bold">{vsdBalance.toLocaleString()} VSD</div>
+        </CardContent>
+      </Card>
 
       <Card className="max-w-3xl mx-auto shadow-xl bg-card/80 backdrop-blur-sm">
         <CardHeader>
@@ -105,9 +132,15 @@ export default function SmartContractGeneratorPage() {
                   </FormItem>
                 )}
               />
+               <div className="flex justify-between items-center p-4 rounded-md bg-muted/50">
+                <span className="text-muted-foreground">Generation Fee</span>
+                <span className="font-bold text-xl text-primary">
+                  {GENERATION_COST} VSD
+                </span>
+              </div>
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button type="submit" disabled={isLoading} size="lg">
+              <Button type="submit" disabled={isLoading || vsdBalance < GENERATION_COST} size="lg">
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -129,7 +162,7 @@ export default function SmartContractGeneratorPage() {
         <Card className="max-w-3xl mx-auto mt-8 border-destructive bg-destructive/10">
           <CardHeader>
             <CardTitle className="text-destructive text-lg sm:text-xl">Generation Error</CardTitle> {/* Adjusted font size */}
-          </CardHeader>
+          </Header>
           <CardContent>
             <p className="text-destructive-foreground text-sm sm:text-base">{error}</p> {/* Adjusted font size */}
           </CardContent>
