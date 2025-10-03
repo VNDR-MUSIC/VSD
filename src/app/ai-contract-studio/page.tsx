@@ -26,7 +26,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function SmartContractGeneratorPage() {
+export default function AiContractStudioPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [result, setResult] = useState<GenerateSmartContractOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +56,6 @@ export default function SmartContractGeneratorPage() {
       return;
     }
 
-
     try {
       const response = await generateSmartContract({ description: data.description });
       setResult(response);
@@ -83,7 +82,7 @@ export default function SmartContractGeneratorPage() {
     <div className="space-y-8 py-8">
       <header className="text-center">
         <FileText className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
-        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-2 text-primary">AI Smart Contract Generator</h1>
+        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-2 text-primary">AI Contract Studio</h1>
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto">
           Describe the smart contract you need, and our AI will generate the Solidity code and an explanation for you.
         </p>

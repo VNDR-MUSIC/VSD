@@ -88,12 +88,12 @@ export default function HomePage() {
               </div>
               <div className="space-y-4">
                   <FileJson className="h-12 w-12 text-primary" />
-                  <h2 className="font-headline text-3xl md:text-4xl font-bold">AI Smart Contract Engine</h2>
+                  <h2 className="font-headline text-3xl md:text-4xl font-bold">AI Contract Studio</h2>
                   <p className="text-muted-foreground text-lg">
                       Dynamically generate and deploy Solidity smart contracts for royalty splits, licensing, and fundraising. Describe your needs in plain English and let our AI handle the code.
                   </p>
                    <Button asChild variant="link" className="text-primary text-lg p-0 h-auto">
-                    <Link href="/smart-contract-generator">Try the Generator <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                    <Link href="/ai-contract-studio">Try the Studio <ArrowRight className="ml-2 h-5 w-5" /></Link>
                   </Button>
               </div>
           </div>
