@@ -7,7 +7,7 @@ import { siteConfig } from '@/config/site';
 import { Logo } from '@/components/icons/Logo';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Menu, User, LogOut, ChevronDown, type LucideIcon, ShieldAlert } from 'lucide-react';
 import {
   DropdownMenu,
@@ -199,6 +199,10 @@ export function Header() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right">
+                    <SheetHeader className="sr-only">
+                        <SheetTitle>Navigation Menu</SheetTitle>
+                        <SheetDescription>Main navigation links for the VSD Network website.</SheetDescription>
+                    </SheetHeader>
                     <SheetClose asChild>
                         <Link href="/" className="mb-6 flex items-center">
                             <Logo size={36} className="mr-2" />
