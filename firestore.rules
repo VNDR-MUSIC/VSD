@@ -1,30 +1,37 @@
 /**
- * @fileOverview Firestore Security Rules for VSD Token Information and Related Data.
+ * @fileOverview Firestore Security Rules for VSD Token Information.
  *
  * Core Philosophy:
- * This ruleset provides public read access to all data related to VSD tokens, ecosystem projects, developer resources, and legal documents.
- * Write access is generally denied in this prototype to ensure no accidental modification of data.
+ * This ruleset allows public read access to all data, but restricts write access.
+ * This approach is suitable for a data model where information is intended to be publicly available,
+ * but modifications are controlled.
  *
  * Data Structure:
- * - /vsdTokenInfo/{vsdTokenInfoId}: Stores core information about each VSD token.
- * - /vsdTokenInfo/{vsdTokenInfoId}/ecosystemProjects/{ecosystemProjectId}: Stores ecosystem projects associated with a VSD token.
- * - /vsdTokenInfo/{vsdTokenInfoId}/developerResources/{developerResourceId}: Stores developer resources for a VSD token.
- * - /vsdTokenInfo/{vsdTokenInfoId}/legalDocuments/{legalDocumentId}: Stores legal documents related to a VSD token.
+ * The Firestore database is organized around VSD tokens, with subcollections for associated ecosystem projects,
+ * developer resources, and legal documents. The primary hierarchy is:
+ * - /vsdTokenInfo/{vsdTokenInfoId}
+ * - /vsdTokenInfo/{vsdTokenInfoId}/ecosystemProjects/{ecosystemProjectId}
+ * - /vsdTokenInfo/{vsdTokenInfoId}/developerResources/{developerResourceId}
+ * - /vsdTokenInfo/{vsdTokenInfoId}/legalDocuments/{legalDocumentId}
  *
  * Key Security Decisions:
- * - Public read access for all collections.
- * - No write access is granted in this prototype to prevent unauthorized data modification.
+ * - All data is publicly readable (`get` and `list` are allowed for all users).
+ * - Write operations (create, update, delete) are denied. If writes are needed,
+ *   rules should be updated to include authorization logic (e.g., checking for
+ *   a specific admin role).
+ * - No data validation is performed, as the prototyping philosophy prioritizes
+ *   flexibility and rapid iteration.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Allows public read access to VSD token information. Writes are disallowed in this prototype.
+     * @description Allows public read access to VSD token information, but denies write access.
      * @path /vsdTokenInfo/{vsdTokenInfoId}
-     * @allow (get, list): Any user can read VSD token information.
-     * @deny (create, update, delete): No user can create, update, or delete VSD token information.
-     * @principle Provides public read access to token information while preventing unauthorized modifications.
+     * @allow (get, list) Any user can read VSD token information.
+     * @deny (create, update, delete) No user can create, update, or delete VSD token information.
+     * @principle Allows public read access for all data, but denies all write operations.
      */
     match /vsdTokenInfo/{vsdTokenInfoId} {
       allow get, list: if true;
@@ -34,11 +41,11 @@ service cloud.firestore {
     }
 
     /**
-     * @description Allows public read access to ecosystem projects. Writes are disallowed in this prototype.
+     * @description Allows public read access to ecosystem projects, but denies write access.
      * @path /vsdTokenInfo/{vsdTokenInfoId}/ecosystemProjects/{ecosystemProjectId}
-     * @allow (get, list): Any user can read ecosystem project information.
-     * @deny (create, update, delete): No user can create, update, or delete ecosystem project information.
-     * @principle Provides public read access to ecosystem project information while preventing unauthorized modifications.
+     * @allow (get, list) Any user can read ecosystem project information.
+     * @deny (create, update, delete) No user can create, update, or delete ecosystem project information.
+     * @principle Allows public read access for all data, but denies all write operations.
      */
     match /vsdTokenInfo/{vsdTokenInfoId}/ecosystemProjects/{ecosystemProjectId} {
       allow get, list: if true;
@@ -48,11 +55,11 @@ service cloud.firestore {
     }
 
     /**
-     * @description Allows public read access to developer resources. Writes are disallowed in this prototype.
+     * @description Allows public read access to developer resources, but denies write access.
      * @path /vsdTokenInfo/{vsdTokenInfoId}/developerResources/{developerResourceId}
-     * @allow (get, list): Any user can read developer resource information.
-     * @deny (create, update, delete): No user can create, update, or delete developer resource information.
-     * @principle Provides public read access to developer resource information while preventing unauthorized modifications.
+     * @allow (get, list) Any user can read developer resource information.
+     * @deny (create, update, delete) No user can create, update, or delete developer resource information.
+     * @principle Allows public read access for all data, but denies all write operations.
      */
     match /vsdTokenInfo/{vsdTokenInfoId}/developerResources/{developerResourceId} {
       allow get, list: if true;
@@ -62,11 +69,11 @@ service cloud.firestore {
     }
 
     /**
-     * @description Allows public read access to legal documents. Writes are disallowed in this prototype.
+     * @description Allows public read access to legal documents, but denies write access.
      * @path /vsdTokenInfo/{vsdTokenInfoId}/legalDocuments/{legalDocumentId}
-     * @allow (get, list): Any user can read legal document information.
-     * @deny (create, update, delete): No user can create, update, or delete legal document information.
-     * @principle Provides public read access to legal document information while preventing unauthorized modifications.
+     * @allow (get, list) Any user can read legal document information.
+     * @deny (create, update, delete) No user can create, update, or delete legal document information.
+     * @principle Allows public read access for all data, but denies all write operations.
      */
     match /vsdTokenInfo/{vsdTokenInfoId}/legalDocuments/{legalDocumentId} {
       allow get, list: if true;

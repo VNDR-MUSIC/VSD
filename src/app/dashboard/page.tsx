@@ -9,24 +9,30 @@ import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy,
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 import type { Metadata } from 'next';
+import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
+import { doc, collection } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
-// Metadata is defined for reference, but this is a Client Component.
-// For SEO, this page would ideally have a Server Component parent setting the metadata.
 export const metadata: Metadata = {
   title: 'My Dashboard | VSD Network',
   description: 'Your personal VSD Network banking suite. View your VSD token balance, transaction history, staking information, and manage your assets.',
 };
 
+interface Account {
+  walletAddress: string;
+  vsdBalance: number;
+}
 
-const mockWalletAddress = "0xVSD...a1B2c3D4e5F6";
-
-const mockTransactions = [
-  { id: '1', type: 'in', from: '0xabc...def', amount: 5000, status: 'Completed', date: '3 hours ago', description: 'Presale Allocation' },
-  { id: '2', type: 'out', to: '0x123...456', amount: 250, status: 'Completed', date: '1 day ago', description: 'Service Fee: IMG-Gen' },
-  { id: '3', type: 'in', from: 'Staking Rewards', amount: 15.78, status: 'Completed', date: '2 days ago', description: 'Weekly Staking Payout' },
-  { id: '4', type: 'out', to: '0x789...abc', amount: 1000, status: 'Pending', date: '1 day ago', description: 'P2P Transfer' },
-  { id: '5', type: 'in', from: '0xghi...jkl', amount: 300, status: 'Completed', date: '4 days ago', description: 'Royalty Payout' },
-];
+interface Transaction {
+  id: string;
+  type: 'in' | 'out';
+  from?: string;
+  to?: string;
+  amount: number;
+  status: 'Completed' | 'Pending' | 'Failed';
+  date: string;
+  description: string;
+}
 
 const mockPortfolioData = [
   { month: 'Jan', value: 125.00 },
@@ -39,13 +45,25 @@ const mockPortfolioData = [
 
 export default function DashboardPage() {
   const { toast } = useToast();
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
+  
+  const accountRef = useMemoFirebase(() => user ? doc(firestore, 'accounts', user.uid) : null, [firestore, user]);
+  const transactionsRef = useMemoFirebase(() => user ? collection(firestore, 'accounts', user.uid, 'transactions') : null, [firestore, user]);
+
+  const { data: account, isLoading: isAccountLoading } = useDoc<Account>(accountRef);
+  const { data: transactions, isLoading: areTransactionsLoading } = useCollection<Transaction>(transactionsRef);
+
+  const isLoading = isUserLoading || isAccountLoading;
 
   const handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(mockWalletAddress);
-    toast({
-      title: "Copied to Clipboard!",
-      description: "Your VSD wallet address has been copied.",
-    });
+    if (account?.walletAddress) {
+      navigator.clipboard.writeText(account.walletAddress);
+      toast({
+        title: "Copied to Clipboard!",
+        description: "Your VSD wallet address has been copied.",
+      });
+    }
   };
 
   return (
@@ -56,23 +74,31 @@ export default function DashboardPage() {
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Column */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Main Balance Card */}
           <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardDescription>Total VSD Balance</CardDescription>
-                <CardTitle className="text-4xl md:text-5xl font-bold">12,845.78 <span className="text-xl text-primary">VSD</span></CardTitle>
+                {isLoading ? (
+                  <Skeleton className="h-14 w-64 mt-2" />
+                ) : (
+                  <CardTitle className="text-4xl md:text-5xl font-bold">{account?.vsdBalance.toLocaleString() || '0.00'} <span className="text-xl text-primary">VSD</span></CardTitle>
+                )}
               </div>
               <HandCoins className="h-12 w-12 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-xs text-muted-foreground flex items-center">
-                <span>{mockWalletAddress}</span>
-                <Button variant="ghost" size="icon" className="h-6 w-6 ml-2" onClick={handleCopyToClipboard}>
-                  <Copy className="h-4 w-4" />
-                </Button>
+                 {isLoading ? (
+                    <Skeleton className="h-5 w-full" />
+                 ) : (
+                    <>
+                        <span>{account?.walletAddress}</span>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 ml-2" onClick={handleCopyToClipboard}>
+                        <Copy className="h-4 w-4" />
+                        </Button>
+                    </>
+                 )}
               </div>
             </CardContent>
             <CardFooter className="gap-2">
@@ -81,7 +107,6 @@ export default function DashboardPage() {
             </CardFooter>
           </Card>
 
-          {/* Portfolio Chart */}
           <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><BarChart className="h-6 w-6" />Activity Overview</CardTitle>
@@ -108,7 +133,6 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Side Column */}
         <div className="space-y-6">
           <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
             <CardHeader>
@@ -144,7 +168,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Transaction History */}
       <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
         <CardHeader>
           <CardTitle>Recent Transactions</CardTitle>
@@ -161,7 +184,16 @@ export default function DashboardPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockTransactions.map((tx) => (
+              {areTransactionsLoading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={i}>
+                        <TableCell colSpan={5}>
+                            <Skeleton className="h-5 w-full" />
+                        </TableCell>
+                    </TableRow>
+                ))
+              ) : (
+                transactions?.map((tx) => (
                 <TableRow key={tx.id}>
                   <TableCell>
                     <div className={`flex items-center gap-2 ${tx.type === 'in' ? 'text-green-400' : 'text-red-400'}`}>
@@ -180,7 +212,7 @@ export default function DashboardPage() {
                     </span>
                   </TableCell>
                 </TableRow>
-              ))}
+              )))}
             </TableBody>
           </Table>
         </CardContent>

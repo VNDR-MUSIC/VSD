@@ -43,8 +43,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Logo } from '@/components/icons/Logo';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '@/services/firebase';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePathname } from 'next/navigation';
@@ -53,69 +51,79 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import type { Metadata } from 'next';
+import { useAuth, useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
+import type { WithId } from '@/firebase';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { doc } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
-// This is a client component, so we can't export metadata directly.
-// The metadata object is kept here for reference for a potential future refactor into a server component.
-const metadata: Metadata = {
+export const metadata: Metadata = {
   title: 'Admin Dashboard | VSD Network',
   description: 'Manage users, tenants, transactions, and system settings for the VSD Network.',
 };
 
-// Mock Data
-const users = [
-  {
-    id: 'usr_1',
-    name: 'Alice Johnson',
-    email: 'alice@example.com',
-    wallet: '0x123...abc',
-    vsdBalance: 150000,
-    status: 'Active',
-    joined: '2024-05-01',
-  },
-  {
-    id: 'usr_2',
-    name: 'Bob Williams',
-    email: 'bob@example.com',
-    wallet: '0x456...def',
-    vsdBalance: 75000,
-    status: 'Active',
-    joined: '2024-05-02',
-  },
-  {
-    id: 'usr_3',
-    name: 'Charlie Brown',
-    email: 'charlie@example.com',
-    wallet: '0x789...ghi',
-    vsdBalance: 10000,
-    status: 'Suspended',
-    joined: '2024-05-03',
-  },
-  {
-    id: 'usr_4',
-    name: 'Diana Prince',
-    email: 'diana@example.com',
-    wallet: '0xabc...123',
-    vsdBalance: 500000,
-    status: 'Active',
-    joined: '2024-05-04',
-  },
-];
+interface Account {
+  uid: string;
+  name: string;
+  email: string;
+  walletAddress: string;
+  vsdBalance: number;
+  status: 'Active' | 'Suspended';
+  joined: string;
+}
 
-const transactions = [
-    { id: 'txn_1', type: 'Mint (Stripe)', user: 'Alice Johnson', amount: 1000, date: '2 hours ago', status: 'Completed' },
-    { id: 'txn_2', type: 'Transfer', user: 'Bob Williams', amount: 500, date: '5 hours ago', status: 'Completed' },
-    { id: 'txn_3', type: 'Burn (Refund)', user: 'Charlie Brown', amount: 200, date: '1 day ago', status: 'Completed' },
-    { id: 'txn_4', type: 'API Spend', user: 'Diana Prince', amount: 75, date: '2 days ago', status: 'Completed' },
-];
+interface Transaction {
+    id: string;
+    type: string;
+    user: string;
+    amount: number;
+    date: string;
+    status: 'Completed' | 'Pending' | 'Failed';
+}
 
-const tenants = [
-    { id: 'ten_1', name: 'Audio Exchange (AUDEX)', domain: 'audex.vsd.network', apiKey: 'vsd_key_...xyz', status: 'Active', createdAt: '2024-04-15' },
-    { id: 'ten_2', name: 'Indie Videos TV (IVTV)', domain: 'ivtv.vsd.network', apiKey: 'vsd_key_...abc', status: 'Active', createdAt: '2024-04-20' },
-    { id: 'ten_3', name: 'MIU', domain: 'miu.vsd.network', apiKey: 'vsd_key_...def', status: 'Inactive', createdAt: '2024-05-10' },
-];
+interface Tenant {
+    id: string;
+    name: string;
+    domain: string;
+    apiKey: string;
+    status: 'Active' | 'Inactive';
+    createdAt: string;
+}
 
+const StatCardSkeleton = () => (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Skeleton className="h-4 w-2/4" />
+      </CardHeader>
+      <CardContent>
+          <Skeleton className="h-7 w-3/4 mb-2" />
+          <Skeleton className="h-3 w-1/2" />
+      </CardContent>
+    </Card>
+)
+
+const TableRowSkeleton = ({ cells }: { cells: number }) => (
+    <TableRow>
+        {Array.from({ length: cells }).map((_, i) => (
+            <TableCell key={i}>
+                <Skeleton className="h-5 w-full" />
+            </TableCell>
+        ))}
+    </TableRow>
+)
 
 export default function AdminDashboardPage() {
+  const firestore = useFirestore();
+
+  const accountsQuery = useMemoFirebase(() => collection(firestore, 'accounts'), [firestore]);
+  const tenantsQuery = useMemoFirebase(() => collection(firestore, 'tenants'), [firestore]);
+  const transactionsQuery = useMemoFirebase(() => collection(firestore, 'transactions'), [firestore]);
+
+  const { data: users, isLoading: usersLoading } = useCollection<Account>(accountsQuery);
+  const { data: tenants, isLoading: tenantsLoading } = useCollection<Tenant>(tenantsQuery);
+  const { data: transactions, isLoading: transactionsLoading } = useCollection<Transaction>(transactionsQuery);
+
   return (
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
         <AdminHeader />
@@ -135,8 +143,8 @@ export default function AdminDashboardPage() {
                 </div>
             </div>
             
-            {/* Stat Cards */}
             <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+              {usersLoading ? <StatCardSkeleton /> : (
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total VSD Supply</CardTitle>
@@ -147,16 +155,20 @@ export default function AdminDashboardPage() {
                         <p className="text-xs text-muted-foreground">Fixed total supply</p>
                     </CardContent>
                 </Card>
+              )}
+               {usersLoading ? <StatCardSkeleton /> : (
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Active Users</CardTitle>
                         <Users2 className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">+2,500</div>
-                         <p className="text-xs text-muted-foreground">+180.1% from last month</p>
+                        <div className="text-2xl font-bold">+{users?.length || 0}</div>
+                         <p className="text-xs text-muted-foreground">+180.1% from last month (mock)</p>
                     </CardContent>
                 </Card>
+               )}
+                {transactionsLoading ? <StatCardSkeleton /> : (
                  <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Transaction Volume (24h)</CardTitle>
@@ -164,23 +176,25 @@ export default function AdminDashboardPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">1,250,834 VSD</div>
-                         <p className="text-xs text-muted-foreground">+19% from yesterday</p>
+                         <p className="text-xs text-muted-foreground">+19% from yesterday (mock)</p>
                     </CardContent>
                 </Card>
+                )}
+                 {tenantsLoading ? <StatCardSkeleton /> : (
                  <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Integrated Tenants</CardTitle>
                         <Globe className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{tenants.length}</div>
+                        <div className="text-2xl font-bold">{tenants?.length || 0}</div>
                         <p className="text-xs text-muted-foreground">Live partner integrations</p>
                     </CardContent>
                 </Card>
+                 )}
             </div>
 
-            {/* Main Content Area with Tabs */}
-             <Tabs defaultValue="users">
+            <Tabs defaultValue="users">
                 <div className="flex items-center">
                     <TabsList>
                         <TabsTrigger value="users">Users</TabsTrigger>
@@ -218,8 +232,11 @@ export default function AdminDashboardPage() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {users.map((user) => (
-                            <TableRow key={user.id}>
+                          {usersLoading ? (
+                            Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} cells={6} />)
+                          ) : (
+                            users?.map((user) => (
+                            <TableRow key={user.uid}>
                               <TableCell>
                                 <div className="font-medium">{user.name}</div>
                                 <div className="hidden text-sm text-muted-foreground md:inline">
@@ -227,7 +244,7 @@ export default function AdminDashboardPage() {
                                 </div>
                               </TableCell>
                               <TableCell className="hidden sm:table-cell font-mono">
-                                {user.wallet}
+                                {user.walletAddress}
                               </TableCell>
                               <TableCell className="hidden sm:table-cell">
                                 <Badge className="text-xs" variant={user.status === 'Active' ? 'default' : 'destructive'}>
@@ -235,7 +252,7 @@ export default function AdminDashboardPage() {
                                 </Badge>
                               </TableCell>
                               <TableCell className="hidden md:table-cell">
-                                {user.joined}
+                                {new Date(user.joined).toLocaleDateString()}
                               </TableCell>
                               <TableCell className="text-right">{user.vsdBalance.toLocaleString()} VSD</TableCell>
                               <TableCell className="text-right">
@@ -255,7 +272,7 @@ export default function AdminDashboardPage() {
                                   </DropdownMenu>
                               </TableCell>
                             </TableRow>
-                          ))}
+                          )))}
                         </TableBody>
                       </Table>
                     </CardContent>
@@ -281,7 +298,10 @@ export default function AdminDashboardPage() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {tenants.map((tenant) => (
+                          {tenantsLoading ? (
+                             Array.from({ length: 3 }).map((_, i) => <TableRowSkeleton key={i} cells={5} />)
+                          ) : (
+                            tenants?.map((tenant) => (
                             <TableRow key={tenant.id}>
                               <TableCell className="font-medium">{tenant.name}</TableCell>
                               <TableCell>
@@ -294,7 +314,7 @@ export default function AdminDashboardPage() {
                                   {tenant.status}
                                 </Badge>
                               </TableCell>
-                              <TableCell className="hidden md:table-cell">{tenant.createdAt}</TableCell>
+                              <TableCell className="hidden md:table-cell">{new Date(tenant.createdAt).toLocaleDateString()}</TableCell>
                               <TableCell className="text-right">
                                  <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
@@ -312,7 +332,7 @@ export default function AdminDashboardPage() {
                                   </DropdownMenu>
                               </TableCell>
                             </TableRow>
-                          ))}
+                          )))}
                         </TableBody>
                       </Table>
                     </CardContent>
@@ -338,7 +358,10 @@ export default function AdminDashboardPage() {
                                   </TableRow>
                               </TableHeader>
                               <TableBody>
-                                  {transactions.map(tx => (
+                                  {transactionsLoading ? (
+                                     Array.from({ length: 4 }).map((_, i) => <TableRowSkeleton key={i} cells={5} />)
+                                  ) : (
+                                    transactions?.map(tx => (
                                        <TableRow key={tx.id}>
                                         <TableCell>
                                             <div className="font-medium">{tx.user}</div>
@@ -349,10 +372,10 @@ export default function AdminDashboardPage() {
                                         <TableCell>
                                              <Badge variant={tx.status === 'Completed' ? 'default' : 'secondary'}>{tx.status}</Badge>
                                         </TableCell>
-                                        <TableCell>{tx.date}</TableCell>
+                                        <TableCell>{new Date(tx.date).toLocaleString()}</TableCell>
                                         <TableCell className="text-right">{tx.amount.toLocaleString()} VSD</TableCell>
                                     </TableRow>
-                                  ))}
+                                  )))}
                               </TableBody>
                           </Table>
                         </CardContent>
@@ -368,14 +391,35 @@ export default function AdminDashboardPage() {
 function AddTenantDialog() {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = React.useState(false);
+  const firestore = useFirestore();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // In a real app, you'd handle form submission to your backend here.
-    // For this demo, we'll just show a success toast and close the dialog.
+    const formData = new FormData(event.currentTarget);
+    const name = formData.get('name') as string;
+    const domain = formData.get('domain') as string;
+    
+    if (!name || !domain) {
+      toast({ variant: 'destructive', title: 'Missing fields', description: 'Please fill out all fields.' });
+      return;
+    }
+    
+    const tenantId = name.toLowerCase().replace(/\s+/g, '-');
+    const newTenant: Omit<Tenant, 'id'> = {
+      name,
+      domain,
+      status: "Active",
+      apiKey: `vsd_key_${crypto.randomUUID()}`, // In production, generate this securely on the backend
+      createdAt: new Date().toISOString(),
+    };
+
+    const docRef = doc(firestore, 'tenants', tenantId);
+
+    setDocumentNonBlocking(docRef, newTenant, { merge: true });
+
     toast({
-      title: "Tenant Created (Mock)",
-      description: "A new tenant has been registered and an API key has been generated.",
+      title: "Tenant Creation Initiated",
+      description: `Tenant "${name}" is being created.`,
     });
     setIsOpen(false);
   };
@@ -405,6 +449,7 @@ function AddTenantDialog() {
               </Label>
               <Input
                 id="name"
+                name="name"
                 placeholder="e.g., Audio Exchange"
                 className="col-span-3"
                 required
@@ -416,6 +461,7 @@ function AddTenantDialog() {
               </Label>
               <Input
                 id="domain"
+                name="domain"
                 placeholder="e.g., audex.vsd.network"
                 className="col-span-3"
                 required
@@ -433,7 +479,7 @@ function AddTenantDialog() {
 
 
 function AdminHeader() {
-    const [user] = useAuthState(auth);
+    const { user } = useUser();
     const pathname = usePathname();
 
     const navItems = [
@@ -469,11 +515,13 @@ function AdminHeader() {
                      <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                               {user && (
+                               {user ? (
                                     <Avatar className="h-8 w-8">
                                         <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'Admin'} />
                                         <AvatarFallback>{user.displayName?.charAt(0) ?? 'A'}</AvatarFallback>
                                     </Avatar>
+                               ) : (
+                                <Skeleton className="h-8 w-8 rounded-full" />
                                )}
                             </Button>
                         </DropdownMenuTrigger>

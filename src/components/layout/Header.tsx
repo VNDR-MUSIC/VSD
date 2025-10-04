@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -22,12 +21,12 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '@/services/firebase';
+import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import React from 'react';
+import { Skeleton } from '../ui/skeleton';
 
 const NavLink = ({ href, children, currentPathname }: { href: string, children: React.ReactNode, currentPathname: string }) => (
     <Link
@@ -53,7 +52,8 @@ const MobileNavLink = ({ href, children, onSelect }: { href: string, children: R
 );
 
 const UserNav = () => {
-    const [user] = useAuthState(auth);
+    const { user } = useUser();
+    const auth = useAuth();
     const router = useRouter();
     const { toast } = useToast();
 
@@ -107,7 +107,7 @@ const UserNav = () => {
 
 export function Header() {
   const pathname = usePathname();
-  const [user, loading] = useAuthState(auth);
+  const { user, isUserLoading } = useUser();
   const [isSheetOpen, setSheetOpen] = React.useState(false);
 
 
@@ -222,7 +222,6 @@ export function Header() {
       );
     }
 
-    // New Dropdown for "Developers"
     if (item.href === "/developers") {
       return (
         <DropdownMenu key={item.href}>
@@ -248,7 +247,6 @@ export function Header() {
       );
     }
     
-    // Default nav items
     return (
       <NavLink key={item.href} href={item.href} currentPathname={pathname}>
         {item.title}
@@ -264,8 +262,8 @@ export function Header() {
         </Link>
         
         <div className="flex items-center gap-2">
-           {loading ? (
-             <div className="h-9 w-20 animate-pulse rounded-md bg-muted" />
+           {isUserLoading ? (
+             <Skeleton className="h-10 w-10 rounded-full" />
            ) : user ? (
               <UserNav />
            ) : (
@@ -274,7 +272,6 @@ export function Header() {
              </Button>
            )}
 
-            {/* Mobile Navigation */}
             <div>
               <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
                 <SheetTrigger asChild>
@@ -324,5 +321,3 @@ export function Header() {
     </header>
   );
 }
-
-  

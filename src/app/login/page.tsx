@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { auth } from '@/services/firebase';
+import { useAuth } from '@/firebase';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,9 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import type { Metadata } from 'next';
 
-// Metadata is defined for reference, but this is a Client Component.
-// For SEO, this page would ideally have a Server Component parent setting the metadata.
-const metadata: Metadata = {
+export const metadata: Metadata = {
   title: 'Login to VSD Network',
   description: 'Sign in to access your VSD Network dashboard, manage your tokens, and interact with the IMG ecosystem.',
 };
@@ -20,6 +18,7 @@ const metadata: Metadata = {
 export default function LoginPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const auth = useAuth();
 
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
