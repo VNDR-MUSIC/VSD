@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useAuth } from '@/firebase';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
@@ -10,10 +9,12 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: 'Login to VSD Network',
-  description: 'Sign in to access your VSD Network dashboard, manage your tokens, and interact with the IMG ecosystem.',
-};
+// Metadata cannot be exported from a Client Component.
+// This should be defined in a Server Component parent or layout file.
+// export const metadata: Metadata = {
+//   title: 'Login to VSD Network',
+//   description: 'Sign in to access your VSD Network dashboard, manage your tokens, and interact with the IMG ecosystem.',
+// };
 
 export default function LoginPage() {
   const { toast } = useToast();
