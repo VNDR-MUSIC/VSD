@@ -1,96 +1,261 @@
-
 {
   "entities": {
-    "Tenant": {
-      "title": "Tenant",
-      "description": "Represents a subsidiary site or partner within the IMG ecosystem.",
+    "VSDTokenInfo": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "VSDTokenInfo",
       "type": "object",
+      "description": "Represents key information about the VSD token.",
       "properties": {
-        "name": { "type": "string", "description": "The official name of the tenant." },
-        "domain": { "type": "string", "description": "The primary domain of the tenant's website." },
-        "apiKeyHash": { "type": "string", "description": "A salted hash of the API key issued to the tenant." },
-        "createdAt": { "type": "string", "format": "date-time" }
-      },
-      "required": ["name", "domain", "apiKeyHash", "createdAt"]
-    },
-    "Account": {
-      "title": "Account",
-      "description": "Represents a user's VSD token account within the central ledger.",
-      "type": "object",
-      "properties": {
-        "userId": { "type": "string", "description": "The Firebase Auth UID of the user." },
-        "balance": { "type": "number", "description": "The user's VSD token balance." },
-        "updatedAt": { "type": "string", "format": "date-time" }
-      },
-      "required": ["userId", "balance", "updatedAt"]
-    },
-    "Transaction": {
-      "title": "Transaction",
-      "description": "Represents a single movement of VSD tokens.",
-      "type": "object",
-      "properties": {
-        "type": { "type": "string", "enum": ["MINT", "BURN", "TRANSFER"] },
-        "from": { "type": "string", "description": "Sender's account ID or 'TREASURY'." },
-        "to": { "type": "string", "description": "Recipient's account ID." },
-        "amount": { "type": "number" },
-        "status": { "type": "string", "enum": ["PENDING", "COMPLETED", "FAILED"] },
-        "idempotencyKey": { "type": "string" },
-        "timestamp": { "type": "string", "format": "date-time" },
-        "relatedId": { "type": "string", "description": "ID of related entity (e.g., Stripe charge ID)." }
-      },
-      "required": ["type", "from", "to", "amount", "status", "timestamp"]
-    },
-    "LedgerEntry": {
-        "title": "LedgerEntry",
-        "description": "An entry in the immutable, daily ledger.",
-        "type": "object",
-        "properties": {
-            "date": { "type": "string", "format": "date" },
-            "totalMinted": { "type": "number" },
-            "totalBurned": { "type": "number" },
-            "totalTransferred": { "type": "number" },
-            "closingTotalSupply": { "type": "number" }
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the VSD token information."
         },
-        "required": ["date", "closingTotalSupply"]
-    },
-    "AuditLog": {
-      "title": "AuditLog",
-      "description": "Logs critical administrative or system actions.",
-      "type": "object",
-      "properties": {
-        "actor": { "type": "string", "description": "Who performed the action (e.g., admin UID, system function name)." },
-        "action": { "type": "string", "description": "Description of the action (e.g., 'MANUAL_MINT')." },
-        "details": { "type": "object", "description": "Contextual details of the action." },
-        "timestamp": { "type": "string", "format": "date-time" }
+        "name": {
+          "type": "string",
+          "description": "The name of the VSD token."
+        },
+        "symbol": {
+          "type": "string",
+          "description": "The symbol of the VSD token."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the VSD token."
+        },
+        "price": {
+          "type": "number",
+          "description": "The current price of the VSD token."
+        },
+        "marketCap": {
+          "type": "number",
+          "description": "The market capitalization of the VSD token."
+        },
+        "circulatingSupply": {
+          "type": "number",
+          "description": "The circulating supply of the VSD token."
+        },
+        "totalSupply": {
+          "type": "number",
+          "description": "The total supply of the VSD token."
+        },
+        "websiteUrl": {
+          "type": "string",
+          "description": "URL of the VSD token's website.",
+          "format": "uri"
+        }
       },
-      "required": ["actor", "action", "timestamp"]
+      "required": [
+        "id",
+        "name",
+        "symbol",
+        "description",
+        "price",
+        "marketCap",
+        "circulatingSupply",
+        "totalSupply",
+        "websiteUrl"
+      ]
+    },
+    "EcosystemProject": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "EcosystemProject",
+      "type": "object",
+      "description": "Represents a project within the VSD ecosystem.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ecosystem project."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the ecosystem project."
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the ecosystem project."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the ecosystem project's image.",
+          "format": "uri"
+        },
+        "websiteUrl": {
+          "type": "string",
+          "description": "URL of the ecosystem project's website.",
+          "format": "uri"
+        },
+        "vsdTokenInfoId": {
+          "type": "string",
+          "description": "Reference to VSDTokenInfo. (Relationship: VSDTokenInfo 1:N EcosystemProject)"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "imageUrl",
+        "websiteUrl",
+        "vsdTokenInfoId"
+      ]
+    },
+    "DeveloperResource": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "DeveloperResource",
+      "type": "object",
+      "description": "Represents a developer resource or documentation link.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the developer resource."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the developer resource."
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the developer resource."
+        },
+        "url": {
+          "type": "string",
+          "description": "URL of the developer resource.",
+          "format": "uri"
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of the developer resource (e.g., documentation, tutorial, API)."
+        },
+        "vsdTokenInfoId": {
+          "type": "string",
+          "description": "Reference to VSDTokenInfo. (Relationship: VSDTokenInfo 1:N DeveloperResource)"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "url",
+        "category",
+        "vsdTokenInfoId"
+      ]
+    },
+    "LegalDocument": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "LegalDocument",
+      "type": "object",
+      "description": "Represents a legal document such as terms and conditions or a privacy policy.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the legal document."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the legal document (e.g., Terms and Conditions, Privacy Policy)."
+        },
+        "url": {
+          "type": "string",
+          "description": "URL of the legal document.",
+          "format": "uri"
+        },
+        "vsdTokenInfoId": {
+          "type": "string",
+          "description": "Reference to VSDTokenInfo. (Relationship: VSDTokenInfo 1:N LegalDocument)"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "url",
+        "vsdTokenInfoId"
+      ]
     }
   },
   "auth": {
-    "providers": ["google.com"]
+    "providers": [
+      "password",
+      "anonymous"
+    ]
   },
   "firestore": {
-    "/tenants/{tenantId}": {
-      "schema": { "$ref": "#/entities/Tenant" },
-      "description": "Stores information about IMG subsidiary sites."
-    },
-    "/accounts/{accountId}": {
-      "schema": { "$ref": "#/entities/Account" },
-      "description": "User account balances. Should only be mutable by Cloud Functions."
-    },
-    "/transactions/{transactionId}": {
-      "schema": { "$ref": "#/entities/Transaction" },
-      "description": "Record of all token movements. Should only be mutable by Cloud Functions."
-    },
-    "/ledgers/{ledgerId}": {
-      "schema": { "$ref": "#/entities/LedgerEntry" },
-      "description": "Daily summary of ledger activities for auditing."
-    },
-    "/audit_logs/{logId}": {
-        "schema": { "$ref": "#/entities/AuditLog" },
-        "description": "Immutable log of all critical system events."
-    }
+    "structure": [
+      {
+        "path": "/vsdTokenInfo/{vsdTokenInfoId}",
+        "definition": {
+          "entityName": "VSDTokenInfo",
+          "schema": {
+            "$ref": "#/backend/entities/VSDTokenInfo"
+          },
+          "description": "Stores information about VSD tokens.",
+          "params": [
+            {
+              "name": "vsdTokenInfoId",
+              "description": "Unique identifier for the VSD token information."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/vsdTokenInfo/{vsdTokenInfoId}/ecosystemProjects/{ecosystemProjectId}",
+        "definition": {
+          "entityName": "EcosystemProject",
+          "schema": {
+            "$ref": "#/backend/entities/EcosystemProject"
+          },
+          "description": "Stores projects within the VSD ecosystem associated with a specific VSD token.",
+          "params": [
+            {
+              "name": "vsdTokenInfoId",
+              "description": "Unique identifier for the VSD token information."
+            },
+            {
+              "name": "ecosystemProjectId",
+              "description": "Unique identifier for the ecosystem project."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/vsdTokenInfo/{vsdTokenInfoId}/developerResources/{developerResourceId}",
+        "definition": {
+          "entityName": "DeveloperResource",
+          "schema": {
+            "$ref": "#/backend/entities/DeveloperResource"
+          },
+          "description": "Stores developer resources associated with a specific VSD token.",
+          "params": [
+            {
+              "name": "vsdTokenInfoId",
+              "description": "Unique identifier for the VSD token information."
+            },
+            {
+              "name": "developerResourceId",
+              "description": "Unique identifier for the developer resource."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/vsdTokenInfo/{vsdTokenInfoId}/legalDocuments/{legalDocumentId}",
+        "definition": {
+          "entityName": "LegalDocument",
+          "schema": {
+            "$ref": "#/backend/entities/LegalDocument"
+          },
+          "description": "Stores legal documents associated with a specific VSD token.",
+          "params": [
+            {
+              "name": "vsdTokenInfoId",
+              "description": "Unique identifier for the VSD token information."
+            },
+            {
+              "name": "legalDocumentId",
+              "description": "Unique identifier for the legal document."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to store information about VSD tokens, ecosystem projects, developer resources, and legal documents. It prioritizes clarity, security, and scalability. The structure employs Structural Segregation to ensure homogeneous security postures for each collection. Given the relationships described (VSDTokenInfo 1:N EcosystemProject, VSDTokenInfo 1:N DeveloperResource, VSDTokenInfo 1:N LegalDocument), a top-level collection for `vsdTokenInfo` is established, with subcollections for related entities to represent the 1:N relationships. This supports efficient querying and organization.  \n\nAuthorization Independence is achieved via Path-Based ownership. There is only public data in this data model. Thus, all documents are publicly readable.  The structure also supports list operations (QAPs) by ensuring each collection contains documents with a consistent security posture, allowing for straightforward security rules without complex filtering logic."
   }
 }
-
-    

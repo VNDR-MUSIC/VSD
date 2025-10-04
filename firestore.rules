@@ -1,58 +1,78 @@
-
+/**
+ * @fileOverview Firestore Security Rules for VSD Token Information and Related Data.
+ *
+ * Core Philosophy:
+ * This ruleset provides public read access to all data related to VSD tokens, ecosystem projects, developer resources, and legal documents.
+ * Write access is generally denied in this prototype to ensure no accidental modification of data.
+ *
+ * Data Structure:
+ * - /vsdTokenInfo/{vsdTokenInfoId}: Stores core information about each VSD token.
+ * - /vsdTokenInfo/{vsdTokenInfoId}/ecosystemProjects/{ecosystemProjectId}: Stores ecosystem projects associated with a VSD token.
+ * - /vsdTokenInfo/{vsdTokenInfoId}/developerResources/{developerResourceId}: Stores developer resources for a VSD token.
+ * - /vsdTokenInfo/{vsdTokenInfoId}/legalDocuments/{legalDocumentId}: Stores legal documents related to a VSD token.
+ *
+ * Key Security Decisions:
+ * - Public read access for all collections.
+ * - No write access is granted in this prototype to prevent unauthorized data modification.
+ */
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Helper function to check if the user is authenticated
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-    
-    // Helper function to check if the user is the owner of the account
-    function isAccountOwner(accountId) {
-      return request.auth.uid == accountId;
+
+    /**
+     * @description Allows public read access to VSD token information. Writes are disallowed in this prototype.
+     * @path /vsdTokenInfo/{vsdTokenInfoId}
+     * @allow (get, list): Any user can read VSD token information.
+     * @deny (create, update, delete): No user can create, update, or delete VSD token information.
+     * @principle Provides public read access to token information while preventing unauthorized modifications.
+     */
+    match /vsdTokenInfo/{vsdTokenInfoId} {
+      allow get, list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
-    // ACCOUNTS: Users can only read their own account. Writes are disallowed for all clients.
-    // Balances must only be mutated by trusted Cloud Functions.
-    match /accounts/{accountId} {
-      allow read: if isAuthenticated() && isAccountOwner(accountId);
-      allow write: if false; // NO-CLI-WRITES
+    /**
+     * @description Allows public read access to ecosystem projects. Writes are disallowed in this prototype.
+     * @path /vsdTokenInfo/{vsdTokenInfoId}/ecosystemProjects/{ecosystemProjectId}
+     * @allow (get, list): Any user can read ecosystem project information.
+     * @deny (create, update, delete): No user can create, update, or delete ecosystem project information.
+     * @principle Provides public read access to ecosystem project information while preventing unauthorized modifications.
+     */
+    match /vsdTokenInfo/{vsdTokenInfoId}/ecosystemProjects/{ecosystemProjectId} {
+      allow get, list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
-    // TRANSACTIONS: Users can read transactions where they are the sender or receiver. 
-    // Writes are disallowed for all clients.
-    match /transactions/{transactionId} {
-      allow read: if isAuthenticated() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
-      allow write: if false; // NO-CLI-WRITES
+    /**
+     * @description Allows public read access to developer resources. Writes are disallowed in this prototype.
+     * @path /vsdTokenInfo/{vsdTokenInfoId}/developerResources/{developerResourceId}
+     * @allow (get, list): Any user can read developer resource information.
+     * @deny (create, update, delete): No user can create, update, or delete developer resource information.
+     * @principle Provides public read access to developer resource information while preventing unauthorized modifications.
+     */
+    match /vsdTokenInfo/{vsdTokenInfoId}/developerResources/{developerResourceId} {
+      allow get, list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
-    // TENANTS: Publicly readable for client-side configuration, but only writable from backend.
-    match /tenants/{tenantId} {
-      allow read: if true;
-      allow write: if false;
-    }
-
-    // LEDGERS & AUDIT LOGS: These are for internal auditing and should not be client-accessible.
-    match /ledgers/{ledgerId} {
-      allow read, write: if false;
-    }
-    match /audit_logs/{logId} {
-      allow read, write: if false;
-    }
-
-    // API Keys, Idempotency, Promotions are backend-only collections.
-    match /api_keys/{keyId} {
-        allow read, write: if false;
-    }
-     match /idempotency/{keyId} {
-        allow read, write: if false;
-    }
-     match /promotions/{promoId} {
-        allow read, write: if false;
+    /**
+     * @description Allows public read access to legal documents. Writes are disallowed in this prototype.
+     * @path /vsdTokenInfo/{vsdTokenInfoId}/legalDocuments/{legalDocumentId}
+     * @allow (get, list): Any user can read legal document information.
+     * @deny (create, update, delete): No user can create, update, or delete legal document information.
+     * @principle Provides public read access to legal document information while preventing unauthorized modifications.
+     */
+    match /vsdTokenInfo/{vsdTokenInfoId}/legalDocuments/{legalDocumentId} {
+      allow get, list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
   }
 }
-
-    
