@@ -13,11 +13,6 @@ import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase } from '@
 import { doc, collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export const metadata: Metadata = {
-  title: 'My Dashboard | VSD Network',
-  description: 'Your personal VSD Network banking suite. View your VSD token balance, transaction history, staking information, and manage your assets.',
-};
-
 interface Account {
   walletAddress: string;
   vsdBalance: number;

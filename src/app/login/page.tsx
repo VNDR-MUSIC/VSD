@@ -9,13 +9,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import type { Metadata } from 'next';
 
-// Metadata cannot be exported from a Client Component.
-// This should be defined in a Server Component parent or layout file.
-// export const metadata: Metadata = {
-//   title: 'Login to VSD Network',
-//   description: 'Sign in to access your VSD Network dashboard, manage your tokens, and interact with the IMG ecosystem.',
-// };
-
 export default function LoginPage() {
   const { toast } = useToast();
   const router = useRouter();

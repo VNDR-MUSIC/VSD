@@ -10,13 +10,6 @@ import { Logo } from "@/components/icons/Logo";
 import { useToast } from "@/hooks/use-toast";
 import type { Metadata } from 'next';
 
-// Metadata is defined for reference, but this is a Client Component.
-// For SEO, this page would ideally have a Server Component parent setting the metadata.
-export const metadata: Metadata = {
-  title: 'User Settings | VSD Network',
-  description: 'Manage your VSD Network profile, wallet information, and notification preferences to stay updated on your account activity.',
-};
-
 // Mock user data
 const user = {
     name: 'Satoshi Nakamoto',

@@ -9,8 +9,8 @@ import { AIImage } from '@/components/ai/AIImage';
 import { logger } from 'firebase-functions';
 import type { Metadata } from 'next';
 
-// Metadata is defined for reference, but this is a Client Component.
-// For SEO, this page would ideally have a Server Component parent setting the metadata.
+// This is a client component, so we can't export metadata directly.
+// But we can define it for reference or for moving to a server component later.
 export const metadata: Metadata = {
   title: 'Audio Exchange Demo | VSD Network',
   description: 'Demonstration of a partner project using the VSD Network API for token transactions and AI-generated content, showcasing the potential of the ecosystem.',
@@ -61,11 +61,10 @@ export default function AudioExchangePage() {
         description: `Calling the VSD Transaction API for ${track.price} VSD.`,
       });
 
-      const transactionResponse = await fetch('/api/transactions', {
+      const transactionResponse = await fetch('/api/vsd/transactions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_INTERNAL_API_KEY}`,
         },
         body: JSON.stringify({
           fromAddress: MOCK_SENDER_ADDRESS,
@@ -146,7 +145,7 @@ export default function AudioExchangePage() {
                <Button 
                 className="w-full btn-hover-effect" 
                 onClick={() => handlePurchase(track)}
-                disabled={!!isLoading || !process.env.NEXT_PUBLIC_INTERNAL_API_KEY}
+                disabled={!!isLoading}
                >
                 {isLoading === track.id ? (
                   <>
@@ -164,11 +163,6 @@ export default function AudioExchangePage() {
           </Card>
         ))}
       </div>
-       {!process.env.NEXT_PUBLIC_INTERNAL_API_KEY && (
-          <div className="text-center text-yellow-400 bg-yellow-500/10 p-4 rounded-md">
-              Note: The 'Buy' button is disabled because the internal API key is not set.
-          </div>
-      )}
     </div>
   );
 }

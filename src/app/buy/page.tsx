@@ -12,15 +12,6 @@ import { useToast } from "@/hooks/use-toast";
 import { CreditCard, ShoppingCart, Loader2 } from 'lucide-react';
 import type { Metadata } from 'next';
 
-// Metadata is defined for reference, but this is a Client Component.
-// For SEO, this page would ideally have a Server Component parent setting the metadata.
-const metadata: Metadata = {
-  title: 'Buy VSD Tokens with Card | VSD Network',
-  description: 'Instantly purchase VSD utility tokens using your credit or debit card via our secure Stripe integration. Get the fuel for the VSD AI ecosystem.',
-};
-
-const VSD_PRICE_USD = 0.01;
-
 const buyVsdSchema = z.object({
   vsdAmount: z.coerce.number().min(100, "Minimum purchase is 100 VSD.").max(100000, "Maximum purchase is 100,000 VSD."),
 });
@@ -39,6 +30,7 @@ export default function BuyVsdPage() {
   });
 
   const vsdAmount = form.watch('vsdAmount');
+  const VSD_PRICE_USD = 0.01;
   const usdAmount = (vsdAmount || 0) * VSD_PRICE_USD;
 
   const onSubmit = async (data: BuyVsdFormValues) => {
