@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -11,7 +12,7 @@ import type { Metadata } from 'next';
 
 // This is a client component, so we can't export metadata directly.
 // But we can define it for reference or for moving to a server component later.
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: 'Audio Exchange Demo | VSD Network',
   description: 'Demonstration of a partner project using the VSD Network API for token transactions and AI-generated content, showcasing the potential of the ecosystem.',
 };
