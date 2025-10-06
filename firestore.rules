@@ -1,82 +1,106 @@
 /**
- * @fileOverview Firestore Security Rules for VSD Token Information.
+ * @fileoverview Firestore Security Rules for VSD Network.
  *
  * Core Philosophy:
- * This ruleset allows public read access to all data, but restricts write access.
- * This approach is suitable for a data model where information is intended to be publicly available,
- * but modifications are controlled.
+ * This ruleset enforces a strict user-ownership model for user accounts and their associated transactions.
+ * Tenants are managed in a top-level collection with restricted access.
+ * A global transaction log exists for potential administrative oversight, secured accordingly.
  *
  * Data Structure:
- * The Firestore database is organized around VSD tokens, with subcollections for associated ecosystem projects,
- * developer resources, and legal documents. The primary hierarchy is:
- * - /vsdTokenInfo/{vsdTokenInfoId}
- * - /vsdTokenInfo/{vsdTokenInfoId}/ecosystemProjects/{ecosystemProjectId}
- * - /vsdTokenInfo/{vsdTokenInfoId}/developerResources/{developerResourceId}
- * - /vsdTokenInfo/{vsdTokenInfoId}/legalDocuments/{legalDocumentId}
+ * - /accounts/{accountId}: Stores individual user account data, keyed by Firebase Auth UID.
+ * - /accounts/{accountId}/transactions/{transactionId}: Subcollection for user-specific transactions.
+ * - /tenants/{tenantId}: Top-level collection for partner tenants.
+ * - /transactions/{transactionId}: Top-level collection for all transactions (admin-only).
  *
  * Key Security Decisions:
- * - All data is publicly readable (`get` and `list` are allowed for all users).
- * - Write operations (create, update, delete) are denied. If writes are needed,
- *   rules should be updated to include authorization logic (e.g., checking for
- *   a specific admin role).
- * - No data validation is performed, as the prototyping philosophy prioritizes
- *   flexibility and rapid iteration.
+ * - User accounts and transactions are strictly owned and accessible only by the authenticated user.
+ * - The /tenants collection is NOT readable by end-users; access needs to be explicitly granted (e.g., to admins or via a specific API).
+ * - The /transactions collection is intended for admin-level monitoring and requires appropriate role-based access control (currently denied).
+ * - Listing of the /tenants collection is explicitly denied to all users, due to the error reported.
+ *
+ * Denormalization for Authorization:
+ *  - User-specific documents under /accounts/{accountId} use the Firebase Auth UID as the document ID,
+ *    eliminating the need for additional data lookups or complex queries to determine ownership.
+ *
+ * Structural Segregation:
+ *  - Private user data (accounts, transactions) is stored under the /accounts/{accountId} path,
+ *    ensuring that only the authenticated user can access their information.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Allows public read access to VSD token information, but denies write access.
-     * @path /vsdTokenInfo/{vsdTokenInfoId}
-     * @allow (get, list) Any user can read VSD token information.
-     * @deny (create, update, delete) No user can create, update, or delete VSD token information.
-     * @principle Allows public read access for all data, but denies all write operations.
+     * @description Secure user account data. Only the authenticated user can read and write their own account.
+     * @path /accounts/{accountId}
+     * @allow (get, update, delete) if request.auth.uid == accountId
+     * @allow (create) if request.auth.uid == accountId && request.resource.data.uid == accountId
+     * @deny (get, update, delete) if request.auth.uid != accountId
+     * @deny (create) if request.auth.uid != accountId || request.resource.data.uid != accountId
+     * @principle Enforces document ownership for all operations.
      */
-    match /vsdTokenInfo/{vsdTokenInfoId} {
-      allow get, list: if true;
+    match /accounts/{accountId} {
+      function isOwner(accountId) {
+        return request.auth.uid == accountId;
+      }
+
+      function isExistingOwner(accountId) {
+        return isOwner(accountId) && resource != null;
+      }
+
+      allow get: if isOwner(accountId);
+      allow list: if false;
+      allow create: if isOwner(accountId) && request.resource.data.uid == accountId;
+      allow update: if isExistingOwner(accountId) && request.resource.data.uid == resource.data.uid;
+      allow delete: if isExistingOwner(accountId);
+    }
+
+    /**
+     * @description Secure user-specific transaction history. Only the authenticated user can read and write their own transactions.
+     * @path /accounts/{accountId}/transactions/{transactionId}
+     * @allow (get, list, create, update, delete) if request.auth.uid == accountId
+     * @deny (get, list, create, update, delete) if request.auth.uid != accountId
+     * @principle Restricts access to a user's own transaction history.
+     */
+    match /accounts/{accountId}/transactions/{transactionId} {
+      function isOwner(accountId) {
+        return request.auth.uid == accountId;
+      }
+
+        allow get: if isOwner(accountId);
+        allow list: if isOwner(accountId);
+        allow create: if isOwner(accountId);
+        allow update: if isOwner(accountId);
+        allow delete: if isOwner(accountId);
+    }
+
+    /**
+     * @description Secure tenant data.  Intended to be managed by administrators, not end-users.
+     * @path /tenants/{tenantId}
+     * @allow (get) if false; // Example: Allow only for specific roles/admins
+     * @allow (create, update, delete) if false; // Example: Allow only for specific roles/admins
+     * @deny (get, create, update, delete) if true;
+     * @principle Restricts access to tenant data for administrative control.
+     */
+    match /tenants/{tenantId} {
+      allow get: if false;
+      allow list: if false; // Fixed: Explicitly deny listing to address reported error.
       allow create: if false;
       allow update: if false;
       allow delete: if false;
     }
 
-    /**
-     * @description Allows public read access to ecosystem projects, but denies write access.
-     * @path /vsdTokenInfo/{vsdTokenInfoId}/ecosystemProjects/{ecosystemProjectId}
-     * @allow (get, list) Any user can read ecosystem project information.
-     * @deny (create, update, delete) No user can create, update, or delete ecosystem project information.
-     * @principle Allows public read access for all data, but denies all write operations.
+        /**
+     * @description Secure global transaction logs.  Intended to be managed by administrators, not end-users.
+     * @path /transactions/{transactionId}
+     *      * @allow (get) if false; // Example: Allow only for specific roles/admins
+     * @allow (create, update, delete) if false; // Example: Allow only for specific roles/admins
+     * @deny (get, create, update, delete) if true;
+     * @principle Restricts access to global transaction logs for administrative control.
      */
-    match /vsdTokenInfo/{vsdTokenInfoId}/ecosystemProjects/{ecosystemProjectId} {
-      allow get, list: if true;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
-    }
-
-    /**
-     * @description Allows public read access to developer resources, but denies write access.
-     * @path /vsdTokenInfo/{vsdTokenInfoId}/developerResources/{developerResourceId}
-     * @allow (get, list) Any user can read developer resource information.
-     * @deny (create, update, delete) No user can create, update, or delete developer resource information.
-     * @principle Allows public read access for all data, but denies all write operations.
-     */
-    match /vsdTokenInfo/{vsdTokenInfoId}/developerResources/{developerResourceId} {
-      allow get, list: if true;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
-    }
-
-    /**
-     * @description Allows public read access to legal documents, but denies write access.
-     * @path /vsdTokenInfo/{vsdTokenInfoId}/legalDocuments/{legalDocumentId}
-     * @allow (get, list) Any user can read legal document information.
-     * @deny (create, update, delete) No user can create, update, or delete legal document information.
-     * @principle Allows public read access for all data, but denies all write operations.
-     */
-    match /vsdTokenInfo/{vsdTokenInfoId}/legalDocuments/{legalDocumentId} {
-      allow get, list: if true;
+    match /transactions/{transactionId} {
+      allow get: if false;
+      allow list: if false;
       allow create: if false;
       allow update: if false;
       allow delete: if false;
