@@ -1,110 +1,111 @@
 /**
- * @file Firestore Security Rules
- * @version 2
- *
- * @Core Philosophy
- * This ruleset employs a strict user-ownership model for accounts and their associated transactions.
- * Tenant and global transaction data is secured for admin-level access.
- *
- * @Data Structure
- * - /accounts/{accountId}: Stores individual user account data, keyed by Firebase Auth UID.
- * - /accounts/{accountId}/transactions/{transactionId}: A subcollection storing all transactions for a specific user account.
- * - /tenants/{tenantId}: Top-level collection for all partner tenants integrated with the VSD Network.
- * - /transactions/{transactionId}: A global log of all transactions for administrative overview.
- *
- * @Key Security Decisions
- * - User accounts are secured using an ownership model, where only the authenticated user can read and write their own account data.
- * - Listing all accounts is explicitly denied to prevent unauthorized data access.
- * - Transactions are secured both at the user account level (owner-only) and globally (admin-only).
- *
- * @Denormalization for Authorization
- *  N/A - Current rules leverage the path-based ownership model.  Future iterations could denormalize role or status information for faster checks.
- *
- * @Structural Segregation
- *  N/A - Data is separated into logical collections based on purpose and access control requirements.
+ * @file Firebase Security Rules for VSD Network
+ * @core_philosophy This ruleset enforces a strict user-ownership model for user accounts and their transactions.
+ *   Administrative access is granted to manage tenants and globally view transactions.
+ * @data_structure
+ *   - /accounts/{accountId}: Stores individual user account data.
+ *   - /accounts/{accountId}/transactions/{transactionId}: Stores transactions for a specific user account.
+ *   - /tenants/{tenantId}: Stores data for integrated partner projects.
+ *   - /transactions/{transactionId}: A global log of all transactions.
+ * @key_security_decisions
+ *   - Users can only access their own account data and transactions.
+ *   - Listing all accounts is disallowed for security reasons.
+ *   - The /transactions collection is secured for admin-only access (currently emulated with isSignedIn()).
+ *   - Data validation is relaxed to allow for rapid prototyping, but authorization checks are strictly enforced.
+ *   - Listing the root `/transactions` collection is denied.
+ * @denormalization_for_authorization N/A
+ * @structural_segregation N/A
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Secures individual user account data.
+     * @description Controls access to the /accounts collection, ensuring users can only manage their own account.
      * @path /accounts/{accountId}
-     * @allow (get, update, delete) if the user is the owner of the account.
-     * @allow (create) if the authenticated user's UID matches the accountId.
-     * @deny (list) Always deny listing all accounts.
-     * @deny (create, update, delete) if the user is not the owner of the account.
+     * @allow (create) User with UID 'user123' can create their own account document.
+     * @allow (get) User with UID 'user123' can read their own account document.
+     * @allow (update) User with UID 'user123' can update their own account document.
+     * @allow (delete) User with UID 'user123' can delete their own account document.
+     * @deny User with UID 'user456' cannot access account 'user123'.
      * @principle Enforces document ownership for all operations.
      */
     match /accounts/{accountId} {
-      function isSignedIn() {
-        return request.auth != null;
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
       }
 
-      function isOwner(accountId) {
-        return isSignedIn() && request.auth.uid == accountId;
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
       }
-
-      function isExistingOwner(accountId) {
-          return isSignedIn() && request.auth.uid == accountId && resource.data != null;
-      }
-
       allow get: if isOwner(accountId);
       allow list: if false;
-      allow create: if isSignedIn() && request.auth.uid == accountId;
-      allow update: if isExistingOwner(accountId);
+      allow create: if isOwner(accountId) && request.resource.data.uid == accountId;
+      allow update: if isExistingOwner(accountId) && request.resource.data.uid == resource.data.uid;
       allow delete: if isExistingOwner(accountId);
     }
 
     /**
-     * @description Secures the transactions subcollection for a specific user account.
+     * @description Controls access to the /accounts/{accountId}/transactions collection, ensuring users can only manage their own transactions.
      * @path /accounts/{accountId}/transactions/{transactionId}
-     * @allow (get, list, create, update, delete) if the user is the owner of the parent account.
-     * @deny (create, update, delete) if the user is not the owner of the parent account.
-     * @principle Enforces document ownership and prevents unauthorized modifications.
+     * @allow (create) User with UID 'user123' can create a transaction in their account.
+     * @allow (get) User with UID 'user123' can read a transaction in their account.
+     * @allow (update) User with UID 'user123' can update a transaction in their account.
+     * @allow (delete) User with UID 'user123' can delete a transaction in their account.
+     * @deny User with UID 'user456' cannot access transactions for account 'user123'.
+     * @principle Enforces document ownership for all operations within a user's account.
      */
     match /accounts/{accountId}/transactions/{transactionId} {
-      function isSignedIn() {
-        return request.auth != null;
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
       }
 
-      function isOwner(accountId) {
-        return isSignedIn() && request.auth.uid == accountId;
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
       }
-
-      function isParentOwner(accountId) {
-        return isSignedIn() && request.auth.uid == accountId;
-      }
-
-      allow get: if isParentOwner(accountId);
-      allow list: if isParentOwner(accountId);
-      allow create: if isParentOwner(accountId);
-      allow update: if isParentOwner(accountId);
-      allow delete: if isParentOwner(accountId);
+      allow get: if isOwner(accountId);
+      allow list: if isOwner(accountId);
+      allow create: if isOwner(accountId) && request.resource.data.accountId == accountId;
+      allow update: if isExistingOwner(accountId) && request.resource.data.accountId == resource.data.accountId;
+      allow delete: if isExistingOwner(accountId);
     }
 
     /**
-     * @description Secures tenant data.  Placeholder rules, as full admin security is not yet implemented.
+     * @description Controls access to the /tenants collection, restricting it to authenticated users (simulating admin access for prototyping).
      * @path /tenants/{tenantId}
-     * @allow (get, list) if true.  Assumes tenants may be semi-public for discovery.
-     * @allow (create, update, delete) if false. // TODO: Add admin role check once implemented.
-     * @principle Placeholder for admin-only access to tenant data.
+     * @allow (create) Authenticated user can create a tenant.
+     * @allow (get) Authenticated user can read a tenant.
+     * @allow (update) Authenticated user can update a tenant.
+     * @allow (delete) Authenticated user can delete a tenant.
+     * @deny Unauthenticated user cannot access the /tenants collection.
+     * @principle Requires authentication for all tenant management operations.
      */
     match /tenants/{tenantId} {
-        allow get, list: if true;
-        allow create, update, delete: if false; // TODO: Add admin role check once implemented.
+        function isSignedIn() {
+            return request.auth != null;
+        }
+
+        allow get: if isSignedIn();
+        allow list: if isSignedIn();
+        allow create: if isSignedIn();
+        allow update: if isSignedIn() && resource != null;
+        allow delete: if isSignedIn() && resource != null;
     }
 
-      /**
-       * @description Secures the global transactions log. Placeholder rules, as full admin security is not yet implemented.
-       * @path /transactions/{transactionId}
-       * @allow get, list: if false. // TODO: Add admin role check once implemented.
-       * @allow create, update, delete: if false. // TODO: Add admin role check once implemented.
-       * @principle Placeholder for admin-only access to the global transactions log.
-       */
+    /**
+     * @description Controls access to the root /transactions collection, denying all access in this prototype
+     * @path /transactions/{transactionId}
+     * @allow None. All operations are denied.
+     * @deny All operations are denied to any client.
+     * @principle Restricts access to global transaction logs (admin-only, not implemented in this prototype).
+     */
     match /transactions/{transactionId} {
-        allow get, list: if false; // TODO: Add admin role check once implemented.
-        allow create, update, delete: if false; // TODO: Add admin role check once implemented.
+      // Listing the root `/transactions` collection is denied due to the request in the client
+      allow get: if false;
+      allow list: if false;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
   }
 }
