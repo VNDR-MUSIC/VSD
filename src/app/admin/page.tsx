@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -57,11 +58,6 @@ import type { WithId } from '@/firebase';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { doc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
-
-export const metadata: Metadata = {
-  title: 'Admin Dashboard | VSD Network',
-  description: 'Manage users, tenants, transactions, and system settings for the VSD Network.',
-};
 
 interface Account {
   uid: string;
