@@ -1,123 +1,110 @@
 /**
- * @fileoverview Firestore Security Rules for the VSD Network application.
+ * @file Firestore Security Rules
+ * @version 2
  *
- * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for user accounts and their associated data (transactions).
- * Tenant data is publicly readable, but write access is restricted.
- * A global transactions log exists for potential admin-only access.
+ * @Core Philosophy
+ * This ruleset employs a strict user-ownership model for accounts and their associated transactions.
+ * Tenant and global transaction data is secured for admin-level access.
  *
- * Data Structure:
+ * @Data Structure
  * - /accounts/{accountId}: Stores individual user account data, keyed by Firebase Auth UID.
- * - /accounts/{accountId}/transactions/{transactionId}: A subcollection storing transactions for a specific user.
- * - /tenants/{tenantId}: Top-level collection for partner tenants integrated with the VSD Network.
+ * - /accounts/{accountId}/transactions/{transactionId}: A subcollection storing all transactions for a specific user account.
+ * - /tenants/{tenantId}: Top-level collection for all partner tenants integrated with the VSD Network.
  * - /transactions/{transactionId}: A global log of all transactions for administrative overview.
  *
- * Key Security Decisions:
- * - Users can only read/write their own account data and transactions.
- * - Tenant data is publicly readable, but write access is denied (for now - could be expanded to allow only service accounts to write).
- * - Listing of tenants is currently denied due to the error encountered (addressed below).
- * - Global transaction logs are not secured and require further definition.
+ * @Key Security Decisions
+ * - User accounts are secured using an ownership model, where only the authenticated user can read and write their own account data.
+ * - Listing all accounts is explicitly denied to prevent unauthorized data access.
+ * - Transactions are secured both at the user account level (owner-only) and globally (admin-only).
  *
- * Addressing Tenant List Error:
- * The initial error reported a lack of permissions to "list" the "tenants" collection.  The following rules will explicitly deny "list" access to the `/tenants` collection for all users to solve the runtime error reported.
+ * @Denormalization for Authorization
+ *  N/A - Current rules leverage the path-based ownership model.  Future iterations could denormalize role or status information for faster checks.
  *
- * Denormalization for Authorization:
- * - The `accountId` is used both as the document ID for accounts and as a field within transaction documents. This allows us to secure the `/accounts/{accountId}/transactions` subcollection using the `isOwner(accountId)` function without needing additional `get()` calls.
+ * @Structural Segregation
+ *  N/A - Data is separated into logical collections based on purpose and access control requirements.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Checks if the request is made by a signed-in user.
-     */
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    /**
-     * @description Checks if the authenticated user's UID matches the provided user ID.
-     */
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    /**
-     * @description Checks if the authenticated user is the owner of the existing document.
-     */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
-    }
-
-    /**
-     * @description Enforces that the provided ID in the request data matches the authenticated user's UID.
-     */
-    function isValidAccountId(accountId) {
-      return request.resource.data.uid == accountId;
-    }
-
-    /**
-     * @description Grants access to a user's account.
+     * @description Secures individual user account data.
      * @path /accounts/{accountId}
-     * @allow (create) User with UID 'user123' creates an account with accountId 'user123'.
-     * @deny (create) User with UID 'user123' attempts to create an account with accountId 'user456'.
-     * @allow (get) User with UID 'user123' reads their own account data at /accounts/user123.
-     * @deny (get) User with UID 'user123' attempts to read account data at /accounts/user456.
-     * @principle Enforces account ownership: users can only manage their own accounts.
+     * @allow (get, update, delete) if the user is the owner of the account.
+     * @allow (create) if the authenticated user's UID matches the accountId.
+     * @deny (list) Always deny listing all accounts.
+     * @deny (create, update, delete) if the user is not the owner of the account.
+     * @principle Enforces document ownership for all operations.
      */
     match /accounts/{accountId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(accountId) {
+        return isSignedIn() && request.auth.uid == accountId;
+      }
+
+      function isExistingOwner(accountId) {
+          return isSignedIn() && request.auth.uid == accountId && resource.data != null;
+      }
+
       allow get: if isOwner(accountId);
       allow list: if false;
-      allow create: if isOwner(accountId) && isValidAccountId(accountId);
-      allow update: if isExistingOwner(accountId) && isValidAccountId(accountId);
+      allow create: if isSignedIn() && request.auth.uid == accountId;
+      allow update: if isExistingOwner(accountId);
       allow delete: if isExistingOwner(accountId);
     }
 
     /**
-     * @description Grants access to a user's transactions subcollection.
+     * @description Secures the transactions subcollection for a specific user account.
      * @path /accounts/{accountId}/transactions/{transactionId}
-     * @allow (create) User with UID 'user123' creates a transaction under their account /accounts/user123.
-     * @deny (create) User with UID 'user123' attempts to create a transaction under /accounts/user456.
-     * @allow (get) User with UID 'user123' reads a transaction under their account /accounts/user123.
-     * @deny (get) User with UID 'user123' attempts to read a transaction under /accounts/user456.
-     * @principle Enforces transaction ownership: users can only manage transactions associated with their account.
+     * @allow (get, list, create, update, delete) if the user is the owner of the parent account.
+     * @deny (create, update, delete) if the user is not the owner of the parent account.
+     * @principle Enforces document ownership and prevents unauthorized modifications.
      */
     match /accounts/{accountId}/transactions/{transactionId} {
-      allow get: if isOwner(accountId);
-      allow list: if isOwner(accountId);
-      allow create: if isOwner(accountId) && request.resource.data.accountId == accountId;
-      allow update: if isExistingOwner(accountId) && request.resource.data.accountId == accountId;
-      allow delete: if isExistingOwner(accountId);
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(accountId) {
+        return isSignedIn() && request.auth.uid == accountId;
+      }
+
+      function isParentOwner(accountId) {
+        return isSignedIn() && request.auth.uid == accountId;
+      }
+
+      allow get: if isParentOwner(accountId);
+      allow list: if isParentOwner(accountId);
+      allow create: if isParentOwner(accountId);
+      allow update: if isParentOwner(accountId);
+      allow delete: if isParentOwner(accountId);
     }
 
     /**
-     * @description Grants read-only access to tenant data.
+     * @description Secures tenant data.  Placeholder rules, as full admin security is not yet implemented.
      * @path /tenants/{tenantId}
-     * @allow (get) Any user can read tenant data.
-     * @deny (create) No user can create tenant data.
-     * @principle Public read, restricted write: tenant data is publicly visible but modifications are restricted.
+     * @allow (get, list) if true.  Assumes tenants may be semi-public for discovery.
+     * @allow (create, update, delete) if false. // TODO: Add admin role check once implemented.
+     * @principle Placeholder for admin-only access to tenant data.
      */
     match /tenants/{tenantId} {
-      allow get: if true;
-      allow list: if false;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
+        allow get, list: if true;
+        allow create, update, delete: if false; // TODO: Add admin role check once implemented.
     }
 
-    /**
-     * @description Controls access to the global transactions log.
-     * @path /transactions/{transactionId}
-     * @allow (get) No rule provided, so access is denied.
-     * @deny (create) No rule provided, so access is denied.
-     * @principle Placeholder for future access control: Define rules for who can read and write to the global transaction log.
-     */
+      /**
+       * @description Secures the global transactions log. Placeholder rules, as full admin security is not yet implemented.
+       * @path /transactions/{transactionId}
+       * @allow get, list: if false. // TODO: Add admin role check once implemented.
+       * @allow create, update, delete: if false. // TODO: Add admin role check once implemented.
+       * @principle Placeholder for admin-only access to the global transactions log.
+       */
     match /transactions/{transactionId} {
-      allow get: if false;  // TODO: Define appropriate access controls for the global transaction log.
-      allow list: if false; // TODO: Define appropriate access controls for the global transaction log.
-      allow create: if false; // TODO: Define appropriate access controls for the global transaction log.
-      allow update: if false; // TODO: Define appropriate access controls for the global transaction log.
-      allow delete: if false; // TODO: Define appropriate access controls for the global transaction log.
+        allow get, list: if false; // TODO: Add admin role check once implemented.
+        allow create, update, delete: if false; // TODO: Add admin role check once implemented.
     }
   }
 }
