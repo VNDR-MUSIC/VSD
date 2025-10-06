@@ -1,113 +1,135 @@
 /**
- * @fileoverview Firestore Security Rules for VSD Network.
+ * @fileoverview Firestore Security Rules for the VSD Network application.
  *
  * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for account data,
- * while allowing public read access to tenant information.  Administrative
- * access to the global transaction log is also supported.
+ * This ruleset enforces a strict user-ownership model for account data and restricts
+ * tenant listings to authenticated users.  It also provides a flexible framework
+ * for potential administrative roles in the future. Data validation is relaxed
+ * to allow for rapid prototyping and iteration.
  *
  * Data Structure:
- * - /accounts/{accountId}: Stores individual user account data.
- * - /accounts/{accountId}/transactions/{transactionId}: Stores transactions for a specific user account.
- * - /tenants/{tenantId}: Stores tenant project data.
- * - /transactions/{transactionId}: Stores a global log of all transactions.
+ * - /accounts/{accountId}: Stores individual user account data.  The `accountId`
+ *   must match the Firebase Auth UID.
+ * - /accounts/{accountId}/transactions/{transactionId}: Stores transaction history
+ *   for a given account. Only the owner can manage these transactions.
+ * - /tenants/{tenantId}: Stores data for integrated partner projects. Listing
+ *   is allowed for authenticated users.
+ * - /transactions/{transactionId}: A global log of all transactions, potentially
+ *   secured for admin-only access (currently not implemented).
  *
  * Key Security Decisions:
- * - User accounts and their transactions are strictly controlled by the account owner.
- * - Tenant information is publicly readable to facilitate integration.
- * - Global transaction logs are secured for potential admin-only access.
- *
- * Denormalization for Authorization:
- * - The `accountId` is used both as the document ID and as a field within the
- *   account and transaction documents to ensure consistency and enable efficient
- *   authorization checks.
+ * - User accounts are strictly owned by the corresponding authenticated user.
+ * - Listing of user accounts is disallowed.
+ * - Tenant listing is allowed for any authenticated user.
+ * - The exact schema of the data is not validated during this prototyping phase,
+ *   except for ownership constraints.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Secure user accounts and enforce ownership.
+     * @description Checks if the request is made by the owner of the resource.
+     * @param {string} userId - The user ID to check against the request's auth UID.
+     * @return {boolean} - True if the user ID matches the request's auth UID, false otherwise.
+     */
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Checks if the request is made by the existing owner of the resource, and the resource exists.
+     * @param {string} userId - The user ID to check against the resource's owner ID.
+     * @return {boolean} - True if the user ID matches and the resource exists, false otherwise.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Checks if the user is signed in.
+     * @return {boolean} - True if the user is signed in, false otherwise.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Enforces access control for user accounts.
      * @path /accounts/{accountId}
-     * @allow (create) Authenticated user can create their own account if the accountId matches their UID.
-     * @allow (get, list, update, delete) Only the account owner can read, update, or delete their account.
-     * @deny (create) Reject creation if the accountId does not match the user's UID.
-     * @deny (update, delete) Reject if the account does not exist.
+     * @allow (create) - User with UID 'user123' can create their account if accountId matches their UID.
+     * @allow (get) - User with UID 'user123' can read their account data if accountId matches their UID.
+     * @allow (update) - User with UID 'user123' can update their account if accountId matches their UID, and the account exists.
+     * @allow (delete) - User with UID 'user123' can delete their account if accountId matches their UID, and the account exists.
+     * @deny (create) - User with UID 'user456' cannot create an account with accountId 'user123'.
+     * @deny (get) - User with UID 'user456' cannot read account data for accountId 'user123'.
+     * @deny (update) - User with UID 'user456' cannot update account data for accountId 'user123'.
+     * @deny (delete) - User with UID 'user456' cannot delete account data for accountId 'user123'.
      * @principle Enforces document ownership for writes.
      */
     match /accounts/{accountId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(accountId) {
-        return request.auth.uid == accountId;
-      }
-
-      function isExistingOwner(accountId) {
-        return isOwner(accountId) && resource != null;
-      }
-      
       allow get: if isOwner(accountId);
-      allow list: if false; // Prevent listing of all accounts.
-
-      allow create: if isSignedIn() && request.resource.data.uid == accountId;
+      allow list: if false;
+      allow create: if isOwner(accountId) && request.resource.data.uid == accountId;
       allow update: if isExistingOwner(accountId) && request.resource.data.uid == resource.data.uid;
       allow delete: if isExistingOwner(accountId);
     }
 
     /**
-     * @description Secure user-specific transactions subcollection.
+     * @description Enforces access control for user transactions.
      * @path /accounts/{accountId}/transactions/{transactionId}
-     * @allow (create) The account owner can create new transactions in their account.
-     * @allow (get, list, update, delete) Only the account owner can read, update, or delete transactions.
-     * @deny (create) Creation is rejected if the account ID in the transaction does not match the parent account ID.
-     * @deny (update, delete) Reject if the account or transaction does not exist.
-     * @principle Restricts access to a user's own data tree.
+     * @allow (create) - User with UID 'user123' can create a transaction under their account if accountId matches their UID.
+     * @allow (get) - User with UID 'user123' can read a transaction under their account if accountId matches their UID.
+     * @allow (update) - User with UID 'user123' can update a transaction under their account if accountId matches their UID, and the transaction exists.
+     * @allow (delete) - User with UID 'user123' can delete a transaction under their account if accountId matches their UID, and the transaction exists.
+     * @deny (create) - User with UID 'user456' cannot create a transaction under accountId 'user123'.
+     * @deny (get) - User with UID 'user456' cannot read a transaction under accountId 'user123'.
+     * @deny (update) - User with UID 'user456' cannot update a transaction under accountId 'user123'.
+     * @deny (delete) - User with UID 'user456' cannot delete a transaction under accountId 'user123'.
+     * @principle Restricts access to a user's own transaction history.
      */
     match /accounts/{accountId}/transactions/{transactionId} {
-
-        function isSignedIn() {
-            return request.auth != null;
-        }
-
-        function isOwner(accountId) {
-            return request.auth.uid == accountId;
-        }
-
-        function isExistingOwner(accountId) {
-            return isOwner(accountId) && resource != null;
-        }
-
-        allow get: if isOwner(accountId);
-        allow list: if isOwner(accountId);
-
-        allow create: if isSignedIn() && request.resource.data.accountId == accountId;
-        allow update: if isExistingOwner(accountId) && request.resource.data.accountId == resource.data.accountId;
-        allow delete: if isExistingOwner(accountId);
+      allow get: if isOwner(accountId);
+      allow list: if isOwner(accountId);
+      allow create: if isOwner(accountId);
+      allow update: if isExistingOwner(accountId);
+      allow delete: if isExistingOwner(accountId);
     }
 
     /**
-     * @description Allow public read access to tenant data, but restrict writes.
+     * @description Enforces access control for tenants.
      * @path /tenants/{tenantId}
-     * @allow (get, list) Public read access is allowed for tenants.
-     * @allow (create, update, delete) Only authenticated users can create, update, or delete tenants.
-     * @principle Public Read with Owner-Only Writes
+     * @allow (get) - Any authenticated user can read tenant data.
+     * @allow (list) - Any authenticated user can list tenants.
+     * @deny (create) - No one can create a tenant without specific authorization (e.g., admin role).
+     * @deny (update) - No one can update a tenant without specific authorization (e.g., admin role).
+     * @deny (delete) - No one can delete a tenant without specific authorization (e.g., admin role).
+     * @principle Allows public read access but restricts writes to authorized users.
      */
     match /tenants/{tenantId} {
-        // CRITICAL: Cannot implement owner-only writes. The 'Tenant' entity is missing an 'ownerId' or 'authorId' field.
-        allow get, list: if true;
-        allow create, update, delete: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if false; // TODO: Add tenant creation logic for authorized users (e.g., admins).
+      allow update: if false; // TODO: Add tenant update logic for authorized users (e.g., admins).
+      allow delete: if false; // TODO: Add tenant deletion logic for authorized users (e.g., admins).
     }
 
-    /**
-     * @description Secure the global transactions log for potential admin access.
-     * @path /transactions/{transactionId}
-     * @allow (get, list, create, update, delete) No access granted.
-     * @principle Restricts all access to this collection by default.
-     */
+      /**
+       * @description Enforces access control for global transactions log.
+       * @path /transactions/{transactionId}
+       * @allow (get) - No one can read transaction data without specific authorization (e.g., admin role).
+       * @allow (list) - No one can list transactions without specific authorization (e.g., admin role).
+       * @deny (create) - No one can create a transaction without specific authorization (e.g., admin role).
+       * @deny (update) - No one can update a transaction without specific authorization (e.g., admin role).
+       * @deny (delete) - No one can delete a transaction without specific authorization (e.g., admin role).
+       * @principle Restricts access to authorized users.
+       */
     match /transactions/{transactionId} {
-        allow get, list, create, update, delete: if false;
-    }
+          allow get: if false; // TODO: Add transaction access logic for authorized users (e.g., admins).
+          allow list: if false; // TODO: Add transaction access logic for authorized users (e.g., admins).
+          allow create: if false; // TODO: Add transaction creation logic for authorized users (e.g., admins).
+          allow update: if false; // TODO: Add transaction update logic for authorized users (e.g., admins).
+          allow delete: if false; // TODO: Add transaction deletion logic for authorized users (e.g., admins).
+        }
   }
 }
