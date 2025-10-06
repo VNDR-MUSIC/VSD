@@ -46,7 +46,7 @@
     "firebase-functions": "^5.0.1",
     "framer-motion": "^11.2.10",
     "genkit": "^1.12.0",
-    "@genkit-ai/googleai": "latest",
+    "@genkit-ai/google-genai": "latest",
     "lucide-react": "^0.475.0",
     "next": "15.3.3",
     "patch-package": "^8.0.0",
