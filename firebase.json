@@ -25,6 +25,12 @@
         "destination": "/index.html"
       }
     ]
+  },
+  "database": {
+    "rules": "database.rules.json",
+    "backups": [
+      "daily"
+    ]
   }
 }
 
