@@ -61,7 +61,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 interface Account {
   uid: string;
-  name: string;
+  displayName: string;
   email: string;
   walletAddress: string;
   vsdBalance: number;
@@ -111,14 +111,20 @@ const TableRowSkeleton = ({ cells }: { cells: number }) => (
 
 export default function AdminDashboardPage() {
   const firestore = useFirestore();
+  const { user, isUserLoading } = useUser();
 
-  const accountsQuery = useMemoFirebase(() => collection(firestore, 'accounts'), [firestore]);
+  // Public queries - can run for any user (authenticated or not)
   const tenantsQuery = useMemoFirebase(() => collection(firestore, 'tenants'), [firestore]);
-  const transactionsQuery = useMemoFirebase(() => collection(firestore, 'transactions'), [firestore]);
-
-  const { data: users, isLoading: usersLoading } = useCollection<Account>(accountsQuery);
+  const globalTransactionsQuery = useMemoFirebase(() => collection(firestore, 'transactions'), [firestore]);
+  
   const { data: tenants, isLoading: tenantsLoading } = useCollection<Tenant>(tenantsQuery);
-  const { data: transactions, isLoading: transactionsLoading } = useCollection<Transaction>(transactionsQuery);
+  const { data: transactions, isLoading: transactionsLoading } = useCollection<Transaction>(globalTransactionsQuery);
+
+  // Authenticated query - only run if a user is logged in
+  const accountsQuery = useMemoFirebase(() => user ? collection(firestore, 'accounts') : null, [firestore, user]);
+  const { data: users, isLoading: usersLoading } = useCollection<Account>(accountsQuery);
+
+  const totalVsdInCirculation = users?.reduce((acc, user) => acc + user.vsdBalance, 0) || 0;
 
   return (
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -143,16 +149,16 @@ export default function AdminDashboardPage() {
               {usersLoading ? <StatCardSkeleton /> : (
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total VSD Supply</CardTitle>
+                        <CardTitle className="text-sm font-medium">VSD in Circulation</CardTitle>
                         <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">1,000,000,000</div>
-                        <p className="text-xs text-muted-foreground">Fixed total supply</p>
+                        <div className="text-2xl font-bold">{totalVsdInCirculation.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground">Total VSD held by users</p>
                     </CardContent>
                 </Card>
               )}
-               {usersLoading ? <StatCardSkeleton /> : (
+               {(isUserLoading || usersLoading) ? <StatCardSkeleton /> : (
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Active Users</CardTitle>
@@ -160,19 +166,19 @@ export default function AdminDashboardPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">+{users?.length || 0}</div>
-                         <p className="text-xs text-muted-foreground">+180.1% from last month (mock)</p>
+                         <p className="text-xs text-muted-foreground">Total registered accounts</p>
                     </CardContent>
                 </Card>
                )}
                 {transactionsLoading ? <StatCardSkeleton /> : (
                  <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Transaction Volume (24h)</CardTitle>
+                        <CardTitle className="text-sm font-medium">Total Transactions</CardTitle>
                         <ArrowRightLeft className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">1,250,834 VSD</div>
-                         <p className="text-xs text-muted-foreground">+19% from yesterday (mock)</p>
+                        <div className="text-2xl font-bold">{transactions?.length || 0}</div>
+                         <p className="text-xs text-muted-foreground">All-time transaction count</p>
                     </CardContent>
                 </Card>
                 )}
@@ -195,7 +201,7 @@ export default function AdminDashboardPage() {
                     <TabsList>
                         <TabsTrigger value="users">Users</TabsTrigger>
                         <TabsTrigger value="tenants">Tenants</TabsTrigger>
-                        <TabsTrigger value="transactions">Activity</TabsTrigger>
+                        <TabsTrigger value="transactions">Global Activity</TabsTrigger>
                     </TabsList>
                     <div className="ml-auto flex items-center gap-2">
                        <AddTenantDialog />
@@ -206,7 +212,7 @@ export default function AdminDashboardPage() {
                     <CardHeader>
                       <CardTitle>Users</CardTitle>
                       <CardDescription>
-                        Manage all users and their balances in the VSD ecosystem.
+                        Manage all users and their balances in the VSD ecosystem. Requires authentication.
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -228,29 +234,35 @@ export default function AdminDashboardPage() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {usersLoading ? (
+                          {isUserLoading || usersLoading ? (
                             Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} cells={6} />)
+                          ) : !user ? (
+                             <TableRow>
+                                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                                    Please log in to view user data.
+                                </TableCell>
+                            </TableRow>
                           ) : (
-                            users?.map((user) => (
-                            <TableRow key={user.uid}>
+                            users?.map((userAccount) => (
+                            <TableRow key={userAccount.uid}>
                               <TableCell>
-                                <div className="font-medium">{user.name}</div>
+                                <div className="font-medium">{userAccount.displayName}</div>
                                 <div className="hidden text-sm text-muted-foreground md:inline">
-                                  {user.email}
+                                  {userAccount.email}
                                 </div>
                               </TableCell>
                               <TableCell className="hidden sm:table-cell font-mono">
-                                {user.walletAddress}
+                                {userAccount.walletAddress}
                               </TableCell>
                               <TableCell className="hidden sm:table-cell">
-                                <Badge className="text-xs" variant={user.status === 'Active' ? 'default' : 'destructive'}>
-                                  {user.status}
+                                <Badge className="text-xs" variant={userAccount.status === 'Active' ? 'default' : 'destructive'}>
+                                  {userAccount.status}
                                 </Badge>
                               </TableCell>
                               <TableCell className="hidden md:table-cell">
-                                {new Date(user.joined).toLocaleDateString()}
+                                {new Date(userAccount.joined).toLocaleDateString()}
                               </TableCell>
-                              <TableCell className="text-right">{user.vsdBalance.toLocaleString()} VSD</TableCell>
+                              <TableCell className="text-right">{userAccount.vsdBalance.toLocaleString()} VSD</TableCell>
                               <TableCell className="text-right">
                                  <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
@@ -337,9 +349,9 @@ export default function AdminDashboardPage() {
                  <TabsContent value="transactions">
                     <Card>
                         <CardHeader>
-                          <CardTitle>Recent Activity</CardTitle>
+                          <CardTitle>Recent Global Activity</CardTitle>
                            <CardDescription>
-                            An audit log of the most recent ledger activities.
+                            An audit log of the most recent ledger activities across the network.
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -475,15 +487,14 @@ function AddTenantDialog() {
 
 
 function AdminHeader() {
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
     const pathname = usePathname();
 
     const navItems = [
         { href: "/admin", label: "Dashboard", icon: Home },
-        { href: "/admin/users", label: "Users", icon: Users },
-        { href: "/admin/transactions", label: "Transactions", icon: Wallet },
-        { href: "/admin/keys", label: "API Keys", icon: KeyRound },
-        { href: "/admin/promotions", label: "Promotions", icon: Gift },
+        // These are examples, the main nav is handled by the tabs now
+        // { href: "/admin/users", label: "Users", icon: Users },
+        // { href: "/admin/transactions", label: "Transactions", icon: Wallet },
     ];
 
     return (
@@ -511,28 +522,40 @@ function AdminHeader() {
                      <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                               {user ? (
+                               {isUserLoading ? (
+                                <Skeleton className="h-8 w-8 rounded-full" />
+                               ) : user ? (
                                     <Avatar className="h-8 w-8">
                                         <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'Admin'} />
                                         <AvatarFallback>{user.displayName?.charAt(0) ?? 'A'}</AvatarFallback>
                                     </Avatar>
                                ) : (
-                                <Skeleton className="h-8 w-8 rounded-full" />
+                                 <Avatar className="h-8 w-8">
+                                     <AvatarFallback>A</AvatarFallback>
+                                 </Avatar>
                                )}
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56" align="end">
-                            <DropdownMenuLabel>
-                                <div className="flex flex-col space-y-1">
-                                    <p className="text-sm font-medium leading-none">{user?.displayName}</p>
-                                    <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
-                                </div>
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>Settings</DropdownMenuItem>
-                            <DropdownMenuItem>Support</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>Logout</DropdownMenuItem>
+                           {user ? (
+                            <>
+                                <DropdownMenuLabel>
+                                    <div className="flex flex-col space-y-1">
+                                        <p className="text-sm font-medium leading-none">{user.displayName}</p>
+                                        <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                                    </div>
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>Settings</DropdownMenuItem>
+                                <DropdownMenuItem>Support</DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>Logout</DropdownMenuItem>
+                            </>
+                           ) : (
+                             <DropdownMenuItem asChild>
+                                <Link href="/login">Login</Link>
+                             </DropdownMenuItem>
+                           )}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
