@@ -31,10 +31,6 @@ const DataCard = ({ icon: Icon, title, value, isLoading }: { icon: React.Element
 export function LiveTokenData() {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
-  const firestore = useFirestore();
-
-  const transactionsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'transactions') : null, [firestore]);
-  const { data: transactions, isLoading: isLoadingTransactions } = useCollection(transactionsQuery);
 
   const { data: blockchainData, isLoading: isLoadingBlockchain, error: blockchainError } = useBlockchainData();
 
@@ -74,14 +70,14 @@ export function LiveTokenData() {
             <DataCard 
               icon={Users} 
               title="Holder Wallets" 
-              value={"--"} // This data should come from a backend service, not client-side query
+              value={"--"} // This data requires a more complex backend or third-party service.
               isLoading={false} 
             />
             <DataCard 
               icon={ArrowRightLeft} 
               title="Total Transfers" 
-              value={transactions?.length ?? 0} 
-              isLoading={isLoadingTransactions} 
+              value={"--"} // Displaying a placeholder as fetching all transactions is not feasible on the client for unauth users.
+              isLoading={false} 
             />
             <DataCard 
               icon={FileCode} 
