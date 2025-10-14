@@ -12,15 +12,14 @@ import { useToast } from "@/hooks/use-toast";
 import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
 import { doc, collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useProtectedRoute } from '@/hooks/use-protected-route';
+import type { Account } from '@/types/account';
+import { format } from 'date-fns';
 
-interface Account {
-  walletAddress: string;
-  vsdBalance: number;
-}
 
 interface Transaction {
   id: string;
-  type: 'in' | 'out';
+  type: string; // Changed from 'in' | 'out' to string to support more types
   from?: string;
   to?: string;
   amount: number;
@@ -29,18 +28,22 @@ interface Transaction {
   description: string;
 }
 
-const mockPortfolioData = [
-  { month: 'Jan', value: 125.00 },
-  { month: 'Feb', value: 120.50 },
-  { month: 'Mar', value: 135.20 },
-  { month: 'Apr', value: 132.80 },
-  { month: 'May', value: 145.90 },
-  { month: 'Jun', value: 155.00 },
-];
+const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="p-2 bg-background/80 border border-border rounded-lg shadow-lg">
+                <p className="label font-bold">{`${label}`}</p>
+                <p className="intro text-primary">{`Usage: ${payload[0].value.toLocaleString()} VSD`}</p>
+            </div>
+        );
+    }
+    return null;
+};
 
 export function DashboardClient() {
+  const { isLoading: isAuthLoading } = useProtectedRoute();
   const { toast } = useToast();
-  const { user, isUserLoading } = useUser();
+  const { user } = useUser();
   const firestore = useFirestore();
   
   const accountRef = useMemoFirebase(() => user && firestore ? doc(firestore, 'accounts', user.uid) : null, [firestore, user]);
@@ -49,7 +52,7 @@ export function DashboardClient() {
   const { data: account, isLoading: isAccountLoading } = useDoc<Account>(accountRef);
   const { data: transactions, isLoading: areTransactionsLoading } = useCollection<Transaction>(transactionsRef);
 
-  const isLoading = isUserLoading || isAccountLoading;
+  const isLoading = isAuthLoading || isAccountLoading;
 
   const handleCopyToClipboard = () => {
     if (account?.walletAddress) {
@@ -60,6 +63,35 @@ export function DashboardClient() {
       });
     }
   };
+  
+  const activityData = React.useMemo(() => {
+    if (!transactions) return [];
+    
+    const monthlyUsage = transactions
+        .filter(tx => tx.type !== 'in' && tx.status === 'Completed') // Assuming 'in' is for incoming
+        .reduce((acc, tx) => {
+            const month = format(new Date(tx.date), 'MMM yyyy');
+            acc[month] = (acc[month] || 0) + tx.amount;
+            return acc;
+        }, {} as Record<string, number>);
+        
+    return Object.entries(monthlyUsage)
+        .map(([month, value]) => ({ month, value }))
+        .sort((a, b) => new Date(a.month).getTime() - new Date(b.month).getTime());
+
+  }, [transactions]);
+
+  if (isAuthLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="flex flex-col items-center gap-4">
+            <Skeleton className="h-24 w-24 rounded-full" />
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-6 w-96" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -105,25 +137,23 @@ export function DashboardClient() {
           <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><BarChart className="h-6 w-6" />Activity Overview</CardTitle>
-              <CardDescription>Illustrative chart of your VSD token usage over the last 6 months.</CardDescription>
+              <CardDescription>A live look at your VSD token usage over the last months.</CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={250}>
-                <RechartsBarChart data={mockPortfolioData}>
-                  <XAxis dataKey="month" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value} VSD`} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      borderColor: "hsl(var(--border))",
-                      borderRadius: "var(--radius)",
-                    }}
-                    cursor={{fill: 'hsl(var(--accent))', radius: 'var(--radius)'}}
-                    formatter={(value) => [`${(value as number).toFixed(2)} VSD`, 'Usage']}
-                  />
-                  <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="VSD Spent" />
-                </RechartsBarChart>
-              </ResponsiveContainer>
+                {areTransactionsLoading ? <Skeleton className="h-[250px] w-full" /> : activityData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={250}>
+                    <RechartsBarChart data={activityData}>
+                      <XAxis dataKey="month" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}`} />
+                      <Tooltip content={<CustomTooltip />} cursor={{fill: 'hsl(var(--accent))', radius: 'var(--radius)'}} />
+                      <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="VSD Spent" />
+                    </RechartsBarChart>
+                  </ResponsiveContainer>
+                ) : (
+                    <div className="flex items-center justify-center h-[250px]">
+                        <p className="text-muted-foreground">No transaction data available to display chart.</p>
+                    </div>
+                )}
             </CardContent>
           </Card>
         </div>
@@ -137,15 +167,15 @@ export function DashboardClient() {
             <CardContent className="space-y-4">
               <div>
                 <p className="text-sm text-muted-foreground">Staked Amount</p>
-                <p className="text-2xl font-bold">5,000 VSD</p>
+                <p className="text-2xl font-bold">0 VSD</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Estimated APY</p>
-                <p className="text-2xl font-bold text-green-400">8.75%</p>
+                <p className="text-2xl font-bold text-green-400">~8.75%</p>
               </div>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full btn-hover-effect" onClick={() => toast({ title: "Feature Coming Soon", description: "The staking portal will be available after the presale."})}>Manage Staking</Button>
+              <Button variant="outline" className="w-full btn-hover-effect" onClick={() => toast({ title: "Feature Coming Soon", description: "The staking portal will be available after the presale."})}>Stake Now</Button>
             </CardFooter>
           </Card>
           <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
@@ -187,7 +217,7 @@ export function DashboardClient() {
                         </TableCell>
                     </TableRow>
                 ))
-              ) : (
+              ) : transactions && transactions.length > 0 ? (
                 transactions?.map((tx) => (
                 <TableRow key={tx.id}>
                   <TableCell>
@@ -207,7 +237,13 @@ export function DashboardClient() {
                     </span>
                   </TableCell>
                 </TableRow>
-              )))}
+              ))) : (
+                 <TableRow>
+                    <TableCell colSpan={5} className="text-center text-muted-foreground py-10">
+                        No transactions yet.
+                    </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
@@ -215,3 +251,5 @@ export function DashboardClient() {
     </div>
   );
 }
+
+    
