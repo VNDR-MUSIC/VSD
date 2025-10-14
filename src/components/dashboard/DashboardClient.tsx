@@ -283,7 +283,7 @@ export function DashboardClient() {
 
 function SendVsdDialog({ userAccount }: { userAccount: Account | null }) {
     const { toast } = useToast();
-    const [isOpen, React.useState(false);
+    const [isOpen, setIsOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [tokenType, setTokenType] = React.useState<'vsd' | 'vsd-lite'>('vsd');
     const firestore = useFirestore();
