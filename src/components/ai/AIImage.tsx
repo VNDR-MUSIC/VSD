@@ -5,7 +5,8 @@ import Image, { type ImageProps } from 'next/image';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { generateImageFromHint, type GenerateImageOutput } from '@/ai/flows/generate-image-from-hint-flow';
+// The flow is no longer directly called. It is called via the API bridge.
+// import { generateImageFromHint, type GenerateImageOutput } from '@/ai/flows/generate-image-from-hint-flow';
 
 interface AIImageProps extends Omit<ImageProps, 'src' | 'alt'> {
   hint: string;
@@ -42,13 +43,24 @@ export function AIImage({
       setError(null);
       setCurrentImageSrc(initialSrc); // Show placeholder while loading new image
 
-      generateImageFromHint({ hint })
-        .then((response: GenerateImageOutput) => {
+      // Call the client-facing API bridge route
+      fetch('/api/vsd/generate-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hint }),
+      })
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`API returned status ${res.status}`);
+          }
+          return res.json();
+        })
+        .then((response: { imageDataUri?: string }) => {
           if (isMounted && response && response.imageDataUri) {
             setCurrentImageSrc(response.imageDataUri);
           } else if (isMounted) {
             const errorMessage = 'AIImage: Image generation returned empty or invalid data URI.';
-            console.error(errorMessage, { hint, response, environment: typeof window !== 'undefined' ? window.location.host : 'server' });
+            console.error(errorMessage, { hint, response });
             setError(errorMessage);
             setCurrentImageSrc(initialSrc); 
           }
@@ -60,7 +72,6 @@ export function AIImage({
               hint,
               error: errorMessage,
               errorObject: err,
-              environment: typeof window !== 'undefined' ? window.location.host : 'server'
             });
             setError(errorMessage);
             setCurrentImageSrc(initialSrc); 

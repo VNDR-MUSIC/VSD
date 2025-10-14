@@ -188,9 +188,6 @@ h1, h2, h3, h4, h5, h6, .font-headline {
     transform: translateX(-100%) skewX(-30deg);
     pointer-events: none;
   }
-  .btn-hover-effect:hover::before {
-    transform: translateX(50%) skewX(-30deg);
-  }
   .btn-hover-effect:hover:not(:disabled) {
     @apply transform scale-[1.03] shadow-lg shadow-primary/30 brightness-110;
   }

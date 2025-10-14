@@ -567,5 +567,3 @@ function AdminHeader() {
         </header>
     );
 }
-
-    
