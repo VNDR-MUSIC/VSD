@@ -34,8 +34,11 @@ export function useProtectedRoute({ adminOnly = false }: { adminOnly?: boolean }
         return; // Wait for the user's account document to load.
       }
       
+      // Check if the user's email is the designated admin email OR if their account doc has isAdmin: true
+      const isDesignatedAdmin = user.email === 'support@vndrmusic.com';
+      
       // Once account data is loaded, check the isAdmin flag.
-      if (!account?.isAdmin) {
+      if (!account?.isAdmin && !isDesignatedAdmin) {
         // If user is not an admin, redirect to dashboard (or a dedicated 'unauthorized' page).
         router.push('/dashboard');
       } else {
