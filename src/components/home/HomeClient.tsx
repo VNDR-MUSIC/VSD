@@ -152,14 +152,13 @@ export function HomeClient() {
                 <Link href="/developers/documentation#architecture">Learn About the Architecture <ArrowRight className="ml-2 h-5 w-5" /></Link>
                 </Button>
             </div>
-             <div className="relative h-80 rounded-lg shadow-2xl shadow-primary/10 border border-primary/20 p-2">
-                 <AIImage
-                    initialSrc="https://placehold.co/600x400.png"
-                    alt="The central hub of the IMG ecosystem"
-                    hint="financial technology hub"
-                    layout="fill"
-                    objectFit="cover"
-                    className="rounded-md"
+             <div className="relative h-80 rounded-lg shadow-2xl shadow-primary/10 border border-primary/20 p-2 flex items-center justify-center">
+                 <Image
+                    src="https://i.ibb.co/v64ZGh4/logo-full-256x.png"
+                    alt="VSD Network Full Logo"
+                    width={256}
+                    height={256}
+                    className="object-contain"
                 />
             </div>
         </section>

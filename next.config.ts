@@ -17,8 +17,20 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: 'indiemedia.llc',
       },
+       {
+        protocol: 'https',
+        hostname: 'placehold.co',
+      },
+       {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      }
     ],
   },
 };
