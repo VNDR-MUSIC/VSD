@@ -72,14 +72,33 @@
       "description": "Represents a single ledger activity within the VSD Network.",
       "properties": {
         "id": { "type": "string" },
-        "type": { "type": "string", "enum": ["Mint (Stripe)", "Transfer", "Burn (Refund)", "API Spend", "Staking Reward", "Royalty Payout"] },
+        "type": { "type": "string", "enum": ["Mint (Stripe)", "Transfer", "Burn (Refund)", "API Spend", "Staking Reward", "Royalty Payout", "in", "out", "VSD Lite Transfer", "VSD Lite Exchange"] },
         "status": { "type": "string", "enum": ["Completed", "Pending", "Failed"] },
         "amount": { "type": "number", "description": "The transaction amount in VSD." },
         "date": { "type": "string", "format": "date-time" },
         "user": { "type": "string", "description": "Display name of the user involved." },
-        "accountId": { "type": "string", "description": "The ID of the account involved in the transaction." }
+        "accountId": { "type": "string", "description": "The ID of the account involved in the transaction." },
+        "from": { "type": "string", "description": "The sender's wallet address or identifier." },
+        "to": { "type": "string", "description": "The recipient's wallet address or identifier." },
+        "description": { "type": "string", "description": "A brief description of the transaction." }
       },
       "required": ["id", "type", "status", "amount", "date", "user", "accountId"]
+    },
+    "Advertisement": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Advertisement",
+        "type": "object",
+        "description": "Represents an advertiser's video or link for user engagement rewards.",
+        "properties": {
+            "id": { "type": "string", "description": "Unique ID for the advertisement." },
+            "title": { "type": "string", "description": "Title of the ad." },
+            "type": { "type": "string", "enum": ["video", "url"], "description": "The type of advertisement." },
+            "url": { "type": "string", "format": "uri", "description": "The URL for the video source or the click-through link." },
+            "reward": { "type": "number", "description": "The amount of VSD Lite tokens rewarded for interaction." },
+            "createdAt": { "type": "string", "format": "date-time", "description": "ISO timestamp of when the ad was created." },
+            "status": { "type": "string", "enum": ["Active", "Paused"], "description": "The status of the advertisement campaign." }
+        },
+        "required": ["id", "title", "type", "url", "reward", "createdAt", "status"]
     }
   },
   "auth": {
@@ -101,6 +120,10 @@
     "/transactions/{transactionId}": {
         "schema": { "$ref": "#/entities/Transaction" },
         "description": "A global log of all transactions for administrative overview. Can be secured for admin-only access."
+    },
+    "/advertisements/{advertisementId}": {
+        "schema": { "$ref": "#/entities/Advertisement" },
+        "description": "Stores all advertisement campaigns that users can interact with to earn VSD Lite."
     }
   }
 }

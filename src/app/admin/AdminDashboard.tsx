@@ -16,6 +16,8 @@ import {
   KeyRound,
   Gift,
   Globe,
+  Video,
+  ExternalLink,
 } from 'lucide-react';
 import {
   Card,
@@ -57,6 +59,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import type { Account } from '@/types/account';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Textarea } from '@/components/ui/textarea';
 
 
 interface Transaction {
@@ -74,6 +78,16 @@ interface Tenant {
     domain: string;
     apiKey: string;
     status: 'Active' | 'Inactive';
+    createdAt: string;
+}
+
+interface Advertisement {
+    id: string;
+    title: string;
+    type: 'video' | 'url';
+    url: string;
+    reward: number;
+    status: 'Active' | 'Paused';
     createdAt: string;
 }
 
@@ -104,14 +118,17 @@ export function AdminDashboard() {
   const firestore = useFirestore();
   const { user } = useUser();
 
-  // Collections are fetched only if an admin user is logged in and auth check is complete
+  // Queries are conditional on user being a verified admin
   const tenantsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'tenants') : null, [firestore, user, isAuthLoading]);
   const globalTransactionsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'transactions') : null, [firestore, user, isAuthLoading]);
   const accountsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'accounts') : null, [firestore, user, isAuthLoading]);
+  const advertisementsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'advertisements') : null, [firestore, user, isAuthLoading]);
   
   const { data: tenants, isLoading: tenantsLoading } = useCollection<Tenant>(tenantsQuery);
   const { data: transactions, isLoading: transactionsLoading } = useCollection<Transaction>(globalTransactionsQuery);
   const { data: users, isLoading: usersLoading } = useCollection<Account>(accountsQuery);
+  const { data: advertisements, isLoading: advertisementsLoading } = useCollection<Advertisement>(advertisementsQuery);
+
 
   const totalVsdInCirculation = users?.reduce((acc, user) => acc + user.vsdBalance, 0) || 0;
 
@@ -201,9 +218,11 @@ export function AdminDashboard() {
                     <TabsList>
                         <TabsTrigger value="users">Users</TabsTrigger>
                         <TabsTrigger value="tenants">Tenants</TabsTrigger>
+                        <TabsTrigger value="advertisements">Advertisements</TabsTrigger>
                         <TabsTrigger value="transactions">Global Activity</TabsTrigger>
                     </TabsList>
                     <div className="ml-auto flex items-center gap-2">
+                       <AddAdvertisementDialog />
                        <AddTenantDialog />
                     </div>
                 </div>
@@ -340,6 +359,70 @@ export function AdminDashboard() {
                     </CardContent>
                   </Card>
                 </TabsContent>
+                <TabsContent value="advertisements">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Advertisements</CardTitle>
+                            <CardDescription>
+                                Manage "earn" campaigns for users. Add videos or URLs for users to interact with for VSD Lite rewards.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Title</TableHead>
+                                        <TableHead>Type</TableHead>
+                                        <TableHead>Reward</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="hidden md:table-cell">Created At</TableHead>
+                                        <TableHead><span className="sr-only">Actions</span></TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {advertisementsLoading ? (
+                                        Array.from({ length: 3 }).map((_, i) => <TableRowSkeleton key={i} cells={6} />)
+                                    ) : (
+                                        advertisements?.map((ad) => (
+                                            <TableRow key={ad.id}>
+                                                <TableCell className="font-medium">{ad.title}</TableCell>
+                                                <TableCell>
+                                                    <Badge variant="outline" className="gap-1">
+                                                        {ad.type === 'video' ? <Video className="h-3 w-3"/> : <ExternalLink className="h-3 w-3"/>}
+                                                        {ad.type}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="font-bold text-yellow-400">{ad.reward.toLocaleString()} VSD Lite</TableCell>
+                                                <TableCell>
+                                                    <Badge variant={ad.status === 'Active' ? 'default' : 'secondary'}>
+                                                        {ad.status}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="hidden md:table-cell">{new Date(ad.createdAt).toLocaleDateString()}</TableCell>
+                                                <TableCell className="text-right">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button size="icon" variant="ghost">
+                                                                <MoreHorizontal className="h-4 w-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                            <DropdownMenuItem>Edit</DropdownMenuItem>
+                                                            <DropdownMenuItem>{ad.status === 'Active' ? 'Pause' : 'Activate'}</DropdownMenuItem>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
                  <TabsContent value="transactions">
                     <Card>
                         <CardHeader>
@@ -389,6 +472,110 @@ export function AdminDashboard() {
   );
 }
 
+function AddAdvertisementDialog() {
+    const { toast } = useToast();
+    const [isOpen, setIsOpen] = React.useState(false);
+    const firestore = useFirestore();
+  
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      const formData = new FormData(event.currentTarget);
+      const title = formData.get('title') as string;
+      const type = formData.get('type') as 'video' | 'url';
+      const url = formData.get('url') as string;
+      const reward = Number(formData.get('reward'));
+      
+      if (!title || !type || !url || !reward || reward <= 0) {
+        toast({ variant: 'destructive', title: 'Missing fields', description: 'Please fill out all fields with valid values.' });
+        return;
+      }
+      
+      const adId = title.toLowerCase().replace(/\s+/g, '-').slice(0, 20) + `-${Date.now()}`;
+      const newAdvertisement: Omit<Advertisement, 'id'> = {
+        title,
+        type,
+        url,
+        reward,
+        status: "Active",
+        createdAt: new Date().toISOString(),
+      };
+  
+      if (!firestore) {
+          toast({ variant: 'destructive', title: 'Firestore not available', description: 'Cannot create advertisement.' });
+          return;
+      }
+  
+      const docRef = doc(firestore, 'advertisements', adId);
+  
+      setDocumentNonBlocking(docRef, newAdvertisement, { merge: true });
+  
+      toast({
+        title: "Advertisement Campaign Created",
+        description: `Campaign "${title}" is now active.`,
+      });
+      setIsOpen(false);
+      (event.target as HTMLFormElement).reset();
+    };
+  
+    return (
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button size="sm" className="h-8 gap-1">
+            <PlusCircle className="h-3.5 w-3.5" />
+            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+              Add Ad
+            </span>
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <form onSubmit={handleSubmit}>
+            <DialogHeader>
+              <DialogTitle>Add New Advertisement</DialogTitle>
+              <DialogDescription>
+                Create a new "earn" campaign. Users will be rewarded with VSD Lite for interacting with this content.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="title" className="text-right">
+                  Title
+                </Label>
+                <Input id="title" name="title" placeholder="e.g., Watch Our New Trailer" className="col-span-3" required/>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label className="text-right">Type</Label>
+                 <RadioGroup defaultValue="video" name="type" className="col-span-3 flex gap-4">
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="video" id="r-video" />
+                        <Label htmlFor="r-video">Video</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="url" id="r-url" />
+                        <Label htmlFor="r-url">URL</Label>
+                    </div>
+                </RadioGroup>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="url" className="text-right">
+                  URL
+                </Label>
+                <Input id="url" name="url" placeholder="https://youtube.com/watch?v=..." className="col-span-3" required type="url" />
+              </div>
+               <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="reward" className="text-right">
+                  Reward
+                </Label>
+                <Input id="reward" name="reward" placeholder="e.g., 50" type="number" min="1" className="col-span-3" required />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">Create Campaign</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    );
+}
 
 function AddTenantDialog() {
   const { toast } = useToast();

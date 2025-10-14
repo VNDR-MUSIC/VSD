@@ -1,52 +1,88 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Coins, Video, Link as LinkIcon, ArrowRightLeft, Gift, Loader2 } from "lucide-react";
+import { Coins, Video, Link as LinkIcon, ArrowRightLeft, Gift, Loader2, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { siteConfig } from '@/config/site';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
 
 const MOCK_LITE_BALANCE = 575.50;
 const MOCK_VSD_BALANCE = 12845.78;
-const { CONVERSION_RATE } = siteConfig.tokenValues; // Dynamic conversion rate
+const { CONVERSION_RATE } = siteConfig.tokenValues;
 
-const mockTasks = [
-  {
-    id: 'task-1',
-    title: 'Watch the VSD Whitepaper Explained Video',
-    reward: 50,
-    icon: Video,
-    type: 'video',
-    href: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' // Example link
-  },
-  {
-    id: 'task-2',
-    title: 'Visit our Partner: AiEar',
-    reward: 25,
-    icon: LinkIcon,
-    type: 'link',
-    href: '#'
-  },
-  {
-    id: 'task-3',
-    title: 'Read the Developer Integration Guide',
-    reward: 30,
-    icon: LinkIcon,
-    type: 'link',
-    href: '/developers/integration'
-  }
-];
+interface Advertisement {
+    id: string;
+    title: string;
+    type: 'video' | 'url';
+    url: string;
+    reward: number;
+    status: 'Active' | 'Paused';
+    createdAt: string;
+}
 
+const VideoTaskCard = ({ task, onComplete, completedTasks }: { task: Advertisement, onComplete: (task: Advertisement) => void, completedTasks: string[] }) => {
+    const MOCK_VIDEO_DURATION = 10; // seconds
+    const [isWatched, setIsWatched] = useState(false);
+    const [countdown, setCountdown] = useState(MOCK_VIDEO_DURATION);
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (!completedTasks.includes(task.id)) {
+            timer = setInterval(() => {
+                setCountdown(prev => {
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        setIsWatched(true);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+        return () => clearInterval(timer);
+    }, [task.id, completedTasks]);
+    
+    const isCompleted = completedTasks.includes(task.id);
+
+    return (
+        <Card className="flex flex-col shadow-md">
+            <CardHeader>
+                <div className="flex items-center space-x-3 mb-2">
+                    <Video className="h-7 w-7 text-primary" />
+                    <CardTitle className="text-lg">{task.title}</CardTitle>
+                </div>
+            </CardHeader>
+            <CardContent className="flex-grow space-y-4">
+                 <div className="aspect-video bg-black rounded-md flex items-center justify-center text-muted-foreground">
+                    <p>Mock Video Player</p>
+                </div>
+                <div className="flex justify-between items-center p-3 rounded-md bg-muted/50">
+                    <span className="text-muted-foreground">Reward</span>
+                    <span className="font-bold text-lg text-yellow-400">+{task.reward} VSD Lite</span>
+                </div>
+            </CardContent>
+            <CardFooter>
+                <Button className="w-full" variant="outline" onClick={() => onComplete(task)} disabled={!isWatched || isCompleted}>
+                    {isCompleted ? 'Reward Claimed' : isWatched ? 'Claim Reward' : `Claim in ${countdown}s`}
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+};
 
 export default function EarnPage() {
   const { isLoading: isAuthLoading } = useProtectedRoute();
   const { toast } = useToast();
+  const firestore = useFirestore();
+
   const [liteBalance, setLiteBalance] = useState(MOCK_LITE_BALANCE);
   const [vsdBalance, setVsdBalance] = useState(MOCK_VSD_BALANCE);
   const [liteToVsdAmount, setLiteToVsdAmount] = useState('');
@@ -54,8 +90,11 @@ export default function EarnPage() {
   const [isConvertingLite, setIsConvertingLite] = useState(false);
   const [isConvertingVsd, setIsConvertingVsd] = useState(false);
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
+  
+  const adsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'advertisements') : null, [firestore]);
+  const { data: advertisements, isLoading: isAdsLoading } = useCollection<Advertisement>(adsQuery);
 
-  const handleTaskComplete = (task: typeof mockTasks[0]) => {
+  const handleTaskComplete = (task: Advertisement) => {
     if (completedTasks.includes(task.id)) {
       toast({
         variant: "destructive",
@@ -73,8 +112,8 @@ export default function EarnPage() {
       description: `You've earned ${task.reward} VSD Lite tokens!`,
     });
     
-    if (task.href && task.type === 'link') {
-        window.open(task.href, '_blank');
+    if (task.type === 'url') {
+        window.open(task.url, '_blank');
     }
   };
 
@@ -130,6 +169,8 @@ export default function EarnPage() {
     setIsConvertingVsd(false);
   };
   
+  const activeAds = advertisements?.filter(ad => ad.status === 'Active');
+  
   if (isAuthLoading) {
     return (
        <div className="space-y-12 py-8">
@@ -158,7 +199,7 @@ export default function EarnPage() {
         <Gift className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
         <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">Earn Your Way In</h1>
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-          Complete tasks to earn VSD Lite tokens. Your engagement helps fund the network and provides a pathway to convert your earnings into official VSD tokens.
+          Engage with content from our partners to earn VSD Lite tokens. Your participation helps fund the network and gives you a pathway to convert your earnings into official VSD tokens.
         </p>
       </header>
 
@@ -237,32 +278,43 @@ export default function EarnPage() {
       <section>
         <h2 className="font-headline text-2xl sm:text-3xl font-semibold text-center mb-8">Complete Tasks to Earn VSD Lite</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {mockTasks.map(task => (
-                <Card key={task.id} className="flex flex-col shadow-md">
-                    <CardHeader>
-                        <div className="flex items-center space-x-3 mb-2">
-                           <task.icon className="h-7 w-7 text-primary" />
-                           <CardTitle className="text-lg">{task.title}</CardTitle>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="flex-grow">
-                        <div className="flex justify-between items-center p-3 rounded-md bg-muted/50">
-                            <span className="text-muted-foreground">Reward</span>
-                            <span className="font-bold text-lg text-yellow-400">+{task.reward} VSD Lite</span>
-                        </div>
-                    </CardContent>
-                    <CardFooter>
-                        <Button className="w-full" variant="outline" onClick={() => handleTaskComplete(task)} disabled={completedTasks.includes(task.id)}>
-                            {completedTasks.includes(task.id) ? 'Completed' : 'Complete Task'}
-                        </Button>
-                    </CardFooter>
-                </Card>
-            ))}
+            {isAdsLoading ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                    <Card key={i}><Skeleton className="w-full h-80" /></Card>
+                ))
+            ) : activeAds && activeAds.length > 0 ? (
+                activeAds.map(task => {
+                    if (task.type === 'video') {
+                        return <VideoTaskCard key={task.id} task={task} onComplete={handleTaskComplete} completedTasks={completedTasks} />;
+                    }
+                    return (
+                        <Card key={task.id} className="flex flex-col shadow-md">
+                            <CardHeader>
+                                <div className="flex items-center space-x-3 mb-2">
+                                   <ExternalLink className="h-7 w-7 text-primary" />
+                                   <CardTitle className="text-lg">{task.title}</CardTitle>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="flex-grow">
+                                <div className="flex justify-between items-center p-3 rounded-md bg-muted/50">
+                                    <span className="text-muted-foreground">Reward</span>
+                                    <span className="font-bold text-lg text-yellow-400">+{task.reward} VSD Lite</span>
+                                </div>
+                            </CardContent>
+                            <CardFooter>
+                                <Button className="w-full" variant="outline" onClick={() => handleTaskComplete(task)} disabled={completedTasks.includes(task.id)}>
+                                    {completedTasks.includes(task.id) ? 'Reward Claimed' : 'Visit & Earn'}
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    );
+                })
+            ) : (
+                <p className="text-muted-foreground text-center col-span-full">No active campaigns to earn VSD Lite right now. Check back soon!</p>
+            )}
         </div>
       </section>
 
     </div>
   );
 }
-
-    
