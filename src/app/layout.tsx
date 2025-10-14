@@ -31,23 +31,7 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
   const isAdminOrAdvertiserPage = pathname.startsWith('/admin') || pathname.startsWith('/advertiser');
-
-  if (isAdminOrAdvertiserPage) {
-     return (
-        <html lang="en" className={cn("dark", fontHeadline.variable, fontBody.variable)}>
-          <body className="font-body antialiased min-h-screen flex flex-col relative bg-muted/40">
-            <FirebaseClientProvider>
-                <Header />
-                <div className="flex-grow container mx-auto px-4 py-8">
-                    {children}
-                </div>
-                <Toaster />
-            </FirebaseClientProvider>
-          </body>
-        </html>
-    );
-  }
-
+  
   return (
     <html lang="en" className={cn("dark", fontHeadline.variable, fontBody.variable)}>
       <head>
@@ -55,8 +39,8 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col relative bg-background">
         <FirebaseClientProvider>
-          <BackgroundVideo />
-          <div className="relative z-0 flex flex-col min-h-screen bg-black/85">
+          {!isAdminOrAdvertiserPage && <BackgroundVideo />}
+          <div className={cn("relative z-0 flex flex-col min-h-screen", !isAdminOrAdvertiserPage && "bg-black/85")}>
             <Header />
             <AnimatePresence mode="wait">
               <motion.main
@@ -70,7 +54,7 @@ export default function RootLayout({
                 {children}
               </motion.main>
             </AnimatePresence>
-            <Footer />
+            {!isAdminOrAdvertiserPage && <Footer />}
             <Toaster />
           </div>
         </FirebaseClientProvider>
