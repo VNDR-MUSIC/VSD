@@ -2,7 +2,6 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import {
   MoreHorizontal,
   PlusCircle,
@@ -10,15 +9,9 @@ import {
   Users2,
   DollarSign,
   ArrowRightLeft,
-  Home,
-  Users,
-  Wallet,
-  KeyRound,
-  Gift,
   Globe,
   Video,
   ExternalLink,
-  FileText,
 } from 'lucide-react';
 import {
   Card,
@@ -46,21 +39,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Logo } from '@/components/icons/Logo';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useCollection, useFirestore, useUser, useMemoFirebase, updateDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase';
-import { collection, doc, increment, query, where } from 'firebase/firestore';
+import { collection, doc, query, where, arrayUnion } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Account } from '@/types/account';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Textarea } from '@/components/ui/textarea';
 
 
 interface Transaction {
@@ -132,6 +120,7 @@ export function AdminDashboard() {
   const { isLoading: isAuthLoading } = useProtectedRoute({ adminOnly: true });
   const firestore = useFirestore();
   const { user } = useUser();
+  const { toast } = useToast();
 
   const tenantsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'tenants') : null, [firestore]);
   const globalTransactionsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'transactions') : null, [firestore]);
@@ -146,6 +135,28 @@ export function AdminDashboard() {
   const { data: applications, isLoading: applicationsLoading } = useCollection<AdvertiserApplication>(applicationsQuery);
 
   const totalVsdInCirculation = users?.reduce((acc, user) => acc + user.vsdBalance, 0) || 0;
+
+  const handleApplicationAction = (applicationId: string, userId: string, action: 'approve' | 'reject') => {
+    if (!firestore) return;
+
+    const appRef = doc(firestore, 'advertiserApplications', applicationId);
+    const newStatus = action === 'approve' ? 'approved' : 'rejected';
+
+    updateDocumentNonBlocking(appRef, { status: newStatus });
+
+    if (action === 'approve') {
+      const userAccountRef = doc(firestore, 'accounts', userId);
+      updateDocumentNonBlocking(userAccountRef, {
+        roles: arrayUnion('advertiser')
+      });
+    }
+
+    toast({
+      title: `Application ${newStatus}`,
+      description: `The application has been successfully ${newStatus}.`,
+    });
+  };
+
 
   if (isAuthLoading) {
     return (
@@ -456,7 +467,7 @@ export function AdminDashboard() {
                                     <TableRow>
                                         <TableHead>Company</TableHead>
                                         <TableHead>Contact</TableHead>
-                                        <TableHead>Status</TableHead>
+                                        <TableHead>Description</TableHead>
                                         <TableHead className="hidden md:table-cell">Submitted At</TableHead>
                                         <TableHead><span className="sr-only">Actions</span></TableHead>
                                     </TableRow>
@@ -475,10 +486,8 @@ export function AdminDashboard() {
                                                      <div className="font-medium">{app.userName}</div>
                                                      <div className="text-xs text-muted-foreground">{app.userEmail}</div>
                                                 </TableCell>
-                                                <TableCell>
-                                                     <Badge variant={app.status === 'pending' ? 'secondary' : app.status === 'approved' ? 'default' : 'destructive'}>
-                                                        {app.status}
-                                                    </Badge>
+                                                <TableCell className="max-w-xs truncate text-sm text-muted-foreground">
+                                                    {app.businessDescription}
                                                 </TableCell>
                                                 <TableCell className="hidden md:table-cell">{new Date(app.submittedAt).toLocaleDateString()}</TableCell>
                                                 <TableCell className="text-right">
@@ -490,9 +499,12 @@ export function AdminDashboard() {
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent align="end">
                                                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                            <DropdownMenuItem>View Application</DropdownMenuItem>
-                                                            <DropdownMenuItem>Approve</DropdownMenuItem>
-                                                            <DropdownMenuItem className="text-destructive">Reject</DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleApplicationAction(app.id, app.userId, 'approve')}>
+                                                                Approve
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem className="text-destructive" onClick={() => handleApplicationAction(app.id, app.userId, 'reject')}>
+                                                                Reject
+                                                            </DropdownMenuItem>
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
                                                 </TableCell>
