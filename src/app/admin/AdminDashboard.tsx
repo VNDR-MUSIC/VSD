@@ -105,17 +105,13 @@ export function AdminDashboard() {
   const firestore = useFirestore();
   const { user } = useUser();
 
-  // Public collections - can be fetched by anyone
-  const tenantsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'tenants'): null, [firestore]);
-  const globalTransactionsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'transactions'): null, [firestore]);
-
-  // Private collection - only fetch if user is logged in
+  // Collections are fetched only if an admin user is logged in
+  const tenantsQuery = useMemoFirebase(() => user && firestore ? collection(firestore, 'tenants') : null, [firestore, user]);
+  const globalTransactionsQuery = useMemoFirebase(() => user && firestore ? collection(firestore, 'transactions') : null, [firestore, user]);
   const accountsQuery = useMemoFirebase(() => user && firestore ? collection(firestore, 'accounts') : null, [firestore, user]);
   
   const { data: tenants, isLoading: tenantsLoading } = useCollection<Tenant>(tenantsQuery);
   const { data: transactions, isLoading: transactionsLoading } = useCollection<Transaction>(globalTransactionsQuery);
-  
-  // Pass the conditional query to useCollection
   const { data: users, isLoading: usersLoading } = useCollection<Account>(accountsQuery);
 
   const totalVsdInCirculation = users?.reduce((acc, user) => acc + user.vsdBalance, 0) || 0;
