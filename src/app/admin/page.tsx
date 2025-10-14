@@ -56,6 +56,16 @@ import { collection, doc, setDoc } from 'firebase/firestore';
 import type { WithId } from '@/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import type { Metadata } from 'next';
+
+// Since this is primarily a client-rendered page, we can't export dynamic metadata.
+// However, we can set a static one in the parent layout or here for basic SEO.
+// Note: For full SEO, parts of this could be server-rendered.
+export const metadata: Metadata = {
+  title: 'Admin Dashboard | VSD Network',
+  description: 'Manage users, tenants, and view global network activity for the VSD ecosystem.',
+};
+
 
 interface Account {
   uid: string;
@@ -496,9 +506,6 @@ function AdminHeader() {
 
     const navItems = [
         { href: "/admin", label: "Dashboard", icon: Home },
-        // These are examples, the main nav is handled by the tabs now
-        // { href: "/admin/users", label: "Users", icon: Users },
-        // { href: "/admin/transactions", label: "Transactions", icon: Wallet },
     ];
 
     return (
@@ -508,19 +515,22 @@ function AdminHeader() {
                     <Logo size={32} />
                     <span className="font-bold hidden sm:inline-block">VSD Admin</span>
                 </Link>
-                <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
-                     {navItems.map(item => (
-                         <Link 
-                            key={item.href}
-                            href={item.href}
-                            className={cn(
-                                "text-sm font-medium transition-colors hover:text-primary",
-                                pathname === item.href ? "text-primary" : "text-muted-foreground"
-                            )}
-                         >
-                            {item.label}
-                         </Link>
-                     ))}
+                <nav className="hidden md:flex items-center space-x-1" aria-label="Main navigation">
+                    <ul className="flex items-center space-x-4 lg:space-x-6">
+                        {navItems.map(item => (
+                            <li key={item.href}>
+                                <Link 
+                                    href={item.href}
+                                    className={cn(
+                                        "text-sm font-medium transition-colors hover:text-primary",
+                                        pathname === item.href ? "text-primary" : "text-muted-foreground"
+                                    )}
+                                >
+                                    {item.label}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
                 </nav>
                 <div className="ml-auto flex items-center gap-4">
                      <DropdownMenu>
