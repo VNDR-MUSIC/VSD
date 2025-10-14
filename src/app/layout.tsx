@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  // We determine if the special layouts are used to avoid double-padding or conflicting styles.
+  // We determine if the special layouts are used to avoid showing the main footer and background video.
   const isSpecialLayout = pathname.startsWith('/admin') || pathname.startsWith('/advertiser');
   
   return (
@@ -50,7 +50,7 @@ export default function RootLayout({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5, ease: 'easeInOut' }}
-                // The special layouts will provide their own container and padding.
+                // The special layouts will provide their own container and padding, this handles the public pages.
                 className={cn(!isSpecialLayout && "flex-grow container mx-auto px-4 py-8")}
               >
                 {children}
@@ -64,3 +64,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+    

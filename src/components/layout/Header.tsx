@@ -306,13 +306,11 @@ export function Header() {
             <span className={cn("font-bold", { "hidden sm:inline-block": isSpecialPage })}>VSD Network</span>
         </Link>
         
-        {!isSpecialPage && (
-            <nav className="hidden md:flex items-center space-x-1">
-                {navItems}
-            </nav>
-        )}
+        <div className="hidden md:flex items-center space-x-1 flex-grow">
+          {!isSpecialPage && navItems}
+        </div>
 
-        <div className="flex flex-1 items-center justify-end gap-2">
+        <div className="flex items-center justify-end gap-2">
            <UserNav />
 
             {!isSpecialPage && (
@@ -366,3 +364,5 @@ export function Header() {
     </header>
   );
 }
+
+    
