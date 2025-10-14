@@ -9,6 +9,7 @@ import { Loader2, Music, FileText, ImageIcon, Send } from 'lucide-react';
 import { AIImage } from '@/components/ai/AIImage';
 import { logger } from 'firebase-functions';
 import type { Metadata } from 'next';
+import { randomUUID } from 'crypto';
 
 // This is a client component, so we can't export metadata directly.
 // But we can define it for reference or for moving to a server component later.
@@ -42,6 +43,27 @@ const mockTracks = [
   }
 ];
 
+// MOCK API call simulation
+const mockApiCall = (data: any) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            if (data.amount > 0) {
+                 const mockTransaction = {
+                    transactionId: `txn_mock_${Date.now()}`,
+                    status: 'completed',
+                    timestamp: new Date().toISOString(),
+                    ...data,
+                    mock: true
+                };
+                resolve(mockTransaction);
+            } else {
+                reject(new Error("Invalid transaction amount."));
+            }
+        }, 1500); // Simulate network delay
+    });
+};
+
+
 // This component now makes REAL API calls to the VSD Network backend
 export default function AudioExchangePage() {
   const { toast } = useToast();
@@ -59,27 +81,18 @@ export default function AudioExchangePage() {
       // 1. Call VSD Transaction API
       toast({
         title: "Processing Transaction...",
-        description: `Calling the VSD Transaction API for ${track.price} VSD.`,
+        description: `Simulating a VSD transaction for ${track.price} VSD.`,
       });
 
-      const transactionResponse = await fetch('/api/vsd/transactions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const transactionPayload = {
           fromAddress: MOCK_SENDER_ADDRESS,
           toAddress: MOCK_RECIPIENT_ADDRESS,
           amount: track.price,
           description: `Purchase of audio license: ${track.title}`,
-        }),
-      });
+      };
 
-      if (!transactionResponse.ok) {
-        throw new Error(`Transaction API failed with status: ${transactionResponse.status}`);
-      }
+      const transactionResult: any = await mockApiCall(transactionPayload);
 
-      const transactionResult = await transactionResponse.json();
       console.log('Transaction successful (mock):', transactionResult);
       
       toast({
@@ -126,7 +139,7 @@ export default function AudioExchangePage() {
                  />
                  <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
                     <ImageIcon className="h-3 w-3" />
-                    <span>Art by VSD Image API</span>
+                    <span>Art by VSD AI</span>
                  </div>
                </div>
               <CardTitle className="font-headline text-xl sm:text-2xl">{track.title}</CardTitle>
@@ -139,7 +152,7 @@ export default function AudioExchangePage() {
                 </div>
                 <p className="text-xs text-muted-foreground flex items-center gap-2 pt-2">
                     <FileText className="h-4 w-4" />
-                    <span>Purchase includes an on-chain record via the VSD Transaction API.</span>
+                    <span>Purchase includes a simulated on-chain record via the VSD Transaction API.</span>
                 </p>
             </CardContent>
             <CardFooter>
