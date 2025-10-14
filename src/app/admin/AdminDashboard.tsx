@@ -54,9 +54,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
+import { collection, doc, increment } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { setDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import type { Account } from '@/types/account';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -772,5 +772,3 @@ function AdminHeader() {
         </header>
     );
 }
-
-    
