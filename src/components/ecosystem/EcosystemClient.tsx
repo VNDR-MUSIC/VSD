@@ -41,7 +41,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 name: "SoundKlix",
                 description: "Music streaming platform for indie artists.",
                 link: "https://SoundKlix.com",
-                logoUrl: "https://i.ibb.co/M53tfW4r/6afe7afc-3816-4f85-a250-50819e0f1b00.png",
+                logoUrl: "https://i.ibb.co/M53tfW4/6afe7afc-3816-4f85-a250-50819e0f1b00.png",
                 hint: "music streaming app interface",
             }
         ]
@@ -55,6 +55,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 name: "Audio.Exchange",
                 description: "A decentralized marketplace that revolutionizes music monetization by treating songs as unique digital collectibles.",
                 link: "https://Audio.Exchange",
+                logoUrl: "https://i.ibb.co/fVjNMVpk/logo2.png",
                 hint: "digital marketplace audio files",
             },
             {
