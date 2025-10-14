@@ -9,6 +9,8 @@ import { Separator } from "@/components/ui/separator";
 import { Coins, Video, Link as LinkIcon, ArrowRightLeft, Gift, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { siteConfig } from '@/config/site';
+import { useProtectedRoute } from '@/hooks/use-protected-route';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const MOCK_LITE_BALANCE = 575.50;
 const MOCK_VSD_BALANCE = 12845.78;
@@ -43,6 +45,7 @@ const mockTasks = [
 
 
 export default function EarnPage() {
+  const { isLoading: isAuthLoading } = useProtectedRoute();
   const { toast } = useToast();
   const [liteBalance, setLiteBalance] = useState(MOCK_LITE_BALANCE);
   const [vsdBalance, setVsdBalance] = useState(MOCK_VSD_BALANCE);
@@ -68,7 +71,6 @@ export default function EarnPage() {
       description: `You've earned ${task.reward} VSD Lite tokens!`,
     });
     
-    // For link tasks, open in a new tab
     if (task.href && task.type === 'link') {
         window.open(task.href, '_blank');
     }
@@ -86,7 +88,6 @@ export default function EarnPage() {
     }
 
     setIsConverting(true);
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     const vsdReceived = amount / CONVERSION_RATE;
@@ -100,6 +101,28 @@ export default function EarnPage() {
     });
     setIsConverting(false);
   };
+  
+  if (isAuthLoading) {
+    return (
+       <div className="space-y-12 py-8">
+        <header className="text-center">
+            <Skeleton className="h-16 w-16 rounded-full mx-auto mb-4" />
+            <Skeleton className="h-10 w-1/2 mx-auto mb-4" />
+            <Skeleton className="h-6 w-3/4 mx-auto" />
+        </header>
+         <div className="grid md:grid-cols-2 gap-8">
+            <Card><Skeleton className="h-48 w-full" /></Card>
+            <Card><Skeleton className="h-48 w-full" /></Card>
+         </div>
+         <Separator />
+         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <Card><Skeleton className="h-48 w-full" /></Card>
+            <Card><Skeleton className="h-48 w-full" /></Card>
+            <Card><Skeleton className="h-48 w-full" /></Card>
+         </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-12 py-8">
@@ -112,7 +135,6 @@ export default function EarnPage() {
       </header>
 
       <div className="grid md:grid-cols-2 gap-8">
-        {/* Balances Card */}
         <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
           <CardHeader>
             <CardTitle>Your Balances</CardTitle>
@@ -129,7 +151,6 @@ export default function EarnPage() {
           </CardContent>
         </Card>
         
-        {/* Conversion Card */}
         <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><ArrowRightLeft /> Convert VSD Lite to VSD</CardTitle>

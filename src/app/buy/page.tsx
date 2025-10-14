@@ -11,7 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { CreditCard, ShoppingCart, Loader2 } from 'lucide-react';
-import type { Metadata } from 'next';
+import { useProtectedRoute } from '@/hooks/use-protected-route';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const buyVsdSchema = z.object({
   vsdAmount: z.coerce.number().min(100, "Minimum purchase is 100 VSD.").max(100000, "Maximum purchase is 100,000 VSD."),
@@ -20,6 +21,7 @@ const buyVsdSchema = z.object({
 type BuyVsdFormValues = z.infer<typeof buyVsdSchema>;
 
 export default function BuyVsdPage() {
+  const { isLoading: isAuthLoading } = useProtectedRoute();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -37,31 +39,32 @@ export default function BuyVsdPage() {
   const onSubmit = async (data: BuyVsdFormValues) => {
     setIsLoading(true);
     
-    // MOCK STRIPE INTEGRATION
-    // In a real app, this would call a backend endpoint to create a Stripe Checkout session.
-    // The backend would then return a URL to which we redirect the user.
-    // For now, we will simulate this process with a delay.
-    
     console.log("Creating Stripe session for:", data);
 
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1500)); 
 
     toast({
       title: "Redirecting to Stripe...",
       description: "This is a demonstration. In a real application, you would now be redirected to a secure Stripe payment page.",
     });
 
-    // In a real app, you'd have something like:
-    // const response = await fetch('/api/create-checkout-session', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ vsdAmount: data.vsdAmount })
-    // });
-    // const { url } = await response.json();
-    // window.location.href = url;
-
     setIsLoading(false);
   };
+  
+  if (isAuthLoading) {
+     return (
+      <div className="space-y-12 py-8">
+        <header className="text-center">
+            <Skeleton className="h-16 w-16 rounded-full mx-auto mb-4" />
+            <Skeleton className="h-10 w-1/2 mx-auto mb-4" />
+            <Skeleton className="h-6 w-3/4 mx-auto" />
+        </header>
+        <Card className="max-w-md mx-auto">
+            <Skeleton className="h-[450px] w-full" />
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-12 py-8">

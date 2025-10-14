@@ -33,10 +33,9 @@ export function LiveTokenData() {
   const [copied, setCopied] = useState(false);
   const firestore = useFirestore();
 
-  const accountsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'accounts') : null, [firestore]);
+  // The 'accounts' collection is protected and should not be queried by unauthenticated users.
+  // We will only query the public 'transactions' collection here.
   const transactionsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'transactions') : null, [firestore]);
-
-  const { data: accounts, isLoading: isLoadingAccounts } = useCollection(accountsQuery);
   const { data: transactions, isLoading: isLoadingTransactions } = useCollection(transactionsQuery);
 
   const handleCopy = () => {
@@ -61,7 +60,8 @@ export function LiveTokenData() {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-border/50">
             <DataCard icon={Database} title="Total Supply" value={Number(tokenData.totalSupply).toLocaleString()} />
-            <DataCard icon={Users} title="Holder Wallets" value={accounts?.length ?? 0} isLoading={isLoadingAccounts} />
+            {/* The holder count is removed from this public component to avoid permission errors. It is available on the admin/status pages. */}
+            <DataCard icon={Users} title="Holder Wallets" value={"--"} isLoading={false} />
             <DataCard icon={ArrowRightLeft} title="Total Transfers" value={transactions?.length ?? 0} isLoading={isLoadingTransactions} />
             <DataCard icon={FileCode} title="Decimals" value="18" />
           </div>

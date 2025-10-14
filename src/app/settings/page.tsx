@@ -1,22 +1,15 @@
+
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { Bell, User, Wallet, Mail } from "lucide-react";
-import { Logo } from "@/components/icons/Logo";
+import { Bell, User, Wallet } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import type { Metadata } from 'next';
-
-// Mock user data
-const user = {
-    name: 'Satoshi Nakamoto',
-    email: 'satoshi@vsd.network',
-    walletAddress: '0xVSD...a1B2c3D4e5F6',
-    avatar: 'https://indiemedia.llc/vsdlogo.jpg'
-};
+import { useProtectedRoute } from "@/hooks/use-protected-route";
+import { useUser } from "@/firebase";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const notificationSettings = [
     { id: 'balanceChanges', label: 'Balance Changes', description: 'Get notified about token transfers and staking rewards.' },
@@ -27,6 +20,8 @@ const notificationSettings = [
 
 export default function SettingsPage() {
     const { toast } = useToast();
+    const { isLoading } = useProtectedRoute();
+    const { user } = useUser();
 
     const handleSaveChanges = () => {
         // In a real app, you would save the settings to a backend.
@@ -35,6 +30,22 @@ export default function SettingsPage() {
             description: "Your notification preferences have been updated.",
         });
     };
+
+    if (isLoading || !user) {
+        return (
+            <div className="space-y-12 py-8">
+                 <header className="text-center">
+                    <Skeleton className="h-16 w-16 rounded-full mx-auto mb-4" />
+                    <Skeleton className="h-10 w-1/2 mx-auto mb-4" />
+                    <Skeleton className="h-6 w-3/4 mx-auto" />
+                </header>
+                <div className="grid gap-8 md:grid-cols-3">
+                    <Card className="md:col-span-1"><Skeleton className="h-full w-full" /></Card>
+                    <Card className="md:col-span-2"><Skeleton className="h-full w-full" /></Card>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-12 py-8">
@@ -51,16 +62,17 @@ export default function SettingsPage() {
                 <Card className="md:col-span-1 shadow-lg bg-card/80 backdrop-blur-sm">
                     <CardHeader className="items-center text-center">
                         <Avatar className="h-24 w-24 mb-4 border-2 border-primary/50">
-                           <AvatarImage src={user.avatar} alt={user.name} />
-                           <AvatarFallback><Logo size={96} /></AvatarFallback>
+                           <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'User'} />
+                           <AvatarFallback>{user.displayName?.charAt(0) ?? 'U'}</AvatarFallback>
                         </Avatar>
-                        <CardTitle className="font-headline text-2xl">{user.name}</CardTitle>
+                        <CardTitle className="font-headline text-2xl">{user.displayName}</CardTitle>
                         <CardDescription>{user.email}</CardDescription>
                     </CardHeader>
                     <CardContent className="text-sm">
                          <div className="flex items-center gap-3">
                             <Wallet className="h-4 w-4 text-muted-foreground" />
-                            <span className="font-mono text-xs truncate">{user.walletAddress}</span>
+                            {/* MOCK WALLET */}
+                            <span className="font-mono text-xs truncate">0x...ConnectedWallet</span>
                         </div>
                     </CardContent>
                 </Card>
