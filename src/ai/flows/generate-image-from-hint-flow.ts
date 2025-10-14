@@ -10,7 +10,6 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { googleAI } from '@genkit-ai/google-genai';
 
 const GenerateImageInputSchema = z.object({
   hint: z.string().describe('A textual hint to guide the image generation process.'),
@@ -33,8 +32,6 @@ const generateImageFromHintFlow = ai.defineFlow(
     outputSchema: GenerateImageOutputSchema,
   },
   async (input) => {
-    console.log(`[AI_GEN_START] generateImageFromHintFlow invoked with hint: "${input.hint}"`);
-
     if (!input.hint) {
       console.warn('[AI_GEN_VALIDATION_FAIL] Image generation hint cannot be empty.');
       throw new Error('Image generation hint cannot be empty.');
@@ -42,7 +39,7 @@ const generateImageFromHintFlow = ai.defineFlow(
 
     try {
       const { media } = await ai.generate({
-        model: googleAI.model('imagen-2-fast'),
+        model: 'googleai/imagen-2-fast',
         prompt: `Generate an image based on the following hint: "${input.hint}". Focus on creating a visually appealing, photorealistic image relevant to the hint.`,
       });
 
@@ -51,16 +48,16 @@ const generateImageFromHintFlow = ai.defineFlow(
         throw new Error(`Image generation failed for hint "${input.hint}": No media content returned.`);
       }
       
-      console.log(`[AI_GEN_SUCCESS] Image generated successfully for hint: "${input.hint}"`);
       return { imageDataUri: media.url };
 
     } catch (error: any) {
-      console.error('[AI_GEN_FAILURE] Error in generateImageFromHintFlow.', {
+      console.error('[AI_GEN_FAILURE] An error occurred in the image generation flow.', {
         hint: input.hint,
         errorMessage: error.message,
+        errorStack: error.stack,
       });
       // Re-throw a user-friendly error to be caught by the client
-      throw new Error(`Failed to generate image from hint "${input.hint}".`);
+      throw new Error(`Failed to generate image from hint "${input.hint}". Please check server logs for details.`);
     }
   }
 );
