@@ -65,6 +65,7 @@ const UserNav = () => {
     const { data: account, isLoading: isAccountLoading } = useDoc<Account>(accountDocRef);
 
     const handleSignOut = async () => {
+        if (!auth) return;
         await signOut(auth);
         toast({ title: "Signed Out", description: "You have been successfully signed out." });
         router.push('/');
@@ -76,9 +77,8 @@ const UserNav = () => {
     
     if (!user) return null;
 
-    const isDesignatedAdmin = user.email === 'support@vndrmusic.com';
     const userRoles = account?.roles || [];
-    const isAdmin = isDesignatedAdmin || userRoles.includes('admin');
+    const isAdmin = userRoles.includes('admin');
     const isAdvertiser = userRoles.includes('advertiser');
 
     return (

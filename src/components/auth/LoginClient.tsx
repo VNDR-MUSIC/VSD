@@ -27,11 +27,14 @@ export function LoginClient() {
 
   const handleAuthSuccess = (userCredential: UserCredential) => {
     const user = userCredential.user;
+    
+    // Firebase considers a user "new" if their creation time is very close to their last sign-in time.
+    // A small buffer (e.g., 2 seconds) can account for minor clock differences.
     const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
 
     if (isNewUser && firestore) {
         console.log("New user detected, creating account document...");
-        const accountDoc: Account = {
+        const accountDoc: Omit<Account, 'id'> = {
             uid: user.uid,
             email: user.email!,
             displayName: user.displayName || 'New User',
@@ -40,7 +43,7 @@ export function LoginClient() {
             vsdBalance: 0,
             status: 'Active',
             joined: new Date().toISOString(),
-            isAdmin: false,
+            roles: ['user'], // Default role
         };
         const userDocRef = doc(firestore, 'accounts', user.uid);
         // This can remain non-blocking as it's a background task after login

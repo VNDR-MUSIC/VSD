@@ -37,18 +37,17 @@ export function useProtectedRoute({ adminOnly = false, advertiserOnly = false }:
         return;
       }
       
-      const isDesignatedAdmin = user.email === 'support@vndrmusic.com';
       const userRoles = account?.roles || [];
-
-      if (adminOnly) {
-        if (!isDesignatedAdmin && !userRoles.includes('admin')) {
+      const isAdmin = userRoles.includes('admin');
+      
+      if (adminOnly && !isAdmin) {
           router.push('/dashboard');
           return;
-        }
       }
       
       if (advertiserOnly) {
-        if (!userRoles.includes('advertiser')) {
+        const isAdvertiser = userRoles.includes('advertiser');
+        if (!isAdvertiser) {
           router.push('/dashboard');
           return;
         }
@@ -65,3 +64,4 @@ export function useProtectedRoute({ adminOnly = false, advertiserOnly = false }:
 
   return { isLoading };
 }
+
