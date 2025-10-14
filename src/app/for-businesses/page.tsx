@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Zap, Cpu, Puzzle, Users, Briefcase, ArrowRight, Sparkles, Lightbulb } from 'lucide-react';
+import { Zap, Cpu, Puzzle, Users, Briefcase, ArrowRight, Sparkles, Lightbulb, TrendingUp } from 'lucide-react';
 import { AIImage } from '@/components/ai/AIImage';
 
 export const metadata: Metadata = {
@@ -43,14 +43,14 @@ export default function ForBusinessesPage() {
           <BenefitCard icon={Cpu} title="Access Cutting-Edge AI">
             Utilize VSD tokens to access our suite of AI tools, including the powerful IMG Services for content creation and analytics, to streamline workflows and gain data-driven insights.
           </BenefitCard>
-          <BenefitCard icon={Sparkles} title="Drive Innovation">
-            Leverage AI capabilities to develop new products, personalize customer experiences, and stay ahead of the curve in your industry.
+          <BenefitCard icon={TrendingUp} title="Targeted Advertising & Reporting">
+            Become an advertiser on the VSD Network. Your campaigns reach engaged users, and you get access to a dashboard to track performance metrics like clicks and rewards distributed.
           </BenefitCard>
           <BenefitCard icon={Puzzle} title="Seamless Integration">
             Our planned APIs and SDKs will enable easy integration of VSD AI services and token functionalities into your existing platforms and applications.
           </BenefitCard>
           <BenefitCard icon={Zap} title="Efficient Service Access">
-            VSD tokens can offer a more predictable and potentially cost-effective way to pay for AI services compared to traditional SaaS models, especially with token-based discounts.
+            VSD tokens can offer a more predictable and potentially cost-effective way to pay for AI services and advertising compared to traditional models.
           </BenefitCard>
           <BenefitCard icon={Users} title="Engage with Web3 Economy">
             Connect with a growing ecosystem of Web3 users, developers, and partners by incorporating VSD utility, opening new avenues for collaboration and market reach.
@@ -74,7 +74,7 @@ export default function ForBusinessesPage() {
         />
         <h2 className="font-headline text-2xl sm:text-3xl font-semibold mb-6">Ready to Explore VSD for Your Business?</h2>
         <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto mb-8">
-          Our developer portal and whitepaper provide technical details. For partnership inquiries or to discuss custom solutions, please reach out.
+          Our developer portal and whitepaper provide technical details. For partnership or advertising inquiries, please reach out.
         </p>
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
             <Button asChild size="lg" className="font-bold btn-hover-effect">
@@ -100,8 +100,8 @@ export default function ForBusinessesPage() {
                 <CardContent><p className="text-muted-foreground text-sm sm:text-base">Use VSD-powered AI tools (IMG Services) to generate marketing copy, social media posts, product descriptions, and engaging visuals at scale.</p></CardContent>
             </Card>
             <Card className="shadow-md">
-                <CardHeader><CardTitle className="text-lg sm:text-xl">Enhanced Product Development</CardTitle></CardHeader>
-                <CardContent><p className="text-muted-foreground text-sm sm:text-base">Integrate AI for image recognition in quality control, or use AI analytics to inform product design and feature development based on user data.</p></CardContent>
+                <CardHeader><CardTitle className="text-lg sm:text-xl">Performance-Based Advertising</CardTitle></CardHeader>
+                <CardContent><p className="text-muted-foreground text-sm sm:text-base">Launch campaigns on the VSD "Earn" platform. Pay VSD Lite tokens directly to users for engaging with your content and track results in your advertiser dashboard.</p></CardContent>
             </Card>
             <Card className="shadow-md">
                 <CardHeader><CardTitle className="text-lg sm:text-xl">Personalized Customer Experiences</CardTitle></CardHeader>
@@ -137,3 +137,5 @@ export default function ForBusinessesPage() {
     </div>
   );
 }
+
+    

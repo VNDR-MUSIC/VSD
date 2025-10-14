@@ -26,7 +26,7 @@ const faqs = [
   {
     id: "what-is-vsd-lite",
     question: "What are VSD Lite tokens?",
-    answer: `VSD Lite tokens are an off-chain reward point system within the VSD Network. You can earn them by completing simple tasks like watching videos or engaging with partner content on our <a href='/earn' class='text-primary hover:underline'>Earn page</a>. VSD Lite tokens are not on the blockchain and cannot be traded, but they can be converted into official, on-chain VSD tokens at a rate of ${siteConfig.tokenValues.CONVERSION_RATE} VSD Lite to 1 VSD. This system allows us to reward community engagement without incurring gas fees for small amounts.`
+    answer: `VSD Lite tokens are an off-chain reward point system within the VSD Network. You can earn them by completing simple tasks like watching videos or engaging with partner content on our <a href='/earn' class='text-primary hover:underline'>Earn page</a>. VSD Lite tokens are not on the blockchain and cannot be traded on external exchanges, but they can be converted into official, on-chain VSD tokens at a rate of ${siteConfig.tokenValues.CONVERSION_RATE} VSD Lite to 1 VSD. This system allows us to reward community engagement without incurring gas fees for small amounts.`
   },
   {
     id: "primary-utility",
@@ -42,6 +42,11 @@ const faqs = [
     id: "ai-tools-access",
     question: "What kind of AI tools can I access with VSD tokens?",
     answer: "VSD tokens grant access to a growing suite of AI tools on the VSD Network. The flagship offering is **IMG Services**, an advanced suite for AI-powered image generation, content creation, and editing. Holding VSD unlocks access, and usage is metered in VSD. The range of tools will expand over time as per our <a href='/developers/documentation#roadmap' class='text-primary hover:underline'>Roadmap</a>."
+  },
+  {
+    id: "advertiser-info",
+    question: "I'm an advertiser. How do I get started?",
+    answer: "Advertisers can join the VSD Network to promote their content. After creating an account, you can request the 'advertiser' role. Once approved, you can access a dedicated <a href='/advertiser' class='text-primary hover:underline'>Advertiser Dashboard</a> to view your campaign performance in real-time, including total clicks and rewards paid out. Campaigns are created by VSD admins on your behalf, and the cost is deducted from your prepaid Ad Credit balance, which is funded with VSD tokens."
   },
   {
     id: "presale-details",
@@ -132,3 +137,5 @@ export default function FaqPage() {
     </div>
   );
 }
+
+    

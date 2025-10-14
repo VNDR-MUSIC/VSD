@@ -35,7 +35,7 @@ export default function SymbiPage() {
         </header>
 
         <Section icon={Briefcase} title="Our Mission and Purpose">
-            <p>The VSD Network is the official financial ecosystem for the **Independent Media Group (IMG)**, a large family of companies focused on music, technology, and media. Our main goal is to give creators, artists, and developers access to powerful tools, especially in Artificial Intelligence (AI), that were previously too expensive or difficult to use. We do this by creating a self-sustaining economy powered by our own digital currency, the VSD Token.</p>
+            <p>The VSD Network is the official financial ecosystem for the **Independent Media Group (IMG)**, a large family of companies focused on music, technology, and media. Our main goal is to give creators, artists, and developers access to powerful tools, especially in Artificial Intelligence (AI), that were previously too expensive or difficult to use. We do this by creating a self-sustaining economy powered by our own digital currency, the VSD Token, and funded in part by a unique advertising model.</p>
         </Section>
 
         <Section icon={DollarSign} title="The Two-Token System: VSD and VSD Lite">
@@ -44,10 +44,11 @@ export default function SymbiPage() {
             <h3 className="text-lg font-bold mt-4">1. The VSD Token (The Main Utility Token)</h3>
             <p>This is the primary, official currency of the entire IMG ecosystem. It is a real cryptocurrency (an ERC-20 token) that has tangible value and multiple uses.</p>
             <ul>
-                <li><strong>What is its main purpose?</strong> To be used as "digital fuel" to access services. Think of it like an arcade token needed to play the games in our digital arcade.</li>
+                <li><strong>What is its main purpose?</strong> To be used as "digital fuel" to access services and participate in the economy. Think of it like an arcade token needed to play the games in our digital arcade.</li>
                 <li><strong>What can you do with it?</strong>
                     <ul>
                         <li><strong>Access AI Services:</strong> Use VSD to pay for powerful AI tools, like the "IMG Services" suite which can generate images and other content.</li>
+                        <li><strong>Fund Ad Campaigns:</strong> Advertisers use VSD to purchase "Ad Credits" to fund their campaigns on the network.</li>
                         <li><strong>Vote on the Future (Governance):</strong> VSD holders can vote on important decisions about how the network is run and what features get built next.</li>
                         <li><strong>Earn More Tokens (Staking):</strong> You can "stake" (lock up) your VSD tokens to help secure the network and earn rewards for your participation.</li>
                         <li><strong>Buy and Sell:</strong> Use VSD as the currency to buy, sell, or license digital goods on partner platforms like the Audio.Exchange.</li>
@@ -57,20 +58,33 @@ export default function SymbiPage() {
             </ul>
 
             <h3 className="text-lg font-bold mt-4">2. The VSD Lite Token (The Rewards Token)</h3>
-            <p>VSD Lite is a rewards point system. It is **not** a cryptocurrency and exists only within our website.</p>
+            <p>VSD Lite is a rewards point system. It is **not** a cryptocurrency and exists only within our website. It is designed to be earned and spent within the VSD ecosystem.</p>
             <ul>
                 <li><strong>What is its purpose?</strong> To reward our community for their engagement and help them get started in our ecosystem without needing to spend money.</li>
-                 <li><strong>How do you get VSD Lite?</strong> You earn it by completing simple tasks on the "Earn" page, such as watching informational videos or visiting the websites of our partner companies.</li>
-                 <li><strong>What can you do with it?</strong> VSD Lite's only function is to be converted into the main VSD Token. The current conversion rate is 100 VSD Lite = 1 VSD Token. This allows users to turn their time and engagement into real value within our ecosystem.</li>
+                 <li><strong>How do you get VSD Lite?</strong> You earn it by completing simple tasks on the "Earn" page, such as watching videos or visiting the websites of our advertising partners.</li>
+                 <li><strong>What can you do with it?</strong> 
+                    <ul>
+                        <li>Its primary function is to be **converted into the main VSD Token**. The current conversion rate is 100 VSD Lite = 1 VSD Token. This allows users to turn their time and engagement into real value within our ecosystem.</li>
+                        <li>Users can also **transfer VSD Lite** to other users on the platform.</li>
+                    </ul>
+                </li>
             </ul>
         </Section>
 
-        <Section icon={Users} title="How to Get Started: A Simple Guide">
+        <Section icon={Users} title="How to Get Started: A Guide for Users and Advertisers">
+            <h3 className="text-lg font-bold mt-4">For General Users:</h3>
             <ol>
                 <li><strong>Earn or Buy Tokens:</strong> You can start for free by visiting the "Earn" page and completing tasks to get VSD Lite tokens. Alternatively, you can purchase the main VSD token directly through the "Buy" page or our official presale.</li>
                 <li><strong>Create an Account:</strong> By logging in (e.g., with Google), you create a secure account and a wallet is associated with it on our platform. This is where your tokens will be held.</li>
-                <li><strong>Visit Your Dashboard:</strong> The "Dashboard" is your personal banking suite. Here you can see your token balance, view your transaction history, and access other features like staking.</li>
+                <li><strong>Visit Your Dashboard:</strong> The "Dashboard" is your personal banking suite. Here you can see your token balances, view your transaction history, and access other features like sending tokens or staking.</li>
                 <li><strong>Explore and Use Services:</strong> With a VSD balance, you can now explore the ecosystem. For example, you could visit the "Audio Exchange" demo to see how VSD can be used for purchases, or you could use your VSD to power AI tools.</li>
+            </ol>
+            <h3 className="text-lg font-bold mt-4">For Advertisers:</h3>
+             <ol>
+                <li><strong>Become an Advertiser:</strong> After creating a standard user account, you can request the "advertiser" role from a VSD Network admin.</li>
+                <li><strong>Access the Advertiser Dashboard:</strong> Once approved, you gain access to a special "Advertiser Dashboard" where you can see real-time performance of your campaigns, including total clicks.</li>
+                <li><strong>Fund Your Account:</strong> To run campaigns, you must have "Ad Credits". This is a prepaid balance that is funded by purchasing credits with VSD tokens.</li>
+                <li><strong>Launch Campaigns:</strong> A VSD admin will create your campaigns (e.g., a video to watch or a link to click) on your behalf. The total reward payout for the campaign is debited from your Ad Credit balance. When users engage with your ad, they are paid VSD Lite tokens from this budget.</li>
             </ol>
         </Section>
 
@@ -130,9 +144,9 @@ export default function SymbiPage() {
                 <li><strong>Buy Tokens:</strong> A page that simulates the process of buying VSD tokens with a credit or debit card.</li>
                 <li><strong>Ecosystem:</strong> A full-screen, interactive slider showcasing all the subsidiary and partner companies in the IMG.</li>
                 <li><strong>Developers:</strong> A portal for developers containing the official Whitepaper, API documentation, and guides for integrating with the VSD Network.</li>
-                <li><strong>For Businesses:</strong> An informational page explaining how businesses can benefit from integrating VSD utility.</li>
+                <li><strong>For Businesses:</strong> An informational page explaining how businesses can benefit from integrating VSD utility, including advertising.</li>
                 <li><strong>FAQ:</strong> A list of frequently asked questions about the VSD Network.</li>
-                <li><strong>Login / Dashboard:</strong> The login page allows users to access their personal Dashboard, where they can view their token balance and transaction history.</li>
+                <li><strong>Login / Dashboard / Advertiser Dashboard:</strong> The login page allows users to access their personal Dashboard, where they can view their token balance and transaction history. Users with the 'advertiser' role can also access a special Advertiser Dashboard to see their campaign reports.</li>
              </ul>
         </Section>
         

@@ -498,15 +498,16 @@ function AddAdvertisementDialog() {
       const type = formData.get('type') as 'video' | 'url';
       const url = formData.get('url') as string;
       const reward = Number(formData.get('reward'));
+      const advertiserId = formData.get('advertiserId') as string;
       
-      if (!title || !type || !url || !reward || reward <= 0) {
+      if (!title || !type || !url || !reward || reward <= 0 || !advertiserId) {
         toast({ variant: 'destructive', title: 'Missing fields', description: 'Please fill out all fields with valid values.' });
         return;
       }
       
       const adId = title.toLowerCase().replace(/\s+/g, '-').slice(0, 20) + `-${Date.now()}`;
       const newAdvertisement: Omit<Advertisement, 'id'> = {
-        advertiserId: user.uid,
+        advertiserId,
         title,
         type,
         url,
@@ -527,7 +528,7 @@ function AddAdvertisementDialog() {
   
       toast({
         title: "Advertisement Campaign Created",
-        description: `Campaign "${title}" is now active.`,
+        description: `Campaign "${title}" is now active. The budget has been debited from the advertiser's account (simulation).`,
       });
       setIsOpen(false);
       (event.target as HTMLFormElement).reset();
@@ -548,7 +549,7 @@ function AddAdvertisementDialog() {
             <DialogHeader>
               <DialogTitle>Add New Advertisement</DialogTitle>
               <DialogDescription>
-                Create a new "earn" campaign. Users will be rewarded with VSD Lite for interacting with this content.
+                Create a new campaign on behalf of an advertiser. The reward budget will be debited from their account balance.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -557,6 +558,12 @@ function AddAdvertisementDialog() {
                   Title
                 </Label>
                 <Input id="title" name="title" placeholder="e.g., Watch Our New Trailer" className="col-span-3" required/>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="advertiserId" className="text-right">
+                  Advertiser ID
+                </Label>
+                <Input id="advertiserId" name="advertiserId" placeholder="User UID of the advertiser" className="col-span-3" required/>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right">Type</Label>
@@ -765,3 +772,5 @@ function AdminHeader() {
         </header>
     );
 }
+
+    
