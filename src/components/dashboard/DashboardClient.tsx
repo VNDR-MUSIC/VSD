@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -17,6 +18,8 @@ import { format } from 'date-fns';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Coins } from 'lucide-react';
 
 interface Transaction {
   id: string;
@@ -248,15 +251,15 @@ export function DashboardClient() {
                 filteredTransactions?.map((tx) => (
                 <TableRow key={tx.id}>
                   <TableCell>
-                    <div className={`flex items-center gap-2 ${tx.type === 'in' ? 'text-green-400' : 'text-red-400'}`}>
-                      {tx.type === 'in' ? <ArrowDownLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
+                    <div className={`flex items-center gap-2 ${tx.type.includes('in') ? 'text-green-400' : 'text-red-400'}`}>
+                      {tx.type.includes('in') ? <ArrowDownLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
                       <span className="capitalize">{tx.type}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell font-mono text-xs">{tx.type === 'in' ? tx.from : tx.to}</TableCell>
+                  <TableCell className="hidden sm:table-cell font-mono text-xs">{tx.type.includes('in') ? tx.from : tx.to}</TableCell>
                   <TableCell>{tx.description}</TableCell>
-                  <TableCell className={`font-medium ${tx.type === 'in' ? 'text-green-400' : 'text-red-400'}`}>
-                    {tx.type === 'in' ? '+' : '-'}{tx.amount.toLocaleString()} VSD
+                  <TableCell className={`font-medium ${tx.type.includes('in') ? 'text-green-400' : 'text-red-400'}`}>
+                    {tx.type.includes('in') ? '+' : '-'}{tx.amount.toLocaleString()} {tx.type.includes('Lite') ? 'VSD Lite' : 'VSD'}
                   </TableCell>
                   <TableCell className="text-right">
                      <span className={`px-2 py-1 text-xs rounded-full ${tx.status === 'Completed' ? 'bg-green-500/20 text-green-300' : 'bg-yellow-500/20 text-yellow-300'}`}>
@@ -283,6 +286,7 @@ function SendVsdDialog({ userAccount }: { userAccount: Account | null }) {
     const { toast } = useToast();
     const [isOpen, setIsOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
+    const [tokenType, setTokenType] = React.useState<'vsd' | 'vsd-lite'>('vsd');
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -302,14 +306,25 @@ function SendVsdDialog({ userAccount }: { userAccount: Account | null }) {
             setIsLoading(false);
             return;
         }
-
-        if (amount > userAccount.vsdBalance) {
+        
+        // This is a mock balance for VSD Lite as it's not stored in Firestore yet
+        const vsdLiteBalance = 575.50; 
+        
+        if (tokenType === 'vsd' && amount > userAccount.vsdBalance) {
             toast({ variant: 'destructive', title: 'Insufficient balance', description: 'You do not have enough VSD to complete this transaction.' });
             setIsLoading(false);
             return;
         }
+        
+        if (tokenType === 'vsd-lite' && amount > vsdLiteBalance) {
+            toast({ variant: 'destructive', title: 'Insufficient VSD Lite balance', description: 'You do not have enough VSD Lite to complete this transaction.' });
+            setIsLoading(false);
+            return;
+        }
+
 
         try {
+            // In a real app, you might call a different endpoint or add a 'tokenType' field
             const response = await fetch('/api/vsd/transactions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -317,7 +332,7 @@ function SendVsdDialog({ userAccount }: { userAccount: Account | null }) {
                     fromAddress: userAccount.walletAddress,
                     toAddress,
                     amount,
-                    description: description || 'VSD Transfer',
+                    description: description || `VSD ${tokenType === 'vsd' ? '' : 'Lite '}Transfer`,
                 }),
             });
 
@@ -330,7 +345,7 @@ function SendVsdDialog({ userAccount }: { userAccount: Account | null }) {
 
             toast({
                 title: 'Transaction Submitted (Mock)',
-                description: `Sent ${amount} VSD to ${toAddress}. TXN ID: ${result.transactionId}`,
+                description: `Sent ${amount} ${tokenType === 'vsd' ? 'VSD' : 'VSD Lite'} to ${toAddress}. TXN ID: ${result.transactionId}`,
             });
             setIsOpen(false);
 
@@ -353,20 +368,46 @@ function SendVsdDialog({ userAccount }: { userAccount: Account | null }) {
             <DialogContent className="sm:max-w-[425px]">
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
-                        <DialogTitle className="font-headline">Send VSD Tokens</DialogTitle>
+                        <DialogTitle className="font-headline">Send Tokens</DialogTitle>
                         <DialogDescription>
-                            Transfer VSD to another user. This is a mock transaction.
+                            Transfer VSD or VSD Lite to another user. This is a mock transaction.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
+                        <RadioGroup defaultValue="vsd" onValueChange={(value: 'vsd' | 'vsd-lite') => setTokenType(value)} className="grid grid-cols-2 gap-4">
+                            <div>
+                                <RadioGroupItem value="vsd" id="vsd" className="peer sr-only" />
+                                <Label
+                                htmlFor="vsd"
+                                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                                >
+                                <Coins className="mb-3 h-6 w-6" />
+                                VSD
+                                </Label>
+                            </div>
+                            <div>
+                                <RadioGroupItem value="vsd-lite" id="vsd-lite" className="peer sr-only" />
+                                <Label
+                                htmlFor="vsd-lite"
+                                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                                >
+                                <Gift className="mb-3 h-6 w-6" />
+                                VSD Lite
+                                </Label>
+                            </div>
+                        </RadioGroup>
                         <div className="space-y-2">
                             <Label htmlFor="toAddress">Recipient Wallet Address</Label>
                             <Input id="toAddress" name="toAddress" placeholder="0x..." required />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="amount">Amount (VSD)</Label>
+                            <Label htmlFor="amount">Amount ({tokenType.toUpperCase()})</Label>
                             <Input id="amount" name="amount" type="number" step="any" min="0.01" placeholder="100.00" required />
-                             <p className="text-xs text-muted-foreground">Your balance: {userAccount?.vsdBalance.toLocaleString() ?? '0'} VSD</p>
+                             <p className="text-xs text-muted-foreground">
+                                Your balance: {tokenType === 'vsd' 
+                                    ? `${userAccount?.vsdBalance.toLocaleString() ?? '0'} VSD` 
+                                    : `~575.50 VSD Lite (mock)`}
+                            </p>
                         </div>
                         <div className="space-y-2">
                              <Label htmlFor="description">Description (Optional)</Label>
@@ -376,7 +417,7 @@ function SendVsdDialog({ userAccount }: { userAccount: Account | null }) {
                     <DialogFooter>
                         <Button type="submit" disabled={isLoading} className="w-full">
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {isLoading ? 'Processing...' : 'Send VSD'}
+                            {isLoading ? 'Processing...' : `Send ${tokenType.toUpperCase()}`}
                         </Button>
                     </DialogFooter>
                 </form>

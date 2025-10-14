@@ -49,8 +49,10 @@ export default function EarnPage() {
   const { toast } = useToast();
   const [liteBalance, setLiteBalance] = useState(MOCK_LITE_BALANCE);
   const [vsdBalance, setVsdBalance] = useState(MOCK_VSD_BALANCE);
-  const [conversionAmount, setConversionAmount] = useState('');
-  const [isConverting, setIsConverting] = useState(false);
+  const [liteToVsdAmount, setLiteToVsdAmount] = useState('');
+  const [vsdToLiteAmount, setVsdToLiteAmount] = useState('');
+  const [isConvertingLite, setIsConvertingLite] = useState(false);
+  const [isConvertingVsd, setIsConvertingVsd] = useState(false);
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
 
   const handleTaskComplete = (task: typeof mockTasks[0]) => {
@@ -76,8 +78,8 @@ export default function EarnPage() {
     }
   };
 
-  const handleConversion = async () => {
-    const amount = parseFloat(conversionAmount);
+  const handleLiteToVsdConversion = async () => {
+    const amount = parseFloat(liteToVsdAmount);
     if (isNaN(amount) || amount <= 0) {
       toast({ variant: 'destructive', title: 'Invalid Amount', description: 'Please enter a positive number.' });
       return;
@@ -87,19 +89,45 @@ export default function EarnPage() {
       return;
     }
 
-    setIsConverting(true);
+    setIsConvertingLite(true);
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     const vsdReceived = amount / CONVERSION_RATE;
     setLiteBalance(prev => prev - amount);
     setVsdBalance(prev => prev + vsdReceived);
-    setConversionAmount('');
+    setLiteToVsdAmount('');
 
     toast({
       title: "Conversion Successful",
       description: `You converted ${amount.toLocaleString()} VSD Lite to ${vsdReceived.toLocaleString()} VSD.`,
     });
-    setIsConverting(false);
+    setIsConvertingLite(false);
+  };
+  
+  const handleVsdToLiteConversion = async () => {
+    const amount = parseFloat(vsdToLiteAmount);
+    if (isNaN(amount) || amount <= 0) {
+        toast({ variant: 'destructive', title: 'Invalid Amount', description: 'Please enter a positive number.' });
+        return;
+    }
+    if (amount > vsdBalance) {
+        toast({ variant: 'destructive', title: 'Insufficient Balance', description: 'You do not have enough VSD to convert.' });
+        return;
+    }
+
+    setIsConvertingVsd(true);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    const liteReceived = amount * CONVERSION_RATE;
+    setVsdBalance(prev => prev - amount);
+    setLiteBalance(prev => prev + liteReceived);
+    setVsdToLiteAmount('');
+
+    toast({
+      title: "Exchange Successful",
+      description: `You exchanged ${amount.toLocaleString()} VSD for ${liteReceived.toLocaleString()} VSD Lite.`,
+    });
+    setIsConvertingVsd(false);
   };
   
   if (isAuthLoading) {
@@ -128,9 +156,9 @@ export default function EarnPage() {
     <div className="space-y-12 py-8">
       <header className="text-center">
         <Gift className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
-        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">Earn Your Way In</h1>
+        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">Earn & Exchange</h1>
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-          Complete tasks to earn VSD Lite tokens. Your engagement helps fund the network and provides a pathway to convert your earnings into official VSD tokens.
+          Complete tasks to earn VSD Lite, then convert them to VSD or exchange VSD back to VSD Lite.
         </p>
       </header>
 
@@ -156,23 +184,49 @@ export default function EarnPage() {
             <CardTitle className="flex items-center gap-2"><ArrowRightLeft /> Convert VSD Lite to VSD</CardTitle>
             <CardDescription>{CONVERSION_RATE} VSD Lite = 1 VSD</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
              <div>
-                <label htmlFor="convert-amount" className="text-sm font-medium text-muted-foreground">Amount to Convert</label>
+                <label htmlFor="lite-convert-amount" className="text-sm font-medium text-muted-foreground">Amount of VSD Lite</label>
                 <Input
-                    id="convert-amount"
+                    id="lite-convert-amount"
                     type="number"
                     placeholder={`Max: ${liteBalance.toFixed(2)}`}
-                    value={conversionAmount}
-                    onChange={(e) => setConversionAmount(e.target.value)}
+                    value={liteToVsdAmount}
+                    onChange={(e) => setLiteToVsdAmount(e.target.value)}
                     className="mt-1"
                 />
              </div>
           </CardContent>
           <CardFooter>
-            <Button className="w-full" onClick={handleConversion} disabled={isConverting}>
-                {isConverting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <ArrowRightLeft className="h-4 w-4 mr-2" />}
-                {isConverting ? 'Converting...' : 'Convert Now'}
+            <Button className="w-full" onClick={handleLiteToVsdConversion} disabled={isConvertingLite}>
+                {isConvertingLite ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <ArrowRightLeft className="h-4 w-4 mr-2" />}
+                {isConvertingLite ? 'Converting...' : 'Convert Now'}
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <Card className="shadow-lg bg-card/80 backdrop-blur-sm md:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><ArrowRightLeft /> Exchange VSD for VSD Lite</CardTitle>
+            <CardDescription>1 VSD = {CONVERSION_RATE} VSD Lite</CardDescription>
+          </CardHeader>
+          <CardContent>
+             <div>
+                <label htmlFor="vsd-convert-amount" className="text-sm font-medium text-muted-foreground">Amount of VSD</label>
+                <Input
+                    id="vsd-convert-amount"
+                    type="number"
+                    placeholder={`Max: ${vsdBalance.toLocaleString()}`}
+                    value={vsdToLiteAmount}
+                    onChange={(e) => setVsdToLiteAmount(e.target.value)}
+                    className="mt-1"
+                />
+             </div>
+          </CardContent>
+          <CardFooter>
+            <Button className="w-full" onClick={handleVsdToLiteConversion} disabled={isConvertingVsd}>
+                {isConvertingVsd ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <ArrowRightLeft className="h-4 w-4 mr-2" />}
+                {isConvertingVsd ? 'Exchanging...' : 'Exchange for VSD Lite'}
             </Button>
           </CardFooter>
         </Card>
