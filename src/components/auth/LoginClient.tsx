@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-import { GoogleAuthProvider, signInWithPopup, UserCredential } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup, UserCredential, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -13,7 +13,6 @@ import { Chrome, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { Separator } from '../ui/separator';
-import { initiateEmailSignIn, initiateEmailSignUp } from '@/firebase/non-blocking-login';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { doc } from 'firebase/firestore';
 import type { Account } from '@/types/account';
@@ -44,6 +43,7 @@ export function LoginClient() {
             isAdmin: false,
         };
         const userDocRef = doc(firestore, 'accounts', user.uid);
+        // This can remain non-blocking as it's a background task after login
         setDocumentNonBlocking(userDocRef, accountDoc, { merge: true });
     }
 
@@ -75,10 +75,18 @@ export function LoginClient() {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    if (action === 'signup') {
-        initiateEmailSignUp(auth, email, password, handleAuthSuccess, (err) => handleAuthError(err, 'Sign-up'));
-    } else {
-        initiateEmailSignIn(auth, email, password, handleAuthSuccess, (err) => handleAuthError(err, 'Sign-in'));
+    try {
+      let userCredential;
+      if (action === 'signup') {
+        userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      } else {
+        userCredential = await signInWithEmailAndPassword(auth, email, password);
+      }
+      handleAuthSuccess(userCredential);
+    } catch (error: any) {
+        handleAuthError(error, action === 'signup' ? 'Sign-up' : 'Sign-in');
+    } finally {
+        setIsLoading(false);
     }
   };
 
@@ -87,12 +95,12 @@ export function LoginClient() {
     setGoogleLoading(true);
     const provider = new GoogleAuthProvider();
     try {
-      // We still use await here because it's a direct user interaction
-      // The non-blocking helpers are more for background-style tasks.
       const userCredential = await signInWithPopup(auth, provider);
       handleAuthSuccess(userCredential);
     } catch (error: any) {
       handleAuthError(error, 'Sign-in');
+    } finally {
+        setGoogleLoading(false);
     }
   };
 
