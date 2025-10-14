@@ -44,8 +44,8 @@ export default function DashboardPage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   
-  const accountRef = useMemoFirebase(() => user ? doc(firestore, 'accounts', user.uid) : null, [firestore, user]);
-  const transactionsRef = useMemoFirebase(() => user ? collection(firestore, 'accounts', user.uid, 'transactions') : null, [firestore, user]);
+  const accountRef = useMemoFirebase(() => user && firestore ? doc(firestore, 'accounts', user.uid) : null, [firestore, user]);
+  const transactionsRef = useMemoFirebase(() => user && firestore ? collection(firestore, 'accounts', user.uid, 'transactions') : null, [firestore, user]);
 
   const { data: account, isLoading: isAccountLoading } = useDoc<Account>(accountRef);
   const { data: transactions, isLoading: areTransactionsLoading } = useCollection<Transaction>(transactionsRef);

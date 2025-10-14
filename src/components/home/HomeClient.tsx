@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useUser } from "@/firebase";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "../ui/skeleton";
 
 const FeatureCard = ({ icon: Icon, title, description }: { icon: React.ElementType, title: string, description: string }) => (
     <Card className="text-center items-center flex flex-col bg-card/70 backdrop-blur-sm border-white/10 shadow-lg h-full">
@@ -67,7 +68,11 @@ export function HomeClient() {
   if (isUserLoading || user) {
     return (
         <div className="flex justify-center items-center min-h-screen">
-            <div className="loader"></div> {/* Or some other loading indicator */}
+            <div className="flex flex-col items-center gap-4">
+                <Skeleton className="h-24 w-24 rounded-full" />
+                <Skeleton className="h-8 w-64" />
+                <Skeleton className="h-6 w-96" />
+            </div>
         </div>
     );
   }

@@ -112,8 +112,8 @@ export default function AdminDashboardPage() {
   const { user, isUserLoading } = useUser();
 
   // Public collections - can be fetched by anyone
-  const tenantsQuery = useMemoFirebase(() => collection(firestore, 'tenants'), [firestore]);
-  const globalTransactionsQuery = useMemoFirebase(() => collection(firestore, 'transactions'), [firestore]);
+  const tenantsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'tenants'): null, [firestore]);
+  const globalTransactionsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'transactions'): null, [firestore]);
 
   // Private collection - only fetch if user is logged in
   const accountsQuery = useMemoFirebase(() => user ? collection(firestore, 'accounts') : null, [firestore, user]);
