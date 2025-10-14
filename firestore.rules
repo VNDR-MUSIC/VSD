@@ -1,115 +1,121 @@
 /**
- * @fileoverview Firestore Security Rules for the VSD Network application.
+ * @fileoverview Firestore Security Rules for VSD Network.
  *
  * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for account data and associated transactions.
- * Tenants are managed with owner-only access. A global transaction log exists, but is currently open for read access.
+ * This ruleset enforces a strict user-ownership model for account data and restricts access to sensitive collections.
+ * Administrative access is required for managing tenants and viewing the global transaction log.
  *
  * Data Structure:
- * - /accounts/{accountId}: Stores user account information, with accountId matching the Firebase Auth UID.
- * - /accounts/{accountId}/transactions/{transactionId}: Stores transaction history for each account.
- * - /tenants/{tenantId}: Stores partner tenant data.
- * - /transactions/{transactionId}: A global transaction log.
+ * - /accounts/{accountId}: Stores individual user account data, keyed by Firebase Auth UID.
+ * - /accounts/{accountId}/transactions/{transactionId}: A subcollection storing all transactions for a specific user account.
+ * - /tenants/{tenantId}: Top-level collection for all partner tenants integrated with the VSD Network.
+ * - /transactions/{transactionId}: A global log of all transactions for administrative overview.
+ * - /advertisements/{advertisementId}: Stores all advertisement campaigns that users can interact with to earn VSD Lite.
  *
  * Key Security Decisions:
- * - Users can only access their own account data and transactions.
- * - Listing of all accounts is denied to prevent unauthorized data access.
- * - Tenant management is restricted.
- * - Global transaction log is publicly readable (potentially for analytics), but this may need to be restricted in the future.
- *
- * Denormalization for Authorization:
- * - The `accountId` field in the `/accounts/{accountId}/transactions/{transactionId}` subcollection MUST match the parent `accountId` to ensure relational integrity and efficient security checks.
+ * - Users can only read and write their own account data.
+ * - Listing all accounts is forbidden.
+ * - Tenant and global transaction data are restricted to administrative roles.
+ * - Public read access for advertisements with owner-only writes.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Enforces user-ownership for account data. Only the authenticated user can read or write their own account.
+     * @description Secures user account data, allowing only the owner to read and write.
      * @path /accounts/{accountId}
-     * @allow (create) - User with UID 'user_abc' can create their account if request.auth.uid == 'user_abc'.
-     * @allow (get, update, delete) - User with UID 'user_abc' can get, update, or delete their account.
-     * @deny (create) - User with UID 'user_xyz' cannot create an account with ID 'user_abc'.
-     * @deny (get, update, delete) - User with UID 'user_xyz' cannot get, update, or delete account 'user_abc'.
-     * @deny (list) - Listing all accounts is forbidden.
-     * @principle Enforces document ownership for all operations.
+     * @allow (get, create, update, delete) if request.auth.uid == accountId
+     * @deny (get, create, update, delete) if request.auth.uid != accountId
+     * @principle Enforces document ownership for writes.
      */
     match /accounts/{accountId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(accountId) {
-        return request.auth.uid == accountId;
-      }
-
-      function isExistingOwner(accountId) {
-        return isOwner(accountId) && exists(resource);
-      }
       allow get: if isOwner(accountId);
-      allow list: if false;
-      allow create: if isSignedIn() && request.auth.uid == accountId;
-      allow update: if isExistingOwner(accountId);
+      allow list: if false; // Listing accounts is forbidden.
+      allow create: if isOwner(accountId) && request.resource.data.uid == accountId;
+      allow update: if isExistingOwner(accountId) && request.resource.data.uid == resource.data.uid;
       allow delete: if isExistingOwner(accountId);
     }
 
     /**
-     * @description Enforces user-ownership for transaction data within an account.
+     * @description Secures user transaction history. Only the account owner can read and write transactions.
      * @path /accounts/{accountId}/transactions/{transactionId}
-     * @allow (create) - User 'user_abc' can create a transaction under their account if request.auth.uid == 'user_abc' and accountId matches.
-     * @allow (get, list, update, delete) - User 'user_abc' can get, list, update, and delete transactions under their own account.
-     * @deny (create) - User 'user_xyz' cannot create a transaction under account 'user_abc'.
-     * @deny (get, list, update, delete) - User 'user_xyz' cannot get, list, update, or delete transactions under account 'user_abc'.
-     * @principle Enforces document ownership and relational integrity for transaction data.
+     * @allow (get, create, update, delete) if request.auth.uid == accountId
+     * @deny (get, create, update, delete) if request.auth.uid != accountId
+     * @principle Restricts access to a user's own data tree.
      */
     match /accounts/{accountId}/transactions/{transactionId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(accountId) {
-        return request.auth.uid == accountId;
-      }
-
-      function isExistingOwner(accountId) {
-        return isOwner(accountId) && exists(resource);
-      }
       allow get: if isOwner(accountId);
       allow list: if isOwner(accountId);
-      allow create: if isSignedIn() && request.auth.uid == accountId;
+      allow create: if isOwner(accountId);
       allow update: if isExistingOwner(accountId);
       allow delete: if isExistingOwner(accountId);
     }
 
     /**
-     * @description Restricts access to tenant data to owner-only.
+     * @description Secures tenant data, allowing only admins to read and write.
      * @path /tenants/{tenantId}
-     * @allow (create, update, delete) - No one, tenant management not implemented.
-     * @allow (get, list) - No one, tenant management not implemented.
-     * @deny (create, update, delete, get, list) - All requests are denied.
-     * @principle Placeholder for future tenant management implementation.
+     * @allow (get, list, create, update, delete) if isAdmin()
+     * @deny (get, list, create, update, delete) if !isAdmin()
+     * @principle Restricts access to administrative roles.
      */
     match /tenants/{tenantId} {
-      allow get: if false;
-      allow list: if false;
+      allow get: if isAdmin();
+      allow list: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    /**
+     * @description Secures the global transaction log, allowing only admins to read.
+     * @path /transactions/{transactionId}
+     * @allow (get, list) if isAdmin()
+     * @deny (create, update, delete)
+     * @principle Restricts access to administrative roles.
+     */
+    match /transactions/{transactionId} {
+      allow get: if isAdmin();
+      allow list: if isAdmin();
       allow create: if false;
       allow update: if false;
       allow delete: if false;
     }
 
-        /**
-         * @description Allows public read access to all transactions. Write operations are denied.
-         * @path /transactions/{transactionId}
-         * @allow (get, list) - Any user (or no user) can read the transaction.
-         * @deny (create, update, delete) - No one can create, update, or delete transactions.
-         * @principle Provides a public log of all transactions.  Consider restricting in the future.
-         */
-    match /transactions/{transactionId} {
+    /**
+     * @description Allows public read access to advertisements, but restricts writes to the owner.
+     * @path /advertisements/{advertisementId}
+     * @allow (get, list) if true
+     * @allow (create) if request.auth.uid == request.resource.data.id
+     * @allow (update, delete) if resource != null && resource.data.id == request.auth.uid
+     * @deny (create) if request.auth.uid != request.resource.data.id
+     * @deny (update, delete) if resource == null || resource.data.id != request.auth.uid
+     * @principle Allows public reads with owner-only writes for advertisements.
+     */
+    match /advertisements/{advertisementId} {
       allow get: if true;
       allow list: if true;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
+      allow create: if request.auth.uid == request.resource.data.id;
+      allow update: if isExistingOwner(resource.data.id);
+      allow delete: if isExistingOwner(resource.data.id);
+    }
+
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+    }
+
+    function isAdmin() {
+        return isSignedIn() && (request.auth.token.email == "admin@example.com" || request.auth.token.email == "support@vndrmusic.com");
     }
   }
 }
