@@ -12,6 +12,7 @@ import {
   Globe,
   Video,
   ExternalLink,
+  FileText,
 } from 'lucide-react';
 import {
   Card,
@@ -49,6 +50,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { Account } from '@/types/account';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import Link from 'next/link';
 
 
 interface Transaction {
@@ -247,6 +249,14 @@ export function AdminDashboard() {
                         <TabsTrigger value="transactions">Global Activity</TabsTrigger>
                     </TabsList>
                     <div className="ml-auto flex items-center gap-2">
+                        <Button asChild variant="outline" size="sm" className="h-8 gap-1">
+                          <Link href="/admin/integration-prompt">
+                            <FileText className="h-3.5 w-3.5" />
+                            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                              Get Integration Prompt
+                            </span>
+                          </Link>
+                        </Button>
                        <AddAdvertisementDialog />
                        <AddTenantDialog />
                     </div>
