@@ -66,6 +66,7 @@ interface Account {
   vsdBalance: number;
   status: 'Active' | 'Suspended';
   joined: string;
+  isAdmin?: boolean;
 }
 
 interface Transaction {

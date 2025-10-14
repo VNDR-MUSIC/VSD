@@ -1,0 +1,106 @@
+
+{
+  "entities": {
+    "Account": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Account",
+      "type": "object",
+      "description": "Represents a user's account, linking Firebase Auth UID to their VSD balance and wallet.",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "The Firebase Authentication User ID."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "URL of the user's profile picture.",
+          "format": "uri"
+        },
+        "walletAddress": {
+          "type": "string",
+          "description": "The user's associated wallet address."
+        },
+        "vsdBalance": {
+          "type": "number",
+          "description": "The user's VSD token balance."
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the account (e.g., Active, Suspended).",
+          "enum": ["Active", "Suspended"]
+        },
+        "joined": {
+          "type": "string",
+          "description": "ISO timestamp of when the user joined.",
+          "format": "date-time"
+        },
+        "isAdmin": {
+            "type": "boolean",
+            "description": "Flag to indicate if the user has administrative privileges."
+        }
+      },
+      "required": ["uid", "email", "walletAddress", "vsdBalance", "status", "joined"]
+    },
+    "Tenant": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Tenant",
+      "type": "object",
+      "description": "Represents an integrated partner project or website in the VSD ecosystem.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique ID for the tenant." },
+        "name": { "type": "string", "description": "Name of the tenant project." },
+        "domain": { "type": "string", "description": "The tenant's primary domain." },
+        "apiKey": { "type": "string", "description": "The generated API key for the tenant." },
+        "status": { "type": "string", "enum": ["Active", "Inactive"], "description": "The status of the tenant." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "ISO timestamp of when the tenant was created." }
+      },
+      "required": ["id", "name", "domain", "apiKey", "status", "createdAt"]
+    },
+    "Transaction": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Transaction",
+      "type": "object",
+      "description": "Represents a single ledger activity within the VSD Network.",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["Mint (Stripe)", "Transfer", "Burn (Refund)", "API Spend", "Staking Reward", "Royalty Payout"] },
+        "status": { "type": "string", "enum": ["Completed", "Pending", "Failed"] },
+        "amount": { "type": "number", "description": "The transaction amount in VSD." },
+        "date": { "type": "string", "format": "date-time" },
+        "user": { "type": "string", "description": "Display name of the user involved." },
+        "accountId": { "type": "string", "description": "The ID of the account involved in the transaction." }
+      },
+      "required": ["id", "type", "status", "amount", "date", "user", "accountId"]
+    }
+  },
+  "auth": {
+    "providers": [ "google.com", "password" ]
+  },
+  "firestore": {
+    "/accounts/{accountId}": {
+      "schema": { "$ref": "#/entities/Account" },
+      "description": "Stores individual user account data, keyed by Firebase Auth UID."
+    },
+    "/accounts/{accountId}/transactions/{transactionId}": {
+        "schema": { "$ref": "#/entities/Transaction"},
+        "description": "A subcollection storing all transactions for a specific user account."
+    },
+    "/tenants/{tenantId}": {
+        "schema": { "$ref": "#/entities/Tenant" },
+        "description": "Top-level collection for all partner tenants integrated with the VSD Network."
+    },
+    "/transactions/{transactionId}": {
+        "schema": { "$ref": "#/entities/Transaction" },
+        "description": "A global log of all transactions for administrative overview. Can be secured for admin-only access."
+    }
+  }
+}
