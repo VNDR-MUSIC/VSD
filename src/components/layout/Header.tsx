@@ -62,7 +62,7 @@ const UserNav = () => {
     const { toast } = useToast();
 
     const accountDocRef = useMemoFirebase(() => (user && firestore ? doc(firestore, 'accounts', user.uid) : null), [user, firestore]);
-    const { data: account } = useDoc<Account>(accountDocRef);
+    const { data: account, isLoading: isAccountLoading } = useDoc<Account>(accountDocRef);
 
     const handleSignOut = async () => {
         await signOut(auth);
@@ -70,9 +70,16 @@ const UserNav = () => {
         router.push('/');
     };
 
+    if (isAccountLoading) {
+        return <Skeleton className="h-10 w-10 rounded-full" />;
+    }
+    
     if (!user) return null;
 
     const isDesignatedAdmin = user.email === 'support@vndrmusic.com';
+    const userRoles = account?.roles || [];
+    const isAdmin = isDesignatedAdmin || userRoles.includes('admin');
+    const isAdvertiser = userRoles.includes('advertiser');
 
     return (
         <DropdownMenu>
@@ -103,11 +110,19 @@ const UserNav = () => {
                             </Link>
                         </DropdownMenuItem>
                     ))}
-                    {(account?.isAdmin || isDesignatedAdmin) && (
+                    {isAdmin && (
                         <DropdownMenuItem asChild>
                            <Link href="/admin">
                                <Shield className="mr-2 h-4 w-4" />
-                               <span>Admin</span>
+                               <span>Admin Dashboard</span>
+                            </Link>
+                        </DropdownMenuItem>
+                    )}
+                    {isAdvertiser && (
+                        <DropdownMenuItem asChild>
+                           <Link href="/advertiser">
+                               <Briefcase className="mr-2 h-4 w-4" />
+                               <span>Advertiser Dashboard</span>
                             </Link>
                         </DropdownMenuItem>
                     )}
@@ -338,5 +353,3 @@ export function Header() {
     </header>
   );
 }
-
-  

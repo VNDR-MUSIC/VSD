@@ -8,5 +8,5 @@ export interface Account {
   vsdBalance: number;
   status: 'Active' | 'Suspended';
   joined: string;
-  isAdmin?: boolean;
+  roles: ('admin' | 'advertiser' | 'user')[];
 }

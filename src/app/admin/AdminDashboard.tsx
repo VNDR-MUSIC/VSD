@@ -89,6 +89,8 @@ interface Advertisement {
     reward: number;
     status: 'Active' | 'Paused';
     createdAt: string;
+    advertiserId: string;
+    clicks: number;
 }
 
 const StatCardSkeleton = () => (
@@ -259,7 +261,10 @@ export function AdminDashboard() {
                             users?.map((userAccount) => (
                             <TableRow key={userAccount.uid}>
                               <TableCell>
-                                <div className="font-medium">{userAccount.displayName}{userAccount.isAdmin && <Badge variant="destructive" className="ml-2">Admin</Badge>}</div>
+                                <div className="font-medium">{userAccount.displayName}
+                                    {userAccount.roles?.includes('admin') && <Badge variant="destructive" className="ml-2">Admin</Badge>}
+                                    {userAccount.roles?.includes('advertiser') && <Badge variant="secondary" className="ml-2">Advertiser</Badge>}
+                                </div>
                                 <div className="hidden text-sm text-muted-foreground md:inline">
                                   {userAccount.email}
                                 </div>
@@ -375,13 +380,14 @@ export function AdminDashboard() {
                                         <TableHead>Type</TableHead>
                                         <TableHead>Reward</TableHead>
                                         <TableHead>Status</TableHead>
+                                        <TableHead className="hidden md:table-cell">Clicks</TableHead>
                                         <TableHead className="hidden md:table-cell">Created At</TableHead>
                                         <TableHead><span className="sr-only">Actions</span></TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {advertisementsLoading ? (
-                                        Array.from({ length: 3 }).map((_, i) => <TableRowSkeleton key={i} cells={6} />)
+                                        Array.from({ length: 3 }).map((_, i) => <TableRowSkeleton key={i} cells={7} />)
                                     ) : (
                                         advertisements?.map((ad) => (
                                             <TableRow key={ad.id}>
@@ -398,6 +404,7 @@ export function AdminDashboard() {
                                                         {ad.status}
                                                     </Badge>
                                                 </TableCell>
+                                                <TableCell className="hidden md:table-cell">{(ad.clicks || 0).toLocaleString()}</TableCell>
                                                 <TableCell className="hidden md:table-cell">{new Date(ad.createdAt).toLocaleDateString()}</TableCell>
                                                 <TableCell className="text-right">
                                                     <DropdownMenu>
@@ -474,11 +481,18 @@ export function AdminDashboard() {
 
 function AddAdvertisementDialog() {
     const { toast } = useToast();
+    const { user } = useUser();
     const [isOpen, setIsOpen] = React.useState(false);
     const firestore = useFirestore();
   
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+      
+      if (!user) {
+        toast({ variant: 'destructive', title: 'Authentication Error', description: 'You must be logged in to create a campaign.' });
+        return;
+      }
+
       const formData = new FormData(event.currentTarget);
       const title = formData.get('title') as string;
       const type = formData.get('type') as 'video' | 'url';
@@ -492,10 +506,12 @@ function AddAdvertisementDialog() {
       
       const adId = title.toLowerCase().replace(/\s+/g, '-').slice(0, 20) + `-${Date.now()}`;
       const newAdvertisement: Omit<Advertisement, 'id'> = {
+        advertiserId: user.uid,
         title,
         type,
         url,
         reward,
+        clicks: 0,
         status: "Active",
         createdAt: new Date().toISOString(),
       };

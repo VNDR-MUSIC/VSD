@@ -11,8 +11,8 @@ import { useToast } from "@/hooks/use-toast";
 import { siteConfig } from '@/config/site';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
+import { collection, doc, increment } from 'firebase/firestore';
 
 const MOCK_LITE_BALANCE = 575.50;
 const MOCK_VSD_BALANCE = 12845.78;
@@ -26,6 +26,7 @@ interface Advertisement {
     reward: number;
     status: 'Active' | 'Paused';
     createdAt: string;
+    clicks: number;
 }
 
 const VideoTaskCard = ({ task, onComplete, completedTasks }: { task: Advertisement, onComplete: (task: Advertisement) => void, completedTasks: string[] }) => {
@@ -104,6 +105,7 @@ export default function EarnPage() {
       return;
     }
     
+    // Optimistically update UI
     setLiteBalance(prev => prev + task.reward);
     setCompletedTasks(prev => [...prev, task.id]);
 
@@ -111,6 +113,14 @@ export default function EarnPage() {
       title: "Task Complete!",
       description: `You've earned ${task.reward} VSD Lite tokens!`,
     });
+    
+    // Update click count in Firestore non-blockingly
+    if (firestore) {
+        const adRef = doc(firestore, 'advertisements', task.id);
+        updateDocumentNonBlocking(adRef, {
+            clicks: increment(1)
+        });
+    }
     
     if (task.type === 'url') {
         window.open(task.url, '_blank');
