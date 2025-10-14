@@ -67,11 +67,19 @@ export default function AudioExchangePage() {
           amount: track.price,
           description: `Purchase of audio license: ${track.title}`,
       };
+      
+      // Note: In a real multi-project setup, this key would be an environment variable
+      // on the server of the "spoke" application calling the "hub" (VSD Network).
+      // Here, we simulate it for demonstration purposes.
+      const MOCK_INTERNAL_API_KEY = process.env.INTERNAL_API_KEY || "your-super-secret-key";
 
-      // Call the client-facing bridge API
-      const response = await fetch('/api/vsd/transactions', {
+      // Call the secure, central API endpoint
+      const response = await fetch('/api/transactions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${MOCK_INTERNAL_API_KEY}`
+        },
         body: JSON.stringify(transactionPayload),
       });
       
@@ -115,7 +123,7 @@ export default function AudioExchangePage() {
             <CardHeader>
                <div className="aspect-video relative mb-4">
                  <AIImage
-                    initialSrc="https://placehold.co/600x400.png"
+                    initialSrc={`https://picsum.photos/seed/${encodeURIComponent(track.hint)}/600/400`}
                     alt={`Cover art for ${track.title}`}
                     width={600}
                     height={400}
