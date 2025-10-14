@@ -4,13 +4,12 @@
  * @fileOverview An AI flow for generating images from text hints.
  *
  * - generateImageFromHint - A function that generates an image based on a textual hint.
- * - GenerateImageInput - The input type for the generateImageFromHint function.
+ * - GenerateImageInput - The input type for the generateImageFromhinthint function.
  * - GenerateImageOutput - The return type for the generateImageFromHint function.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { logger } from 'firebase-functions'; // For structured logging
 import { googleAI } from '@genkit-ai/google-genai';
 
 const GenerateImageInputSchema = z.object({
@@ -34,40 +33,34 @@ const generateImageFromHintFlow = ai.defineFlow(
     outputSchema: GenerateImageOutputSchema,
   },
   async (input) => {
-    logger.info('AI_GEN_START: generateImageFromHintFlow invoked.', {
-      hint: input.hint,
-      genkitFlowName: 'generateImageFromHintFlow',
-    });
+    console.log(`[AI_GEN_START] generateImageFromHintFlow invoked with hint: "${input.hint}"`);
 
     if (!input.hint) {
-      logger.warn('AI_GEN_VALIDATION_FAIL: Image generation hint cannot be empty.', { hint: input.hint });
+      console.warn('[AI_GEN_VALIDATION_FAIL] Image generation hint cannot be empty.');
       throw new Error('Image generation hint cannot be empty.');
     }
 
     try {
       const { media } = await ai.generate({
-        model: googleAI.model('imagen-4.0-fast-generate-001'), // Updated to a production-ready model
+        model: googleAI.model('imagen-4.0-fast-generate-001'),
         prompt: `Generate an image based on the following hint: "${input.hint}". Focus on creating a visually appealing, photorealistic image relevant to the hint.`,
       });
 
       if (!media || !media.url) {
-        logger.error('AI_GEN_EMPTY_RESPONSE: AI model did not return media or media.url.', {
-          hint: input.hint,
-          modelResponse: { media },
-        });
+        console.error('[AI_GEN_EMPTY_RESPONSE] AI model did not return media or media.url.', { hint: input.hint });
         throw new Error(`Image generation failed for hint "${input.hint}": No media content returned.`);
       }
       
-      logger.info('AI_GEN_SUCCESS: Image generated successfully.', { hint: input.hint, returnedUrlLength: media.url.length });
+      console.log(`[AI_GEN_SUCCESS] Image generated successfully for hint: "${input.hint}"`);
       return { imageDataUri: media.url };
 
     } catch (error: any) {
-      logger.error('AI_GEN_FAILURE: Error in generateImageFromHintFlow.', {
+      console.error('[AI_GEN_FAILURE] Error in generateImageFromHintFlow.', {
         hint: input.hint,
         errorMessage: error.message,
-        errorStack: error.stack,
       });
-      throw new Error(`Failed to generate image from hint "${input.hint}": ${error.message || String(error)}`);
+      // Re-throw a user-friendly error to be caught by the client
+      throw new Error(`Failed to generate image from hint "${input.hint}".`);
     }
   }
 );
