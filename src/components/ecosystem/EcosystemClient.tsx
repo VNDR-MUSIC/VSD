@@ -89,7 +89,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 name: "Qreatv Branding Agency",
                 description: "Artist development and branding to help creators build a powerful market presence.",
                 link: "https://Qreatv.Agency",
-                hint: "modern branding agency meeting",
+                hint: "music branding strategy",
             }
         ]
     },
@@ -103,14 +103,14 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 description: "An educational platform offering expert-led courses on the new music economy.",
                 link: "https://musicindustry.university",
                 logoUrl: "https://i.ibb.co/sJV522gj/miu-logo.png",
-                hint: "modern university lecture music",
+                hint: "modern music business classroom",
             },
             {
                 name: "Music Focus Group",
                 description: "Provides structured, data-driven feedback on music from real listeners to help artists refine their tracks.",
                 link: "https://musicfocus.group",
                 logoUrl: "https://i.ibb.co/tPDWyjWd/Screenshot-2025-07-25-at-10-01-10-AM.png",
-                hint: "people listening music headphones",
+                hint: "music feedback data analysis",
             },
              {
                 name: "Inner View Podcasts",
@@ -149,7 +149,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 name: "Indie Music News",
                 description: "An independent journalism hub focused on the indie music scene.",
                 link: "#",
-                hint: "vintage newspaper pressroom",
+                hint: "vintage newspaper pressroom music",
             }
         ]
     },
@@ -193,7 +193,7 @@ export function EcosystemClient() {
                             <CardHeader>
                                 <div className="aspect-video relative mb-4">
                                     <AIImage
-                                        initialSrc={`https://picsum.photos/seed/${encodeURIComponent(sub.hint.replace(/\//g, ''))}/600/400`}
+                                        initialSrc={`https://picsum.photos/seed/${encodeURIComponent(sub.name.replace(/\//g, ''))}/600/400`}
                                         alt={`Cover art for ${sub.name}`}
                                         width={600}
                                         height={400}
