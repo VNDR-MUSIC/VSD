@@ -11,6 +11,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { logger } from 'firebase-functions'; // For structured logging
+import { googleAI } from '@genkit-ai/google-genai';
 
 const GenerateImageInputSchema = z.object({
   hint: z.string().describe('A textual hint to guide the image generation process.'),
@@ -47,7 +48,7 @@ const generateImageFromHintFlow = ai.defineFlow(
 
     try {
       const { media } = await ai.generate({
-        model: 'googleai/gemini-2.0-flash-preview-image-generation', // Per Genkit docs for image generation
+        model: googleAI.model('gemini-2.0-flash-preview-image-generation'), // Per Genkit docs for image generation
         prompt: `Generate an image based on the following hint: "${input.hint}". Focus on creating a visually appealing image relevant to the hint. Create a photorealistic image if possible, otherwise an artistic representation.`,
         config: {
           responseModalities: ['TEXT', 'IMAGE'], // MUST provide both TEXT and IMAGE
