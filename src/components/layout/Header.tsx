@@ -293,27 +293,24 @@ export function Header() {
     );
   });
   
-  const headerBaseClasses = "sticky top-0 z-50 w-full border-b";
-  const publicHeaderClasses = "border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60";
-  const specialPageHeaderClasses = "bg-background";
-
+  const headerClasses = "sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60";
 
   return (
-    <header className={cn(headerBaseClasses, isSpecialPage ? specialPageHeaderClasses : publicHeaderClasses)}>
+    <header className={cn(headerClasses)}>
       <div className="container flex h-16 max-w-screen-2xl items-center">
         <Link href="/" className="flex items-center space-x-2 mr-6">
             <Logo size={36} />
-            <span className={cn("font-bold", { "hidden sm:inline-block": isSpecialPage })}>VSD Network</span>
+            <span className="font-bold sm:inline-block">VSD Network</span>
         </Link>
         
         <div className="hidden md:flex items-center space-x-1 flex-grow">
-          {!isSpecialPage && navItems}
+          { !isSpecialPage && navItems }
         </div>
 
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex flex-1 items-center justify-end gap-2">
            <UserNav />
 
-            {!isSpecialPage && (
+            { !isSpecialPage && (
               <div className="md:hidden">
                 <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
                     <SheetTrigger asChild>
@@ -364,5 +361,3 @@ export function Header() {
     </header>
   );
 }
-
-    
