@@ -193,7 +193,7 @@ export function EcosystemClient() {
                             <CardHeader>
                                 <div className="aspect-video relative mb-4">
                                     <AIImage
-                                        initialSrc={`https://picsum.photos/seed/${encodeURIComponent(sub.name.replace(/\//g, ''))}/600/400`}
+                                        initialSrc={`https://picsum.photos/seed/${encodeURIComponent(sub.hint.replace(/\//g, ''))}/600/400`}
                                         alt={`Cover art for ${sub.name}`}
                                         width={600}
                                         height={400}
@@ -210,7 +210,7 @@ export function EcosystemClient() {
                                                     alt={`${sub.name} Logo`}
                                                     layout="fill"
                                                     objectFit="contain"
-                                                    className="brightness-0 invert drop-shadow-lg"
+                                                    className="drop-shadow-lg"
                                                 />
                                             </div>
                                         </div>
