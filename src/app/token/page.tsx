@@ -10,7 +10,7 @@ import { PresaleInterface } from "@/components/token/PresaleInterface";
 
 export const metadata: Metadata = {
   title: 'VSD Utility Token | Presale & Tokenomics',
-  description: 'Official utility token of the Independent Music Group (IMG). Detailed information about the VSD token, its tokenomics, active presale, and use cases in the AI-powered ecosystem.',
+  description: 'Official utility token of the Independent Media Group (IMG). Detailed information about the VSD token, its tokenomics, active presale, and use cases in the AI-powered ecosystem.',
 };
 
 const FeatureItem = ({ icon: Icon, title, children }: { icon: React.ElementType, title: string, children: React.ReactNode }) => (
@@ -44,7 +44,7 @@ export default function TokenPage() {
           <CardContent className="p-6 sm:p-8 grid md:grid-cols-2 gap-8 items-center">
             <div className="space-y-4">
                <p className="text-base sm:text-lg">
-                  VSD is the official utility token that powers the **Independent Music Group (IMG) ecosystem**. It is the primary vehicle for accessing a decentralized platform of AI-driven tools and services, including the flagship **IMG Services** suite.
+                  VSD is the official utility token that powers the **Independent Media Group (IMG) ecosystem**. It is the primary vehicle for accessing a decentralized platform of AI-driven tools and services, including the flagship **IMG Services** suite.
                </p>
                <p className="text-muted-foreground">
                   Our mission is to democratize access to powerful AI by creating a token-powered network where holding VSD allows users to unlock exclusive AI tools, receive discounts, and participate in the platform's growth and governance.

@@ -93,7 +93,7 @@ export function HomeClient() {
             The Currency for the Creator Economy
           </h1>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 animate-fade-in-up animation-delay-400">
-            VSD is a decentralized financial network for the Independent Music Group (IMG), providing access to previously gate-kept services by leveraging a user-centric ad-revenue model.
+            VSD is a decentralized financial network for the Independent Media Group (IMG), providing access to previously gate-kept services by leveraging a user-centric ad-revenue model.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animation-delay-600">
             <Button asChild size="lg" className="font-bold btn-hover-effect w-full sm:w-auto text-lg py-7">
@@ -141,7 +141,7 @@ export function HomeClient() {
                 <Network className="h-12 w-12 text-primary" />
                 <h2 className="font-headline text-3xl md:text-4xl font-bold">The Official Financial Hub for IMG</h2>
                 <p className="text-muted-foreground text-lg">
-                    The VSD Network is more than just a token; it's the official, centralized ledger and banking system for the entire Independent Music Group. It provides a single source of truth for all financial operations, from instant royalty payouts to AI service billing, with the security and transparency of on-chain settlement.
+                    The VSD Network is more than just a token; it's the official, centralized ledger and banking system for the entire Independent Media Group. It provides a single source of truth for all financial operations, from instant royalty payouts to AI service billing, with the security and transparency of on-chain settlement.
                 </p>
                 <Button asChild variant="link" className="text-primary text-lg p-0 h-auto">
                 <Link href="/developers/documentation#architecture">Learn About the Architecture <ArrowRight className="ml-2 h-5 w-5" /></Link>
