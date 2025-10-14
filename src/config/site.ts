@@ -10,14 +10,32 @@ export const siteConfig = {
   },
   mainNav: [
     { title: "Home", href: "/", icon: LayoutDashboard },
-    // The Dashboard link is now part of the user dropdown in the header
-    // { title: "Dashboard", href: "/dashboard", icon: UserSquare, description: "Your personal banking suite" },
     { title: "Network Status", href: "/network-status", icon: Signal, description: "Live API Connections" },
-    { title: "VSD Token", href: "/token", icon: BrainCircuit, description: "Utility, Tokenomics, Presale" },
-    { title: "Buy Tokens", href: "/buy", icon: ShoppingCart, description: "Purchase VSD with a card" },
+    { 
+      title: "Token", 
+      href: "/token", 
+      icon: BrainCircuit, 
+      description: "Utility, Tokenomics, Presale",
+      subItems: [
+        { title: "Token Details", href: "/token", description: "Presale, roadmap, and tokenomics." },
+        { title: "Buy VSD with Card", href: "/buy", description: "Purchase tokens via Stripe." },
+        { title: "Earn VSD", href: "/earn", description: "Complete tasks to earn VSD Lite." },
+      ],
+    },
     { title: "Ecosystem", href: "/ecosystem", icon: Network, description: "AI Tools & Partner dApps" },
-    { title: "Developers", href: "/developers", icon: Code, description: "Whitepaper, SDKs, Build" },
-    { title: "For Businesses", href: "/for-businesses", icon: Briefcase, description: "Integrate VSD Utility" },
+    { 
+      title: "For Partners",
+      href: "/developers", 
+      icon: Code, 
+      description: "Docs for developers and businesses",
+      subItems: [
+        { title: "Developer Portal", href: "/developers", description: "SDKs, tools, and community links." },
+        { title: "For Businesses", href: "/for-businesses", description: "Leverage VSD for your enterprise." },
+        { title: "Whitepaper", href: "/developers/documentation", description: "The complete VSD technical document." },
+        { title: "API Reference", href: "/developers/api-reference", description: "Technical details for our AI endpoints." },
+        { title: "Integration Guide", href: "/developers/integration", description: "Connect your project to the network." },
+      ],
+    },
     { title: "FAQ", href: "/faq", icon: HelpCircle, description: "Frequently Asked Questions"},
   ] satisfies NavItem[],
   footerNav: [

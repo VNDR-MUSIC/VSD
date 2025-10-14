@@ -30,6 +30,7 @@ import React from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { doc } from 'firebase/firestore';
 import type { Account } from '@/types/account';
+import { NavItem } from '@/types/nav';
 
 const NavLink = ({ href, children, currentPathname }: { href: string, children: React.ReactNode, currentPathname: string }) => (
     <Link
@@ -44,15 +45,29 @@ const NavLink = ({ href, children, currentPathname }: { href: string, children: 
 );
 
 
-const MobileNavLink = ({ href, children, onSelect }: { href: string, children: React.ReactNode, onSelect: () => void }) => (
-    <Link
-      href={href}
-      onClick={onSelect}
-      className="text-lg font-medium transition-colors hover:text-primary text-foreground/80"
-    >
-        {children}
-    </Link>
+const NavDropdown = ({ item, currentPathname }: { item: NavItem, currentPathname: string }) => (
+    <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className={cn(
+                "text-sm font-medium transition-colors hover:text-primary focus:bg-accent focus:text-accent-foreground",
+                currentPathname.startsWith(item.href) ? "text-primary" : "text-foreground/70"
+            )}>
+                {item.title}
+                <ChevronDown className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180" />
+            </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-64">
+            <DropdownMenuLabel>{item.description}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {item.subItems?.map(subItem => (
+                <DropdownMenuItem key={subItem.href} asChild>
+                    <Link href={subItem.href}>{subItem.title}</Link>
+                </DropdownMenuItem>
+            ))}
+        </DropdownMenuContent>
+    </DropdownMenu>
 );
+
 
 const UserNav = () => {
     const { user, isUserLoading } = useUser();
@@ -116,6 +131,7 @@ const UserNav = () => {
                             </Link>
                         </DropdownMenuItem>
                     ))}
+                    {(isAdmin || isAdvertiser) && <DropdownMenuSeparator />}
                     {isAdmin && (
                         <DropdownMenuItem asChild>
                            <Link href="/admin">
@@ -150,146 +166,14 @@ export function Header() {
 
 
   const navItems = siteConfig.mainNav.map((item) => {
-    if (item.href === "/ecosystem") {
+      if (item.subItems) {
+          return <NavDropdown key={item.href} item={item} currentPathname={pathname} />;
+      }
       return (
-        <DropdownMenu key={item.href}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className={cn(
-              "text-sm font-medium transition-colors hover:text-primary focus:bg-accent focus:text-accent-foreground",
-              pathname.startsWith('/ecosystem') || pathname.startsWith('/audio-exchange') || pathname.startsWith('/earn') ? "text-primary" : "text-foreground/70"
-            )}>
-              {item.title}
-              <ChevronDown className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-64">
-            <DropdownMenuLabel>{item.description}</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-               <Link href="/ecosystem">Ecosystem Overview</Link>
-            </DropdownMenuItem>
-             <DropdownMenuItem asChild>
-               <Link href="/audio-exchange">Audio Exchange Demo</Link>
-            </DropdownMenuItem>
-             <DropdownMenuItem asChild>
-               <Link href="/earn">Earn VSD Tokens</Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                    <Disc className="mr-2 h-4 w-4" />
-                    <span>Music Management</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                         <DropdownMenuItem asChild><Link href="/ecosystem#music-management-distribution">VNDR MUSIC Hub</Link></DropdownMenuItem>
-                         <DropdownMenuItem asChild><Link href="/ecosystem#music-management-distribution">Music Manager</Link></DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-            </DropdownMenuSub>
-             <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                    <PiggyBank className="mr-2 h-4 w-4" />
-                    <span>Financial Platforms</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                         <DropdownMenuItem asChild><Link href="/ecosystem#financial-monetization-platforms">Audio Exchange (AUDEX)</Link></DropdownMenuItem>
-                         <DropdownMenuItem asChild><Link href="/ecosystem#financial-monetization-platforms">Indie Videos TV (IVTV)</Link></DropdownMenuItem>
-                         <DropdownMenuItem asChild><Link href="/ecosystem#financial-monetization-platforms">ND RADIO</Link></DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-            </DropdownMenuSub>
-            <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    <span>Business Development</span>
-                </DropdownMenuSubTrigger>
-                 <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                         <DropdownMenuItem asChild><Link href="/ecosystem#business-development-innovation">Blaque Tech Ventures</Link></DropdownMenuItem>
-                         <DropdownMenuItem asChild><Link href="/ecosystem#business-development-innovation">AI Motion Design</Link></DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-            </DropdownMenuSub>
-            <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                    <GraduationCap className="mr-2 h-4 w-4" />
-                    <span>Artist Development</span>
-                </DropdownMenuSubTrigger>
-                 <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                         <DropdownMenuItem asChild><Link href="/ecosystem#education-artist-development">MIU</Link></DropdownMenuItem>
-                         <DropdownMenuItem asChild><Link href="/ecosystem#education-artist-development">Music Focus Group</Link></DropdownMenuItem>
-                         <DropdownMenuItem asChild><Link href="/ecosystem#education-artist-development">Forward Always Podcast</Link></DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-            </DropdownMenuSub>
-            <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                    <Group className="mr-2 h-4 w-4" />
-                    <span>Community & Networking</span>
-                </DropdownMenuSubTrigger>
-                 <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                         <DropdownMenuItem asChild><Link href="/ecosystem#community-networking">Indie Artist Network</Link></DropdownMenuItem>
-                         <DropdownMenuItem asChild><Link href="/ecosystem#community-networking">IMG Social</Link></DropdownMenuItem>
-                         <DropdownMenuItem asChild><Link href="/ecosystem#community-networking">Pro Files</Link></DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-            </DropdownMenuSub>
-             <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                    <Search className="mr-2 h-4 w-4" />
-                    <span>Music Discovery</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                         <DropdownMenuItem asChild><Link href="/ecosystem#music-discovery">SoundKlix</Link></DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-            </DropdownMenuSub>
-             <DropdownMenuSeparator />
-             <DropdownMenuItem asChild>
-               <Link href="/ecosystem#ecosystem-infrastructure">
-                    <Route className="mr-2 h-4 w-4" /> Vsd.Network
-                </Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <NavLink key={item.href} href={item.href} currentPathname={pathname}>
+          {item.title}
+        </NavLink>
       );
-    }
-
-    if (item.href === "/developers") {
-      return (
-        <DropdownMenu key={item.href}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className={cn(
-              "text-sm font-medium transition-colors hover:text-primary focus:bg-accent focus:text-accent-foreground",
-              pathname.startsWith('/developers') ? "text-primary" : "text-foreground/70"
-            )}>
-              {item.title}
-              <ChevronDown className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>{item.description}</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild><Link href="/developers">Developer Portal</Link></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link href="/developers/documentation">Whitepaper</Link></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link href="/developers/api-reference">API Reference</Link></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link href="/developers/integration">Integration Guide</Link></DropdownMenuItem>
-             <DropdownMenuItem asChild><Link href="/developers/sdks-tools">SDKs & Tools</Link></DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    }
-    
-    return (
-      <NavLink key={item.href} href={item.href} currentPathname={pathname}>
-        {item.title}
-      </NavLink>
-    );
   });
   
   const headerClasses = "sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60";
