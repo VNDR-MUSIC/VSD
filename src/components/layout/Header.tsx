@@ -1,5 +1,5 @@
 
-"use client";
+'use client';
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -146,7 +146,6 @@ const UserNav = () => {
 export function Header() {
   const pathname = usePathname();
   const [isSheetOpen, setSheetOpen] = React.useState(false);
-  
   const isSpecialPage = pathname.startsWith('/admin') || pathname.startsWith('/advertiser');
 
 
