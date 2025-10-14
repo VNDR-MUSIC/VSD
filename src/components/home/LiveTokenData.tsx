@@ -4,17 +4,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Database, Users, ArrowRightLeft, FileCode, Copy, Check, ArrowUpRightSquare } from "lucide-react";
+import { Database, Users, ArrowRightLeft, FileCode, Copy, Check, ArrowUpRightSquare, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { collection } from "firebase/firestore";
 import { Skeleton } from "../ui/skeleton";
+import { useBlockchainData } from "@/hooks/use-blockchain-data";
 
 const tokenData = {
   contractAddress: "0xA37CDC5CE42333A4F57776A4cD93f434E59AB243",
-  totalSupply: "1000000000",
   etherscanUrl: "https://etherscan.io/token/0xA37CDC5CE42333A4F57776A4cD93f434E59AB243",
 };
 
@@ -33,10 +33,10 @@ export function LiveTokenData() {
   const [copied, setCopied] = useState(false);
   const firestore = useFirestore();
 
-  // The 'accounts' collection is protected and should not be queried by unauthenticated users.
-  // We will only query the public 'transactions' collection here.
   const transactionsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'transactions') : null, [firestore]);
   const { data: transactions, isLoading: isLoadingTransactions } = useCollection(transactionsQuery);
+
+  const { data: blockchainData, isLoading: isLoadingBlockchain, error: blockchainError } = useBlockchainData();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(tokenData.contractAddress);
@@ -45,7 +45,7 @@ export function LiveTokenData() {
       title: "Address Copied!",
       description: "VSD contract address copied to clipboard.",
     });
-    setTimeout(() => setCopied(false), 2000); // Reset icon after 2 seconds
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -58,12 +58,37 @@ export function LiveTokenData() {
           </p>
         </CardHeader>
         <CardContent>
+          {blockchainError && (
+            <div className="flex items-center gap-3 p-4 mb-6 rounded-md border border-amber-500/50 bg-amber-500/10 text-amber-400">
+                <AlertTriangle className="h-5 w-5 shrink-0" />
+                <p className="text-sm">{blockchainError}</p>
+            </div>
+          )}
           <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-border/50">
-            <DataCard icon={Database} title="Total Supply" value={Number(tokenData.totalSupply).toLocaleString()} />
-            {/* The holder count is removed from this public component to avoid permission errors. It is available on the admin/status pages. */}
-            <DataCard icon={Users} title="Holder Wallets" value={"--"} isLoading={false} />
-            <DataCard icon={ArrowRightLeft} title="Total Transfers" value={transactions?.length ?? 0} isLoading={isLoadingTransactions} />
-            <DataCard icon={FileCode} title="Decimals" value="18" />
+            <DataCard 
+              icon={Database} 
+              title="Total Supply" 
+              value={blockchainData.totalSupply ? Number(blockchainData.totalSupply).toLocaleString() : '--'} 
+              isLoading={isLoadingBlockchain} 
+            />
+            <DataCard 
+              icon={Users} 
+              title="Holder Wallets" 
+              value={"--"} // This data should come from a backend service, not client-side query
+              isLoading={false} 
+            />
+            <DataCard 
+              icon={ArrowRightLeft} 
+              title="Total Transfers" 
+              value={transactions?.length ?? 0} 
+              isLoading={isLoadingTransactions} 
+            />
+            <DataCard 
+              icon={FileCode} 
+              title="Decimals" 
+              value={18} 
+              isLoading={isLoadingBlockchain}
+            />
           </div>
           <Separator className="my-6" />
           <div className="text-center space-y-4">
