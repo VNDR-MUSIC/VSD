@@ -51,9 +51,8 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth, useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
-import { collection, doc, setDoc } from 'firebase/firestore';
-import type { WithId } from '@/firebase';
+import { useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
+import { collection, doc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import type { Account } from '@/types/account';
@@ -105,10 +104,10 @@ export function AdminDashboard() {
   const firestore = useFirestore();
   const { user } = useUser();
 
-  // Collections are fetched only if an admin user is logged in
-  const tenantsQuery = useMemoFirebase(() => user && firestore ? collection(firestore, 'tenants') : null, [firestore, user]);
-  const globalTransactionsQuery = useMemoFirebase(() => user && firestore ? collection(firestore, 'transactions') : null, [firestore, user]);
-  const accountsQuery = useMemoFirebase(() => user && firestore ? collection(firestore, 'accounts') : null, [firestore, user]);
+  // Collections are fetched only if an admin user is logged in and auth check is complete
+  const tenantsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'tenants') : null, [firestore, user, isAuthLoading]);
+  const globalTransactionsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'transactions') : null, [firestore, user, isAuthLoading]);
+  const accountsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'accounts') : null, [firestore, user, isAuthLoading]);
   
   const { data: tenants, isLoading: tenantsLoading } = useCollection<Tenant>(tenantsQuery);
   const { data: transactions, isLoading: transactionsLoading } = useCollection<Transaction>(globalTransactionsQuery);
