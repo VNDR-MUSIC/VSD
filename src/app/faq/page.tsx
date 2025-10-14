@@ -16,7 +16,7 @@ const faqs = [
   {
     id: "what-is-vsd-token",
     question: "What is the VSD Utility Token?",
-    answer: "VSD is the official utility token for the Independent Music Group (IMG) ecosystem. It functions as the essential currency required to access a decentralized platform of AI-driven tools and services, most notably the IMG Services suite for content and image generation. VSD fuels the entire network, enabling transactions, rewarding participation, and governing the platform's future."
+    answer: "VSD is the official utility token for the Independent Media Group (IMG) ecosystem. It functions as the essential currency required to access a decentralized platform of AI-driven tools and services, most notably the IMG Services suite for content and image generation. VSD fuels the entire network, enabling transactions, rewarding participation, and governing the platform's future."
   },
   {
     id: "how-does-vsd-work",
@@ -99,10 +99,12 @@ export default function FaqPage() {
                 <AccordionTrigger className="text-md sm:text-lg md:text-xl text-left hover:no-underline py-4 sm:py-6">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent
-                  className="text-sm sm:text-base md:text-lg text-muted-foreground prose prose-sm sm:prose-base prose-invert max-w-none prose-a:text-primary hover:prose-a:text-primary/80"
-                  dangerouslySetInnerHTML={{ __html: faq.answer }}
-                />
+                <AccordionContent>
+                  <div
+                    className="text-sm sm:text-base md:text-lg text-muted-foreground prose prose-sm sm:prose-base prose-invert max-w-none prose-a:text-primary hover:prose-a:text-primary/80"
+                    dangerouslySetInnerHTML={{ __html: faq.answer }}
+                  />
+                </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
