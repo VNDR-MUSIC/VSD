@@ -42,7 +42,7 @@ const generateImageFromHintFlow = ai.defineFlow(
 
     try {
       const { media } = await ai.generate({
-        model: googleAI.model('imagen-4.0-fast-generate-001'),
+        model: googleAI.model('imagen-2-fast'),
         prompt: `Generate an image based on the following hint: "${input.hint}". Focus on creating a visually appealing, photorealistic image relevant to the hint.`,
       });
 
