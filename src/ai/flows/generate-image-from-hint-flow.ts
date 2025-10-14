@@ -37,8 +37,6 @@ const generateImageFromHintFlow = ai.defineFlow(
     logger.info('AI_GEN_START: generateImageFromHintFlow invoked.', {
       hint: input.hint,
       genkitFlowName: 'generateImageFromHintFlow',
-      projectId: process.env.GCLOUD_PROJECT || process.env.GOOGLE_CLOUD_PROJECT || 'N/A',
-      functionRegion: process.env.FUNCTION_REGION || 'N/A',
     });
 
     if (!input.hint) {
@@ -48,20 +46,16 @@ const generateImageFromHintFlow = ai.defineFlow(
 
     try {
       const { media } = await ai.generate({
-        model: googleAI.model('gemini-2.0-flash-preview-image-generation'), // Per Genkit docs for image generation
-        prompt: `Generate an image based on the following hint: "${input.hint}". Focus on creating a visually appealing image relevant to the hint. Create a photorealistic image if possible, otherwise an artistic representation.`,
-        config: {
-          responseModalities: ['TEXT', 'IMAGE'], // MUST provide both TEXT and IMAGE
-          // safetySettings can be added here if needed
-        },
+        model: googleAI.model('imagen-4.0-fast-generate-001'), // Updated to a production-ready model
+        prompt: `Generate an image based on the following hint: "${input.hint}". Focus on creating a visually appealing, photorealistic image relevant to the hint.`,
       });
 
       if (!media || !media.url) {
         logger.error('AI_GEN_EMPTY_RESPONSE: AI model did not return media or media.url.', {
           hint: input.hint,
-          modelResponse: { media }, // Log the partial response if available
+          modelResponse: { media },
         });
-        throw new Error(`Image generation failed for hint "${input.hint}": No media content returned from the AI model.`);
+        throw new Error(`Image generation failed for hint "${input.hint}": No media content returned.`);
       }
       
       logger.info('AI_GEN_SUCCESS: Image generated successfully.', { hint: input.hint, returnedUrlLength: media.url.length });
@@ -72,15 +66,7 @@ const generateImageFromHintFlow = ai.defineFlow(
         hint: input.hint,
         errorMessage: error.message,
         errorStack: error.stack,
-        errorDetails: error.details || error.cause, // Include additional error info if present
-        environment: {
-          NODE_ENV: process.env.NODE_ENV || 'N/A',
-          FUNCTION_MEMORY_MB: process.env.FUNCTION_MEMORY_MB || 'N/A',
-          PROJECT_ID: process.env.GCLOUD_PROJECT || process.env.GOOGLE_CLOUD_PROJECT || 'N/A',
-          GEMINI_API_KEY_STATUS: process.env.GEMINI_API_KEY ? 'Set' : 'Not Set',
-        },
       });
-      // Re-throw a more specific error or the original one
       throw new Error(`Failed to generate image from hint "${input.hint}": ${error.message || String(error)}`);
     }
   }
