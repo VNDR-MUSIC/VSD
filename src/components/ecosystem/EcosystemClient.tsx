@@ -69,6 +69,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 name: "ND 24/7 Indie Radio",
                 description: "An all-indie radio station that showcases independent audio artists and pays for plays.",
                 link: "#",
+                logoUrl: "https://i.ibb.co/4wvZ1Mzq/ND-Radio-transparent.png",
                 hint: "vintage radio broadcasting waves",
             }
         ]
