@@ -51,7 +51,7 @@ export function Footer() {
              <h4 className="font-bold mb-2">An IMG Company</h4>
              <Link href="https://indiemedia.llc" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition-opacity w-32">
                  <Image
-                    src="https://i.ibb.co/v64ZGh4/logo-full-256x.png"
+                    src="https://i.ibb.co/3wpP3F4/logo-full-256x.png"
                     alt="Independent Media Group Logo"
                     width={128}
                     height={128}
