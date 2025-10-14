@@ -30,7 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const isAdminOrAdvertiserPage = pathname.startsWith('/admin') || pathname.startsWith('/advertiser');
+  // We determine if the special layouts are used to avoid double-padding or conflicting styles.
+  const isSpecialLayout = pathname.startsWith('/admin') || pathname.startsWith('/advertiser');
   
   return (
     <html lang="en" className={cn("dark", fontHeadline.variable, fontBody.variable)}>
@@ -39,8 +40,8 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col relative bg-background">
         <FirebaseClientProvider>
-          {!isAdminOrAdvertiserPage && <BackgroundVideo />}
-          <div className={cn("relative z-0 flex flex-col min-h-screen", !isAdminOrAdvertiserPage && "bg-black/85")}>
+          {!isSpecialLayout && <BackgroundVideo />}
+          <div className={cn("relative z-0 flex flex-col min-h-screen", !isSpecialLayout && "bg-black/85")}>
             <Header />
             <AnimatePresence mode="wait">
               <motion.main
@@ -49,12 +50,13 @@ export default function RootLayout({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5, ease: 'easeInOut' }}
-                className="flex-grow container mx-auto px-4 py-8"
+                // The special layouts will provide their own container and padding.
+                className={cn(!isSpecialLayout && "flex-grow container mx-auto px-4 py-8")}
               >
                 {children}
               </motion.main>
             </AnimatePresence>
-            {!isAdminOrAdvertiserPage && <Footer />}
+            {!isSpecialLayout && <Footer />}
             <Toaster />
           </div>
         </FirebaseClientProvider>

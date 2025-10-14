@@ -146,7 +146,8 @@ const UserNav = () => {
 export function Header() {
   const pathname = usePathname();
   const [isSheetOpen, setSheetOpen] = React.useState(false);
-  const isAdminOrAdvertiserPage = pathname.startsWith('/admin') || pathname.startsWith('/advertiser');
+  
+  const isSpecialPage = pathname.startsWith('/admin') || pathname.startsWith('/advertiser');
 
 
   const navItems = siteConfig.mainNav.map((item) => {
@@ -294,76 +295,72 @@ export function Header() {
   
   const headerBaseClasses = "sticky top-0 z-50 w-full border-b";
   const publicHeaderClasses = "border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60";
-  const adminHeaderClasses = "bg-background";
+  const specialPageHeaderClasses = "bg-background";
 
 
   return (
-    <header className={cn(headerBaseClasses, isAdminOrAdvertiserPage ? adminHeaderClasses : publicHeaderClasses)}>
+    <header className={cn(headerBaseClasses, isSpecialPage ? specialPageHeaderClasses : publicHeaderClasses)}>
       <div className="container flex h-16 max-w-screen-2xl items-center">
-        <div className={cn("mr-auto", isAdminOrAdvertiserPage && "hidden")}>
-             <Link href="/" className="flex items-center space-x-2">
-                <Logo size={36} />
-            </Link>
-        </div>
-
-        <nav className={cn("hidden md:flex items-center space-x-2 mr-auto", !isAdminOrAdvertiserPage && "hidden")}>
-             <Link href="/" className="flex items-center gap-2 mr-6">
-                    <Logo size={32} />
-                    <span className="font-bold hidden sm:inline-block">VSD Network</span>
-                </Link>
-        </nav>
+        <Link href="/" className="flex items-center space-x-2 mr-6">
+            <Logo size={36} />
+            <span className={cn("font-bold", { "hidden sm:inline-block": isSpecialPage })}>VSD Network</span>
+        </Link>
         
-        <nav className={cn("hidden md:flex items-center space-x-1", isAdminOrAdvertiserPage && "hidden")}>
-            {navItems}
-        </nav>
+        {!isSpecialPage && (
+            <nav className="hidden md:flex items-center space-x-1">
+                {navItems}
+            </nav>
+        )}
 
-        <div className="flex items-center gap-2" style={{ marginLeft: isAdminOrAdvertiserPage ? 'auto' : '' }}>
+        <div className="flex flex-1 items-center justify-end gap-2">
            <UserNav />
 
-            <div className={cn(isAdminOrAdvertiserPage && "hidden")}>
-              <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Menu className="h-6 w-6" />
-                    <span className="sr-only">Toggle navigation menu</span>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right">
-                    <SheetHeader className="sr-only">
-                        <SheetTitle>Navigation Menu</SheetTitle>
-                        <SheetDescription>Main navigation links for the VSD Network website.</SheetDescription>
-                    </SheetHeader>
-                    <SheetClose asChild>
-                        <Link href="/" className="mb-6 flex items-center">
-                            <Logo size={36} className="mr-2" />
-                        </Link>
-                    </SheetClose>
-                  <nav className="flex flex-col space-y-4">
-                    {siteConfig.mainNav.map((item) => (
-                       <SheetClose asChild key={item.href}>
-                         <Link href={item.href} className="text-lg font-medium transition-colors hover:text-primary text-foreground/80">
-                            {item.title}
-                         </Link>
-                       </SheetClose>
-                    ))}
-                     <DropdownMenuSeparator />
-                     {siteConfig.secondaryNav.map((item) => (
-                         <SheetClose asChild key={item.href}>
+            {!isSpecialPage && (
+              <div className="md:hidden">
+                <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
+                    <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                        <Menu className="h-6 w-6" />
+                        <span className="sr-only">Toggle navigation menu</span>
+                    </Button>
+                    </SheetTrigger>
+                    <SheetContent side="right">
+                        <SheetHeader className="sr-only">
+                            <SheetTitle>Navigation Menu</SheetTitle>
+                            <SheetDescription>Main navigation links for the VSD Network website.</SheetDescription>
+                        </SheetHeader>
+                        <SheetClose asChild>
+                            <Link href="/" className="mb-6 flex items-center">
+                                <Logo size={36} className="mr-2" />
+                            </Link>
+                        </SheetClose>
+                    <nav className="flex flex-col space-y-4">
+                        {siteConfig.mainNav.map((item) => (
+                        <SheetClose asChild key={item.href}>
                             <Link href={item.href} className="text-lg font-medium transition-colors hover:text-primary text-foreground/80">
                                 {item.title}
                             </Link>
                         </SheetClose>
-                     ))}
-                     <DropdownMenuSeparator />
-                     <SheetClose asChild>
-                        <Link href="/developers/integration" className="text-lg font-medium transition-colors hover:text-primary text-foreground/80 flex items-center">
-                            <Share2 className="mr-2 h-4 w-4" /> Integration Guide
-                        </Link>
-                    </SheetClose>
-                  </nav>
-                </SheetContent>
-              </Sheet>
-            </div>
+                        ))}
+                        <DropdownMenuSeparator />
+                        {siteConfig.secondaryNav.map((item) => (
+                            <SheetClose asChild key={item.href}>
+                                <Link href={item.href} className="text-lg font-medium transition-colors hover:text-primary text-foreground/80">
+                                    {item.title}
+                                </Link>
+                            </SheetClose>
+                        ))}
+                        <DropdownMenuSeparator />
+                        <SheetClose asChild>
+                            <Link href="/developers/integration" className="text-lg font-medium transition-colors hover:text-primary text-foreground/80 flex items-center">
+                                <Share2 className="mr-2 h-4 w-4" /> Integration Guide
+                            </Link>
+                        </SheetClose>
+                    </nav>
+                    </SheetContent>
+                </Sheet>
+              </div>
+            )}
         </div>
       </div>
     </header>

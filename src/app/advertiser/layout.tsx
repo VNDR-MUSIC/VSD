@@ -3,11 +3,11 @@ import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Admin | VSD Network',
-  description: 'VSD Network Administration',
+  title: 'Advertiser | VSD Network',
+  description: 'VSD Network Advertiser Portal',
 };
 
-export default function AdminLayout({
+export default function AdvertiserLayout({
   children,
 }: {
   children: React.ReactNode;

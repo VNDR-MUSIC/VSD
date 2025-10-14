@@ -770,5 +770,3 @@ function AddTenantDialog() {
     </Dialog>
   );
 }
-
-    

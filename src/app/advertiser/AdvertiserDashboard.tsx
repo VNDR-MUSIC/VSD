@@ -107,8 +107,6 @@ export function AdvertiserDashboard() {
   }, [advertisements]);
 
   return (
-      <div className="flex min-h-screen w-full flex-col bg-muted/40">
-        <AdvertiserHeader />
         <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center justify-between">
               <div>
@@ -252,86 +250,5 @@ export function AdvertiserDashboard() {
             </div>
 
         </main>
-      </div>
   );
 }
-
-function AdvertiserHeader() {
-    const { user, isUserLoading } = useUser();
-    const pathname = usePathname();
-
-    const navItems = [
-        { href: "/advertiser", label: "Dashboard", icon: Home },
-    ];
-
-    return (
-        <header className="sticky top-0 z-40 w-full border-b bg-background">
-            <div className="container flex h-16 items-center px-4 sm:px-6">
-                <Link href="/" className="flex items-center gap-2 mr-6">
-                    <Logo size={32} />
-                    <span className="font-bold hidden sm:inline-block">Advertiser Portal</span>
-                </Link>
-                <nav className="hidden md:flex items-center space-x-1" aria-label="Main navigation">
-                    <ul className="flex items-center space-x-4 lg:space-x-6">
-                        {navItems.map(item => (
-                            <li key={item.href}>
-                                <Link 
-                                    href={item.href}
-                                    className={cn(
-                                        "text-sm font-medium transition-colors hover:text-primary",
-                                        pathname === item.href ? "text-primary" : "text-muted-foreground"
-                                    )}
-                                >
-                                    {item.label}
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
-                </nav>
-                <div className="ml-auto flex items-center gap-4">
-                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                               {isUserLoading ? (
-                                <Skeleton className="h-8 w-8 rounded-full" />
-                               ) : user ? (
-                                    <Avatar className="h-8 w-8">
-                                        <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'User'} />
-                                        <AvatarFallback>{user.displayName?.charAt(0) ?? 'A'}</AvatarFallback>
-                                    </Avatar>
-                               ) : (
-                                 <Avatar className="h-8 w-8">
-                                     <AvatarFallback>U</AvatarFallback>
-                                 </Avatar>
-                               )}
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-56" align="end">
-                           {user ? (
-                            <>
-                                <DropdownMenuLabel>
-                                    <div className="flex flex-col space-y-1">
-                                        <p className="text-sm font-medium leading-none">{user.displayName}</p>
-                                        <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-                                    </div>
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem asChild><Link href="/dashboard">User Dashboard</Link></DropdownMenuItem>
-                                <DropdownMenuItem asChild><Link href="/settings">Settings</Link></DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>Logout</DropdownMenuItem>
-                            </>
-                           ) : (
-                             <DropdownMenuItem asChild>
-                                <Link href="/login">Login</Link>
-                             </DropdownMenuItem>
-                           )}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            </div>
-        </header>
-    );
-}
-
-    
