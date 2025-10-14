@@ -1,6 +1,6 @@
 
 import { genkit } from 'genkit';
-import { googleAI } from '@genkit-ai/googleai';
+import { googleAI } from '@genkit-ai/google-genai';
 
 /**
  * Initializes and exports the Genkit AI instance.

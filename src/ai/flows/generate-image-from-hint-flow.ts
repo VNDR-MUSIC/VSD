@@ -10,6 +10,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import { googleAI } from '@genkit-ai/google-genai';
 
 const GenerateImageInputSchema = z.object({
   hint: z.string().describe('A textual hint to guide the image generation process.'),
@@ -39,7 +40,7 @@ const generateImageFromHintFlow = ai.defineFlow(
 
     try {
       const { media } = await ai.generate({
-        model: 'googleai/imagen-2-fast',
+        model: googleAI.model('imagen-2-fast'),
         prompt: `Generate an image based on the following hint: "${input.hint}". Focus on creating a visually appealing, photorealistic image relevant to the hint.`,
       });
 
