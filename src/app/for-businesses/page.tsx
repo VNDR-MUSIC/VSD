@@ -60,36 +60,21 @@ export default function ForBusinessesPage() {
           </BenefitCard>
         </div>
       </section>
-
+      
       <Separator />
 
-      <section className="text-center">
-        <AIImage
-          initialSrc="https://placehold.co/800x400.png"
-          alt="Businesses innovating with VSD AI tools"
-          width={800}
-          height={400}
-          className="rounded-md my-8 shadow-md mx-auto"
-          hint="business AI innovation"
-        />
-        <h2 className="font-headline text-2xl sm:text-3xl font-semibold mb-6">Ready to Explore VSD for Your Business?</h2>
-        <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto mb-8">
-          Our developer portal and whitepaper provide technical details. For partnership or advertising inquiries, please reach out.
+      <section className="text-center bg-card/70 p-6 sm:p-8 md:p-12 rounded-lg shadow-xl">
+        <h2 className="font-headline text-2xl sm:text-3xl font-bold mb-4">Ready to Advertise with Us?</h2>
+        <p className="text-muted-foreground mb-6 max-w-xl mx-auto text-sm sm:text-base">
+          Join our network of advertisers to reach an engaged community of creators and tech enthusiasts. Register today to get started.
         </p>
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-            <Button asChild size="lg" className="font-bold btn-hover-effect">
-              <Link href="/developers/documentation">
-                Read Whitepaper <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-             <Button asChild variant="outline" size="lg" className="font-bold btn-hover-effect">
-              <Link href="/developers#community">
-                Contact for Partnership
-              </Link>
-            </Button>
-        </div>
+        <Button asChild size="lg" className="font-bold btn-hover-effect">
+            <Link href="/for-businesses/register">
+                Register as an Advertiser <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+        </Button>
       </section>
-      
+
       <Separator />
 
       <section>
@@ -120,18 +105,6 @@ export default function ForBusinessesPage() {
                 <CardContent><p className="text-muted-foreground text-sm sm:text-base">Hold VSD as a utility asset for accessing AI services or participate in the VSD ecosystem's governance, aligning with innovative Web3 trends.</p></CardContent>
             </Card>
         </div>
-      </section>
-
-      <Separator />
-
-      <section className="text-center bg-card/70 p-6 sm:p-8 md:p-12 rounded-lg shadow-xl">
-        <h2 className="font-headline text-2xl sm:text-3xl font-bold mb-4">Join the VSD Business Network</h2>
-        <p className="text-muted-foreground mb-6 max-w-xl mx-auto text-sm sm:text-base">
-          We're building a network of forward-thinking businesses leveraging AI and Web3. If you're interested in strategic partnerships, co-development, or becoming an early adopter of VSD AI services, we'd love to hear from you.
-        </p>
-        <Button variant="outline" size="lg" className="btn-hover-effect" disabled>
-          Partnership Inquiries (Coming Soon)
-        </Button>
       </section>
 
     </div>

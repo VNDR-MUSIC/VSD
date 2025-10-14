@@ -95,14 +95,33 @@
         "description": "Represents an advertiser's video or link for user engagement rewards.",
         "properties": {
             "id": { "type": "string", "description": "Unique ID for the advertisement." },
+            "advertiserId": { "type": "string", "description": "The UID of the user account that owns this ad." },
             "title": { "type": "string", "description": "Title of the ad." },
             "type": { "type": "string", "enum": ["video", "url"], "description": "The type of advertisement." },
             "url": { "type": "string", "format": "uri", "description": "The URL for the video source or the click-through link." },
             "reward": { "type": "number", "description": "The amount of VSD Lite tokens rewarded for interaction." },
+            "clicks": { "type": "number", "description": "The total number of clicks or completed views." },
             "createdAt": { "type": "string", "format": "date-time", "description": "ISO timestamp of when the ad was created." },
             "status": { "type": "string", "enum": ["Active", "Paused"], "description": "The status of the advertisement campaign." }
         },
-        "required": ["id", "title", "type", "url", "reward", "createdAt", "status"]
+        "required": ["id", "advertiserId", "title", "type", "url", "reward", "createdAt", "status", "clicks"]
+    },
+    "AdvertiserApplication": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Advertiser Application",
+        "type": "object",
+        "description": "Represents an application submitted by a user to become an advertiser.",
+        "properties": {
+            "userId": { "type": "string", "description": "The UID of the applicant." },
+            "userName": { "type": "string", "description": "The applicant's display name." },
+            "userEmail": { "type": "string", "format": "email", "description": "The applicant's email." },
+            "companyName": { "type": "string", "description": "The name of the advertiser's company." },
+            "website": { "type": "string", "format": "uri", "description": "The company's website." },
+            "businessDescription": { "type": "string", "description": "A description of the business and advertising goals." },
+            "status": { "type": "string", "enum": ["pending", "approved", "rejected"], "description": "The status of the application." },
+            "submittedAt": { "type": "string", "format": "date-time", "description": "ISO timestamp of when the application was submitted." }
+        },
+        "required": ["userId", "userName", "userEmail", "companyName", "website", "status", "submittedAt"]
     }
   },
   "auth": {
@@ -128,6 +147,12 @@
     "/advertisements/{advertisementId}": {
         "schema": { "$ref": "#/entities/Advertisement" },
         "description": "Stores all advertisement campaigns that users can interact with to earn VSD Lite."
+    },
+    "/advertiserApplications/{applicationId}": {
+        "schema": { "$ref": "#/entities/AdvertiserApplication" },
+        "description": "Stores applications from users wishing to become advertisers."
     }
   }
 }
+
+    

@@ -18,6 +18,7 @@ import {
   Globe,
   Video,
   ExternalLink,
+  FileText,
 } from 'lucide-react';
 import {
   Card,
@@ -93,6 +94,19 @@ interface Advertisement {
     clicks: number;
 }
 
+interface AdvertiserApplication {
+    id: string;
+    userId: string;
+    userName: string;
+    userEmail: string;
+    companyName: string;
+    website: string;
+    businessDescription: string;
+    status: 'pending' | 'approved' | 'rejected';
+    submittedAt: string;
+}
+
+
 const StatCardSkeleton = () => (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -125,12 +139,13 @@ export function AdminDashboard() {
   const globalTransactionsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'transactions') : null, [firestore, user, isAuthLoading]);
   const accountsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'accounts') : null, [firestore, user, isAuthLoading]);
   const advertisementsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'advertisements') : null, [firestore, user, isAuthLoading]);
+  const applicationsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'advertiserApplications') : null, [firestore, user, isAuthLoading]);
   
   const { data: tenants, isLoading: tenantsLoading } = useCollection<Tenant>(tenantsQuery);
   const { data: transactions, isLoading: transactionsLoading } = useCollection<Transaction>(globalTransactionsQuery);
   const { data: users, isLoading: usersLoading } = useCollection<Account>(accountsQuery);
   const { data: advertisements, isLoading: advertisementsLoading } = useCollection<Advertisement>(advertisementsQuery);
-
+  const { data: applications, isLoading: applicationsLoading } = useCollection<AdvertiserApplication>(applicationsQuery);
 
   const totalVsdInCirculation = users?.reduce((acc, user) => acc + user.vsdBalance, 0) || 0;
 
@@ -221,6 +236,7 @@ export function AdminDashboard() {
                         <TabsTrigger value="users">Users</TabsTrigger>
                         <TabsTrigger value="tenants">Tenants</TabsTrigger>
                         <TabsTrigger value="advertisements">Advertisements</TabsTrigger>
+                        <TabsTrigger value="applications">Advertiser Applications</TabsTrigger>
                         <TabsTrigger value="transactions">Global Activity</TabsTrigger>
                     </TabsList>
                     <div className="ml-auto flex items-center gap-2">
@@ -427,6 +443,72 @@ export function AdminDashboard() {
                                     )}
                                 </TableBody>
                             </Table>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+                <TabsContent value="applications">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Advertiser Applications</CardTitle>
+                            <CardDescription>
+                                Review and approve pending applications from potential advertisers.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                           <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Company</TableHead>
+                                        <TableHead>Contact</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="hidden md:table-cell">Submitted At</TableHead>
+                                        <TableHead><span className="sr-only">Actions</span></TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {applicationsLoading ? (
+                                        Array.from({ length: 2 }).map((_, i) => <TableRowSkeleton key={i} cells={5} />)
+                                    ) : applications && applications.length > 0 ? (
+                                        applications.map((app) => (
+                                            <TableRow key={app.id}>
+                                                <TableCell>
+                                                    <div className="font-medium">{app.companyName}</div>
+                                                    <a href={app.website} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:underline">{app.website}</a>
+                                                </TableCell>
+                                                <TableCell>
+                                                     <div className="font-medium">{app.userName}</div>
+                                                     <div className="text-xs text-muted-foreground">{app.userEmail}</div>
+                                                </TableCell>
+                                                <TableCell>
+                                                     <Badge variant={app.status === 'pending' ? 'secondary' : app.status === 'approved' ? 'default' : 'destructive'}>
+                                                        {app.status}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="hidden md:table-cell">{new Date(app.submittedAt).toLocaleDateString()}</TableCell>
+                                                <TableCell className="text-right">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button size="icon" variant="ghost">
+                                                                <MoreHorizontal className="h-4 w-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                            <DropdownMenuItem>View Application</DropdownMenuItem>
+                                                            <DropdownMenuItem>Approve</DropdownMenuItem>
+                                                            <DropdownMenuItem className="text-destructive">Reject</DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={5} className="h-24 text-center">No pending applications.</TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                           </Table>
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -772,3 +854,5 @@ function AdminHeader() {
         </header>
     );
 }
+
+    
