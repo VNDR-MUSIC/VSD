@@ -43,27 +43,6 @@ const mockTracks = [
   }
 ];
 
-// MOCK API call simulation
-const mockApiCall = (data: any) => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            if (data.amount > 0) {
-                 const mockTransaction = {
-                    transactionId: `txn_mock_${Date.now()}`,
-                    status: 'completed',
-                    timestamp: new Date().toISOString(),
-                    ...data,
-                    mock: true
-                };
-                resolve(mockTransaction);
-            } else {
-                reject(new Error("Invalid transaction amount."));
-            }
-        }, 1500); // Simulate network delay
-    });
-};
-
-
 // This component now makes REAL API calls to the VSD Network backend
 export default function AudioExchangePage() {
   const { toast } = useToast();
@@ -75,10 +54,8 @@ export default function AudioExchangePage() {
 
   const handlePurchase = async (track: typeof mockTracks[0]) => {
     setIsLoading(track.id);
-    console.log(`Initiating purchase for ${track.title}...`);
     
     try {
-      // 1. Call VSD Transaction API
       toast({
         title: "Processing Transaction...",
         description: `Simulating a VSD transaction for ${track.price} VSD.`,
@@ -91,12 +68,22 @@ export default function AudioExchangePage() {
           description: `Purchase of audio license: ${track.title}`,
       };
 
-      const transactionResult: any = await mockApiCall(transactionPayload);
-
-      console.log('Transaction successful (mock):', transactionResult);
+      // Call the client-facing bridge API
+      const response = await fetch('/api/vsd/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(transactionPayload),
+      });
       
+      if (!response.ok) {
+        const errorResult = await response.json();
+        throw new Error(errorResult.error || 'Transaction failed to process.');
+      }
+      
+      const transactionResult: any = await response.json();
+
       toast({
-        title: "Transaction Confirmed!",
+        title: "Transaction Confirmed! (Mock)",
         description: `Mock TXN ID: ${transactionResult.transactionId}. Your purchase is complete.`,
       });
       

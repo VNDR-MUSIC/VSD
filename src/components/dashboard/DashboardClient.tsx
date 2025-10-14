@@ -1,12 +1,12 @@
 
-"use client";
+'use client';
 
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank, Loader2 } from "lucide-react";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
@@ -15,11 +15,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import type { Account } from '@/types/account';
 import { format } from 'date-fns';
-
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface Transaction {
   id: string;
-  type: string; // Changed from 'in' | 'out' to string to support more types
+  type: string;
   from?: string;
   to?: string;
   amount: number;
@@ -68,7 +70,7 @@ export function DashboardClient() {
     if (!transactions) return [];
     
     const monthlyUsage = transactions
-        .filter(tx => tx.type !== 'in' && tx.status === 'Completed') // Assuming 'in' is for incoming
+        .filter(tx => tx.type !== 'in' && tx.status === 'Completed')
         .reduce((acc, tx) => {
             const month = format(new Date(tx.date), 'MMM yyyy');
             acc[month] = (acc[month] || 0) + tx.amount;
@@ -78,7 +80,6 @@ export function DashboardClient() {
     return Object.entries(monthlyUsage)
         .map(([month, value]) => ({ month, value }))
         .sort((a, b) => new Date(a.month).getTime() - new Date(b.month).getTime());
-
   }, [transactions]);
 
   if (isAuthLoading) {
@@ -129,7 +130,7 @@ export function DashboardClient() {
               </div>
             </CardContent>
             <CardFooter className="gap-2">
-              <Button className="btn-hover-effect w-full" onClick={() => toast({ title: "Feature Coming Soon", description: "Sending VSD will be enabled shortly."})}><Send className="mr-2 h-4 w-4" />Send</Button>
+              <SendVsdDialog userAccount={account} />
               <Button variant="outline" className="btn-hover-effect w-full" onClick={() => toast({ title: "Feature Coming Soon", description: "Receiving VSD is active at your wallet address."})}>Receive</Button>
             </CardFooter>
           </Card>
@@ -252,5 +253,108 @@ export function DashboardClient() {
   );
 }
 
-    
-    
+function SendVsdDialog({ userAccount }: { userAccount: Account | null }) {
+    const { toast } = useToast();
+    const [isOpen, setIsOpen] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (!userAccount) {
+            toast({ variant: 'destructive', title: 'Error', description: 'User account not found.' });
+            return;
+        }
+
+        setIsLoading(true);
+        const formData = new FormData(event.currentTarget);
+        const toAddress = formData.get('toAddress') as string;
+        const amount = Number(formData.get('amount'));
+        const description = formData.get('description') as string;
+
+        if (!toAddress || !amount || amount <= 0) {
+            toast({ variant: 'destructive', title: 'Invalid input', description: 'Please fill out all fields correctly.' });
+            setIsLoading(false);
+            return;
+        }
+
+        if (amount > userAccount.vsdBalance) {
+            toast({ variant: 'destructive', title: 'Insufficient balance', description: 'You do not have enough VSD to complete this transaction.' });
+            setIsLoading(false);
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/vsd/transactions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fromAddress: userAccount.walletAddress,
+                    toAddress,
+                    amount,
+                    description: description || 'VSD Transfer',
+                }),
+            });
+
+            if (!response.ok) {
+                const errorResult = await response.json();
+                throw new Error(errorResult.error || 'Transaction failed to process.');
+            }
+
+            const result = await response.json();
+
+            toast({
+                title: 'Transaction Submitted (Mock)',
+                description: `Sent ${amount} VSD to ${toAddress}. TXN ID: ${result.transactionId}`,
+            });
+            setIsOpen(false);
+
+        } catch (error: any) {
+            toast({
+                variant: 'destructive',
+                title: 'Transaction Failed',
+                description: error.message || 'An unexpected error occurred.',
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Button className="btn-hover-effect w-full"><Send className="mr-2 h-4 w-4" />Send</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+                <form onSubmit={handleSubmit}>
+                    <DialogHeader>
+                        <DialogTitle className="font-headline">Send VSD Tokens</DialogTitle>
+                        <DialogDescription>
+                            Transfer VSD to another user. This is a mock transaction.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="toAddress">Recipient Wallet Address</Label>
+                            <Input id="toAddress" name="toAddress" placeholder="0x..." required />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="amount">Amount (VSD)</Label>
+                            <Input id="amount" name="amount" type="number" step="any" min="0.01" placeholder="100.00" required />
+                             <p className="text-xs text-muted-foreground">Your balance: {userAccount?.vsdBalance.toLocaleString() ?? '0'} VSD</p>
+                        </div>
+                        <div className="space-y-2">
+                             <Label htmlFor="description">Description (Optional)</Label>
+                            <Input id="description" name="description" placeholder="e.g., Payment for services" />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button type="submit" disabled={isLoading} className="w-full">
+                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {isLoading ? 'Processing...' : 'Send VSD'}
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+}
