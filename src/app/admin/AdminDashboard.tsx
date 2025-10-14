@@ -13,6 +13,9 @@ import {
   Video,
   ExternalLink,
   FileText,
+  ShieldCheck,
+  ShieldOff,
+  Clock,
 } from 'lucide-react';
 import {
   Card,
@@ -45,12 +48,13 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useCollection, useFirestore, useUser, useMemoFirebase, updateDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase';
-import { collection, doc, query, where, arrayUnion } from 'firebase/firestore';
+import { collection, doc, query, where, arrayUnion, orderBy } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Account } from '@/types/account';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Link from 'next/link';
+import { format } from 'date-fns';
 
 
 interface Transaction {
@@ -95,6 +99,16 @@ interface AdvertiserApplication {
     submittedAt: string;
 }
 
+interface ApiLog {
+    id: string;
+    timestamp: string;
+    status: 'Success' | 'Failure';
+    tenantId?: string;
+    tenantName?: string;
+    endpoint: string;
+    message: string;
+}
+
 
 const StatCardSkeleton = () => (
     <Card>
@@ -129,12 +143,14 @@ export function AdminDashboard() {
   const accountsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'accounts') : null, [firestore]);
   const advertisementsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'advertisements') : null, [firestore]);
   const applicationsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'advertiserApplications'), where('status', '==', 'pending')) : null, [firestore]);
+  const apiLogsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'api_logs'), orderBy('timestamp', 'desc')) : null, [firestore]);
   
   const { data: tenants, isLoading: tenantsLoading } = useCollection<Tenant>(tenantsQuery);
   const { data: transactions, isLoading: transactionsLoading } = useCollection<Transaction>(globalTransactionsQuery);
   const { data: users, isLoading: usersLoading } = useCollection<Account>(accountsQuery);
   const { data: advertisements, isLoading: advertisementsLoading } = useCollection<Advertisement>(advertisementsQuery);
   const { data: applications, isLoading: applicationsLoading } = useCollection<AdvertiserApplication>(applicationsQuery);
+  const { data: apiLogs, isLoading: apiLogsLoading } = useCollection<ApiLog>(apiLogsQuery);
 
   const totalVsdInCirculation = users?.reduce((acc, user) => acc + user.vsdBalance, 0) || 0;
 
@@ -246,6 +262,7 @@ export function AdminDashboard() {
                         <TabsTrigger value="tenants">Tenants</TabsTrigger>
                         <TabsTrigger value="advertisements">Advertisements</TabsTrigger>
                         <TabsTrigger value="applications">Advertiser Applications <Badge className="ml-2">{applications?.length || 0}</Badge></TabsTrigger>
+                        <TabsTrigger value="api_logs">API Access Log</TabsTrigger>
                         <TabsTrigger value="transactions">Global Activity</TabsTrigger>
                     </TabsList>
                     <div className="ml-auto flex items-center gap-2">
@@ -523,6 +540,53 @@ export function AdminDashboard() {
                                     ) : (
                                         <TableRow>
                                             <TableCell colSpan={5} className="h-24 text-center">No pending applications.</TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                           </Table>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+                <TabsContent value="api_logs">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>API Access Log</CardTitle>
+                            <CardDescription>
+                                A real-time log of all incoming requests to the VSD Network API endpoints.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                           <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead>Tenant</TableHead>
+                                        <TableHead>Message</TableHead>
+                                        <TableHead className="text-right">Timestamp</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {apiLogsLoading ? (
+                                        Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} cells={4} />)
+                                    ) : apiLogs && apiLogs.length > 0 ? (
+                                        apiLogs.map((log) => (
+                                            <TableRow key={log.id}>
+                                                <TableCell>
+                                                    <Badge variant={log.status === 'Success' ? 'default' : 'destructive'} className="gap-1">
+                                                        {log.status === 'Success' ? <ShieldCheck className="h-3 w-3" /> : <ShieldOff className="h-3 w-3" />}
+                                                        {log.status}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="font-medium">{log.tenantName || 'Unknown'}</TableCell>
+                                                <TableCell className="text-sm text-muted-foreground">{log.message}</TableCell>
+                                                <TableCell className="text-right text-xs text-muted-foreground">
+                                                    {format(new Date(log.timestamp), 'PPpp')}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={4} className="h-24 text-center">No API logs found.</TableCell>
                                         </TableRow>
                                     )}
                                 </TableBody>

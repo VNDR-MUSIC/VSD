@@ -133,6 +133,21 @@
             "submittedAt": { "type": "string", "format": "date-time", "description": "ISO timestamp of when the application was submitted." }
         },
         "required": ["userId", "userName", "userEmail", "companyName", "website", "status", "submittedAt"]
+    },
+    "ApiLog": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "API Access Log",
+      "type": "object",
+      "description": "Records an incoming request to a VSD Network API endpoint.",
+      "properties": {
+        "timestamp": { "type": "string", "format": "date-time", "description": "ISO timestamp of the request." },
+        "status": { "type": "string", "enum": ["Success", "Failure"], "description": "Whether the API key was validated successfully." },
+        "tenantId": { "type": "string", "description": "The ID of the tenant that made the request (if key was valid)." },
+        "tenantName": { "type": "string", "description": "The name of the tenant." },
+        "endpoint": { "type": "string", "description": "The API endpoint that was accessed." },
+        "message": { "type": "string", "description": "A summary of the request or error." }
+      },
+      "required": ["timestamp", "status", "endpoint", "message"]
     }
   },
   "auth": {
@@ -166,6 +181,10 @@
     "/advertiserApplications/{applicationId}": {
         "schema": { "$ref": "#/entities/AdvertiserApplication" },
         "description": "Stores applications from users wishing to become advertisers."
+    },
+    "/api_logs/{logId}": {
+      "schema": { "$ref": "#/entities/ApiLog" },
+      "description": "Stores a log of all incoming requests to protected VSD Network API endpoints for monitoring and debugging."
     }
   }
 }

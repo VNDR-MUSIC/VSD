@@ -4,21 +4,78 @@
 import { NextResponse } from 'next/server';
 import { logger } from 'firebase-functions';
 import { randomUUID } from 'crypto';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
 
-// This is a MOCK API endpoint.
-// In a real application, this would interact with a database (like Firestore)
-// and a smart contract or ledger system to process transactions.
-// For demonstration, it simulates a transaction and returns a mock response.
+// --- Initialize Firebase Admin SDK ---
+// This ensures we can securely write logs to Firestore from the server.
+const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
+  ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
+  : undefined;
+
+if (getApps().length === 0) {
+  initializeApp({
+    credential: serviceAccount ? cert(serviceAccount) : undefined,
+  });
+}
+const db = getFirestore();
+// --- End Firebase Admin SDK Initialization ---
+
+async function logApiRequest(logData: Omit<any, 'id' | 'timestamp'>) {
+    try {
+        const logEntry = {
+            ...logData,
+            timestamp: new Date().toISOString(),
+        };
+        // Use addDoc for auto-generated IDs. This is a non-blocking operation on the server.
+        await db.collection('api_logs').add(logEntry);
+    } catch (error) {
+        logger.error('API_LOGGING_FAILED: Could not write to api_logs collection.', {
+            error,
+            logData,
+        });
+    }
+}
 
 export async function POST(request: Request) {
   const authHeader = request.headers.get('authorization');
   const apiKey = authHeader?.split(' ')[1];
+  const requestUrl = new URL(request.url);
+  const endpoint = requestUrl.pathname;
 
-  if (!process.env.INTERNAL_API_KEY || apiKey !== process.env.INTERNAL_API_KEY) {
-    logger.warn('API_AUTH_FAIL: Invalid or missing API key.', { path: '/api/transactions' });
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!apiKey) {
+    await logApiRequest({
+        status: 'Failure',
+        endpoint,
+        message: 'Authentication error: Missing API key.',
+    });
+    return NextResponse.json({ error: 'Unauthorized: API key is required.' }, { status: 401 });
   }
 
+  // --- Find Tenant by API Key ---
+  // In a real app, this would be a single, efficient query.
+  const tenantsSnapshot = await db.collection('tenants').get();
+  const tenant = tenantsSnapshot.docs.find(doc => doc.data().apiKey === apiKey)?.data();
+
+  if (!tenant) {
+     await logApiRequest({
+        status: 'Failure',
+        endpoint,
+        message: 'Authentication error: Invalid API key provided.',
+    });
+    return NextResponse.json({ error: 'Unauthorized: Invalid API key.' }, { status: 401 });
+  }
+
+  // At this point, the key is valid. Log the successful authentication.
+  await logApiRequest({
+      status: 'Success',
+      tenantId: tenant.id,
+      tenantName: tenant.name,
+      endpoint,
+      message: `Request from ${tenant.name} to ${endpoint}`,
+  });
+  
+  // --- Original Transaction Logic ---
   try {
     const body = await request.json();
     const { fromAddress, toAddress, amount, description } = body;
@@ -38,20 +95,22 @@ export async function POST(request: Request) {
       amount,
       currency: 'VSD',
       description: description || 'VSD Transfer',
-      mock: true // Clearly indicate this is a mock response
+      mock: true
     };
 
-    logger.info('API_MOCK_TRANSACTION_SUCCESS: A mock transaction was processed.', { transaction: mockTransaction });
+    logger.info('API_MOCK_TRANSACTION_SUCCESS: A mock transaction was processed.', { transaction: mockTransaction, tenant: tenant.name });
 
-    return NextResponse.json(mockTransaction, { status: 201 }); // 201 Created
+    return NextResponse.json(mockTransaction, { status: 201 });
 
   } catch (error: any) {
     if (error instanceof SyntaxError) {
-        logger.warn('API_INVALID_JSON: Failed to parse request body.', { path: '/api/transactions' });
+        logger.warn('API_INVALID_JSON: Failed to parse request body.', { path: endpoint, tenant: tenant.name });
         return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 });
     }
 
-    logger.error('API_TRANSACTION_UNHANDLED_EXCEPTION: Unhandled error in /api/transactions endpoint.', {
+    logger.error('API_TRANSACTION_UNHANDLED_EXCEPTION: Unhandled error in endpoint.', {
+      path: endpoint,
+      tenant: tenant.name,
       errorMessage: error.message,
       errorStack: error.stack,
     });
