@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -6,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank, Loader2 } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank, Loader2, Search } from "lucide-react";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
@@ -47,6 +46,7 @@ export function DashboardClient() {
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
+  const [searchQuery, setSearchQuery] = React.useState('');
   
   const accountRef = useMemoFirebase(() => user && firestore ? doc(firestore, 'accounts', user.uid) : null, [firestore, user]);
   const transactionsRef = useMemoFirebase(() => user && firestore ? collection(firestore, 'accounts', user.uid, 'transactions') : null, [firestore, user]);
@@ -81,6 +81,19 @@ export function DashboardClient() {
         .map(([month, value]) => ({ month, value }))
         .sort((a, b) => new Date(a.month).getTime() - new Date(b.month).getTime());
   }, [transactions]);
+  
+  const filteredTransactions = React.useMemo(() => {
+    if (!transactions) return [];
+    if (!searchQuery) return transactions;
+
+    const lowercasedQuery = searchQuery.toLowerCase();
+    return transactions.filter(tx => 
+        (tx.description && tx.description.toLowerCase().includes(lowercasedQuery)) ||
+        (tx.from && tx.from.toLowerCase().includes(lowercasedQuery)) ||
+        (tx.to && tx.to.toLowerCase().includes(lowercasedQuery)) ||
+        tx.amount.toString().includes(lowercasedQuery)
+    );
+  }, [transactions, searchQuery]);
 
   if (isAuthLoading) {
     return (
@@ -195,8 +208,21 @@ export function DashboardClient() {
       </div>
 
       <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
-        <CardHeader>
-          <CardTitle>Recent Transactions</CardTitle>
+        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <CardTitle>Recent Transactions</CardTitle>
+            <CardDescription>Your latest account activity.</CardDescription>
+          </div>
+           <div className="relative w-full sm:max-w-xs">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                    type="search"
+                    placeholder="Search transactions..."
+                    className="w-full rounded-lg bg-background pl-8"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+            </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -218,8 +244,8 @@ export function DashboardClient() {
                         </TableCell>
                     </TableRow>
                 ))
-              ) : transactions && transactions.length > 0 ? (
-                transactions?.map((tx) => (
+              ) : filteredTransactions && filteredTransactions.length > 0 ? (
+                filteredTransactions?.map((tx) => (
                 <TableRow key={tx.id}>
                   <TableCell>
                     <div className={`flex items-center gap-2 ${tx.type === 'in' ? 'text-green-400' : 'text-red-400'}`}>
@@ -241,7 +267,7 @@ export function DashboardClient() {
               ))) : (
                  <TableRow>
                     <TableCell colSpan={5} className="text-center text-muted-foreground py-10">
-                        No transactions yet.
+                        {searchQuery ? 'No transactions match your search.' : 'No transactions yet.'}
                     </TableCell>
                 </TableRow>
               )}
