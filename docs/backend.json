@@ -1,6 +1,17 @@
 
 {
   "entities": {
+    "Admin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Admin",
+      "type": "object",
+      "description": "Represents an administrator user. The document ID is the user's UID.",
+      "properties": {
+        "uid": { "type": "string", "description": "The Firebase Authentication User ID of the admin." },
+        "addedAt": { "type": "string", "format": "date-time", "description": "ISO timestamp of when admin privileges were granted." }
+      },
+      "required": ["uid", "addedAt"]
+    },
     "Account": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Account",
@@ -128,6 +139,10 @@
     "providers": [ "google.com", "password" ]
   },
   "firestore": {
+     "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/Admin" },
+      "description": "Stores a list of admin UIDs for role-based access control."
+    },
     "/accounts/{accountId}": {
       "schema": { "$ref": "#/entities/Account" },
       "description": "Stores individual user account data, keyed by Firebase Auth UID."
@@ -154,5 +169,3 @@
     }
   }
 }
-
-    
