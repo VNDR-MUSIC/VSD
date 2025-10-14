@@ -8,7 +8,7 @@ import { Logo } from '@/components/icons/Logo';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-import { Menu, User, LogOut, ChevronDown, type LucideIcon, ShieldAlert, Share2, Disc, PiggyBank, Briefcase, GraduationCap, Group, Search, Route } from 'lucide-react';
+import { Menu, User, LogOut, ChevronDown, type LucideIcon, ShieldAlert, Share2, Disc, PiggyBank, Briefcase, GraduationCap, Group, Search, Route, Shield } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,12 +22,14 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
-import { useAuth, useUser } from '@/firebase';
+import { useAuth, useDoc, useFirestore, useUser, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import React from 'react';
 import { Skeleton } from '../ui/skeleton';
+import { doc } from 'firebase/firestore';
+import type { Account } from '@/types/account';
 
 const NavLink = ({ href, children, currentPathname }: { href: string, children: React.ReactNode, currentPathname: string }) => (
     <Link
@@ -55,8 +57,12 @@ const MobileNavLink = ({ href, children, onSelect }: { href: string, children: R
 const UserNav = () => {
     const { user } = useUser();
     const auth = useAuth();
+    const firestore = useFirestore();
     const router = useRouter();
     const { toast } = useToast();
+
+    const accountDocRef = useMemoFirebase(() => (user && firestore ? doc(firestore, 'accounts', user.uid) : null), [user, firestore]);
+    const { data: account } = useDoc<Account>(accountDocRef);
 
     const handleSignOut = async () => {
         await signOut(auth);
@@ -65,6 +71,8 @@ const UserNav = () => {
     };
 
     if (!user) return null;
+
+    const isDesignatedAdmin = user.email === 'support@vndrmusic.com';
 
     return (
         <DropdownMenu>
@@ -95,6 +103,14 @@ const UserNav = () => {
                             </Link>
                         </DropdownMenuItem>
                     ))}
+                    {(account?.isAdmin || isDesignatedAdmin) && (
+                        <DropdownMenuItem asChild>
+                           <Link href="/admin">
+                               <Shield className="mr-2 h-4 w-4" />
+                               <span>Admin</span>
+                            </Link>
+                        </DropdownMenuItem>
+                    )}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
@@ -322,3 +338,5 @@ export function Header() {
     </header>
   );
 }
+
+  
