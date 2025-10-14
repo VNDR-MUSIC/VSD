@@ -51,13 +51,11 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import type { Metadata } from 'next';
 import { useAuth, useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { collection, doc, setDoc } from 'firebase/firestore';
 import type { WithId } from '@/firebase';
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { doc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 interface Account {
   uid: string;
@@ -113,15 +111,12 @@ export default function AdminDashboardPage() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
 
-  // Public queries - can run for any user (authenticated or not)
   const tenantsQuery = useMemoFirebase(() => collection(firestore, 'tenants'), [firestore]);
   const globalTransactionsQuery = useMemoFirebase(() => collection(firestore, 'transactions'), [firestore]);
+  const accountsQuery = useMemoFirebase(() => user ? collection(firestore, 'accounts') : null, [firestore, user]);
   
   const { data: tenants, isLoading: tenantsLoading } = useCollection<Tenant>(tenantsQuery);
   const { data: transactions, isLoading: transactionsLoading } = useCollection<Transaction>(globalTransactionsQuery);
-
-  // Authenticated query - only run if a user is logged in
-  const accountsQuery = useMemoFirebase(() => user ? collection(firestore, 'accounts') : null, [firestore, user]);
   const { data: users, isLoading: usersLoading } = useCollection<Account>(accountsQuery);
 
   const totalVsdInCirculation = users?.reduce((acc, user) => acc + user.vsdBalance, 0) || 0;
@@ -146,7 +141,7 @@ export default function AdminDashboardPage() {
             </div>
             
             <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-              {usersLoading ? <StatCardSkeleton /> : (
+              {(isUserLoading || usersLoading) ? <StatCardSkeleton /> : (
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">VSD in Circulation</CardTitle>
