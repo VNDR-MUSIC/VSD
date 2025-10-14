@@ -112,6 +112,21 @@ h1, h2, h3, h4, h5, h6, .font-headline {
   body {
     @apply bg-background text-foreground;
   }
+  .embla {
+    overflow: hidden;
+  }
+  .embla__container {
+    display: flex;
+  }
+  .embla__slide {
+    flex: 0 0 100%;
+    min-width: 0;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+  .embla__slide.is-active {
+    opacity: 1;
+  }
 }
 
 @layer utilities {
@@ -180,5 +195,3 @@ h1, h2, h3, h4, h5, h6, .font-headline {
     @apply transform scale-[1.03] shadow-lg shadow-primary/30 brightness-110;
   }
 }
-
-    
