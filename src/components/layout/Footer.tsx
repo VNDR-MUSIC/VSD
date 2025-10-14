@@ -49,8 +49,14 @@ export function Footer() {
           {/* Partner Link */}
           <div className="flex flex-col items-start gap-2 col-span-2 md:col-span-1 p-4 rounded-lg footer-menu-background">
              <h4 className="font-bold mb-2">An IMG Company</h4>
-             <Link href="https://indiemedia.llc" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition-opacity">
-               <span className="font-headline text-lg">Independent Media Group</span>
+             <Link href="https://indiemedia.llc" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition-opacity w-32">
+                 <Image
+                    src="https://i.ibb.co/v64ZGh4/logo-full-256x.png"
+                    alt="Independent Media Group Logo"
+                    width={128}
+                    height={128}
+                    className="object-contain"
+                />
             </Link>
           </div>
         </div>
