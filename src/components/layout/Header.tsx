@@ -146,6 +146,7 @@ const UserNav = () => {
 export function Header() {
   const pathname = usePathname();
   const [isSheetOpen, setSheetOpen] = React.useState(false);
+  const isAdminOrAdvertiserPage = pathname.startsWith('/admin') || pathname.startsWith('/advertiser');
 
 
   const navItems = siteConfig.mainNav.map((item) => {
@@ -290,18 +291,36 @@ export function Header() {
       </NavLink>
     );
   });
+  
+  const headerBaseClasses = "sticky top-0 z-50 w-full border-b";
+  const publicHeaderClasses = "border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60";
+  const adminHeaderClasses = "bg-background";
+
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className={cn(headerBaseClasses, isAdminOrAdvertiserPage ? adminHeaderClasses : publicHeaderClasses)}>
       <div className="container flex h-16 max-w-screen-2xl items-center">
-        <Link href="/" className="flex items-center space-x-2 mr-auto">
-          <Logo size={36} />
-        </Link>
+        <div className={cn("mr-auto", isAdminOrAdvertiserPage && "hidden")}>
+             <Link href="/" className="flex items-center space-x-2">
+                <Logo size={36} />
+            </Link>
+        </div>
+
+        <nav className={cn("hidden md:flex items-center space-x-2 mr-auto", !isAdminOrAdvertiserPage && "hidden")}>
+             <Link href="/" className="flex items-center gap-2 mr-6">
+                    <Logo size={32} />
+                    <span className="font-bold hidden sm:inline-block">VSD Network</span>
+                </Link>
+        </nav>
         
-        <div className="flex items-center gap-2">
+        <nav className={cn("hidden md:flex items-center space-x-1", isAdminOrAdvertiserPage && "hidden")}>
+            {navItems}
+        </nav>
+
+        <div className="flex items-center gap-2" style={{ marginLeft: isAdminOrAdvertiserPage ? 'auto' : '' }}>
            <UserNav />
 
-            <div>
+            <div className={cn(isAdminOrAdvertiserPage && "hidden")}>
               <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon">

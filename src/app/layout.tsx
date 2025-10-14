@@ -30,14 +30,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const isAdminPage = pathname.startsWith('/admin');
+  const isAdminOrAdvertiserPage = pathname.startsWith('/admin') || pathname.startsWith('/advertiser');
 
-  if (isAdminPage) {
+  if (isAdminOrAdvertiserPage) {
      return (
         <html lang="en" className={cn("dark", fontHeadline.variable, fontBody.variable)}>
-          <FirebaseClientProvider>
-            <body>{children}</body>
-          </FirebaseClientProvider>
+          <body className="font-body antialiased min-h-screen flex flex-col relative bg-muted/40">
+            <FirebaseClientProvider>
+                <Header />
+                <div className="flex-grow container mx-auto px-4 py-8">
+                    {children}
+                </div>
+                <Toaster />
+            </FirebaseClientProvider>
+          </body>
         </html>
     );
   }

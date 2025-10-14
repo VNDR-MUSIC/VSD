@@ -54,10 +54,9 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
-import { collection, doc, increment } from 'firebase/firestore';
+import { useCollection, useFirestore, useUser, useMemoFirebase, updateDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase';
+import { collection, doc, increment, query, where } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
-import { setDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import type { Account } from '@/types/account';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -139,7 +138,7 @@ export function AdminDashboard() {
   const globalTransactionsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'transactions') : null, [firestore, user, isAuthLoading]);
   const accountsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'accounts') : null, [firestore, user, isAuthLoading]);
   const advertisementsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'advertisements') : null, [firestore, user, isAuthLoading]);
-  const applicationsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'advertiserApplications') : null, [firestore, user, isAuthLoading]);
+  const applicationsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? query(collection(firestore, 'advertiserApplications'), where('status', '==', 'pending')) : null, [firestore, user, isAuthLoading]);
   
   const { data: tenants, isLoading: tenantsLoading } = useCollection<Tenant>(tenantsQuery);
   const { data: transactions, isLoading: transactionsLoading } = useCollection<Transaction>(globalTransactionsQuery);
@@ -162,7 +161,6 @@ export function AdminDashboard() {
 
   return (
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
-        <AdminHeader />
         <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center justify-between">
               <div>
@@ -236,7 +234,7 @@ export function AdminDashboard() {
                         <TabsTrigger value="users">Users</TabsTrigger>
                         <TabsTrigger value="tenants">Tenants</TabsTrigger>
                         <TabsTrigger value="advertisements">Advertisements</TabsTrigger>
-                        <TabsTrigger value="applications">Advertiser Applications</TabsTrigger>
+                        <TabsTrigger value="applications">Advertiser Applications <Badge className="ml-2">{applications?.length || 0}</Badge></TabsTrigger>
                         <TabsTrigger value="transactions">Global Activity</TabsTrigger>
                     </TabsList>
                     <div className="ml-auto flex items-center gap-2">
@@ -775,84 +773,3 @@ function AddTenantDialog() {
     </Dialog>
   );
 }
-
-
-function AdminHeader() {
-    const { user, isUserLoading } = useUser();
-    const pathname = usePathname();
-
-    const navItems = [
-        { href: "/admin", label: "Dashboard", icon: Home },
-    ];
-
-    return (
-        <header className="sticky top-0 z-40 w-full border-b bg-background">
-            <div className="container flex h-16 items-center px-4 sm:px-6">
-                <Link href="/" className="flex items-center gap-2 mr-6">
-                    <Logo size={32} />
-                    <span className="font-bold hidden sm:inline-block">VSD Admin</span>
-                </Link>
-                <nav className="hidden md:flex items-center space-x-1" aria-label="Main navigation">
-                    <ul className="flex items-center space-x-4 lg:space-x-6">
-                        {navItems.map(item => (
-                            <li key={item.href}>
-                                <Link 
-                                    href={item.href}
-                                    className={cn(
-                                        "text-sm font-medium transition-colors hover:text-primary",
-                                        pathname === item.href ? "text-primary" : "text-muted-foreground"
-                                    )}
-                                >
-                                    {item.label}
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
-                </nav>
-                <div className="ml-auto flex items-center gap-4">
-                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                               {isUserLoading ? (
-                                <Skeleton className="h-8 w-8 rounded-full" />
-                               ) : user ? (
-                                    <Avatar className="h-8 w-8">
-                                        <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'Admin'} />
-                                        <AvatarFallback>{user.displayName?.charAt(0) ?? 'A'}</AvatarFallback>
-                                    </Avatar>
-                               ) : (
-                                 <Avatar className="h-8 w-8">
-                                     <AvatarFallback>A</AvatarFallback>
-                                 </Avatar>
-                               )}
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-56" align="end">
-                           {user ? (
-                            <>
-                                <DropdownMenuLabel>
-                                    <div className="flex flex-col space-y-1">
-                                        <p className="text-sm font-medium leading-none">{user.displayName}</p>
-                                        <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-                                    </div>
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>Settings</DropdownMenuItem>
-                                <DropdownMenuItem>Support</DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>Logout</DropdownMenuItem>
-                            </>
-                           ) : (
-                             <DropdownMenuItem asChild>
-                                <Link href="/login">Login</Link>
-                             </DropdownMenuItem>
-                           )}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            </div>
-        </header>
-    );
-}
-
-    
