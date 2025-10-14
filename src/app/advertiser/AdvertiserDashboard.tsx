@@ -128,7 +128,7 @@ export function AdvertiserDashboard() {
                         <Wallet className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                         <div className="text-2xl font-bold">1,500,000</div>
+                         <div className="text-2xl font-bold">1,500,000 <span className="text-base text-yellow-400">VSD Lite</span></div>
                         <p className="text-xs text-muted-foreground">Mock balance for campaign rewards</p>
                     </CardContent>
                 </Card>

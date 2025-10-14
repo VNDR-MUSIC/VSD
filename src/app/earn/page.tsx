@@ -11,11 +11,10 @@ import { useToast } from "@/hooks/use-toast";
 import { siteConfig } from '@/config/site';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCollection, useFirestore, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
-import { collection, doc, increment } from 'firebase/firestore';
+import { useCollection, useDoc, useFirestore, useMemoFirebase, updateDocumentNonBlocking, useUser } from '@/firebase';
+import { collection, doc, increment, runTransaction } from 'firebase/firestore';
+import type { Account } from '@/types/account';
 
-const MOCK_LITE_BALANCE = 575.50;
-const MOCK_VSD_BALANCE = 12845.78;
 const { CONVERSION_RATE } = siteConfig.tokenValues;
 
 interface Advertisement {
@@ -82,10 +81,12 @@ const VideoTaskCard = ({ task, onComplete, completedTasks }: { task: Advertiseme
 export default function EarnPage() {
   const { isLoading: isAuthLoading } = useProtectedRoute();
   const { toast } = useToast();
+  const { user } = useUser();
   const firestore = useFirestore();
 
-  const [liteBalance, setLiteBalance] = useState(MOCK_LITE_BALANCE);
-  const [vsdBalance, setVsdBalance] = useState(MOCK_VSD_BALANCE);
+  const accountRef = useMemoFirebase(() => user && firestore ? doc(firestore, 'accounts', user.uid) : null, [firestore, user]);
+  const { data: account, isLoading: isAccountLoading } = useDoc<Account>(accountRef);
+
   const [liteToVsdAmount, setLiteToVsdAmount] = useState('');
   const [vsdToLiteAmount, setVsdToLiteAmount] = useState('');
   const [isConvertingLite, setIsConvertingLite] = useState(false);
@@ -96,6 +97,7 @@ export default function EarnPage() {
   const { data: advertisements, isLoading: isAdsLoading } = useCollection<Advertisement>(adsQuery);
 
   const handleTaskComplete = (task: Advertisement) => {
+    if (!firestore || !user) return;
     if (completedTasks.includes(task.id)) {
       toast({
         variant: "destructive",
@@ -105,22 +107,19 @@ export default function EarnPage() {
       return;
     }
     
-    // Optimistically update UI
-    setLiteBalance(prev => prev + task.reward);
-    setCompletedTasks(prev => [...prev, task.id]);
+    // Non-blocking UI update for clicks
+    const adRef = doc(firestore, 'advertisements', task.id);
+    updateDocumentNonBlocking(adRef, { clicks: increment(1) });
+    
+    // Blocking transaction for balance update
+    const userAccountRef = doc(firestore, 'accounts', user.uid);
+    updateDocumentNonBlocking(userAccountRef, { vsdLiteBalance: increment(task.reward) });
 
+    setCompletedTasks(prev => [...prev, task.id]);
     toast({
       title: "Task Complete!",
       description: `You've earned ${task.reward} VSD Lite tokens!`,
     });
-    
-    // Update click count in Firestore non-blockingly
-    if (firestore) {
-        const adRef = doc(firestore, 'advertisements', task.id);
-        updateDocumentNonBlocking(adRef, {
-            clicks: increment(1)
-        });
-    }
     
     if (task.type === 'url') {
         window.open(task.url, '_blank');
@@ -129,59 +128,77 @@ export default function EarnPage() {
 
   const handleLiteToVsdConversion = async () => {
     const amount = parseFloat(liteToVsdAmount);
+    if (!firestore || !accountRef) return;
+
     if (isNaN(amount) || amount <= 0) {
       toast({ variant: 'destructive', title: 'Invalid Amount', description: 'Please enter a positive number.' });
       return;
     }
-    if (amount > liteBalance) {
+    if (amount > (account?.vsdLiteBalance ?? 0)) {
       toast({ variant: 'destructive', title: 'Insufficient Balance', description: 'You cannot convert more VSD Lite than you have.' });
       return;
     }
 
     setIsConvertingLite(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    const vsdReceived = amount / CONVERSION_RATE;
-    setLiteBalance(prev => prev - amount);
-    setVsdBalance(prev => prev + vsdReceived);
-    setLiteToVsdAmount('');
-
-    toast({
-      title: "Conversion Successful",
-      description: `You converted ${amount.toLocaleString()} VSD Lite to ${vsdReceived.toLocaleString()} VSD.`,
-    });
-    setIsConvertingLite(false);
+    
+    try {
+      await runTransaction(firestore, async (transaction) => {
+        const vsdReceived = amount / CONVERSION_RATE;
+        transaction.update(accountRef, {
+            vsdLiteBalance: increment(-amount),
+            vsdBalance: increment(vsdReceived),
+        });
+      });
+      setLiteToVsdAmount('');
+      toast({
+        title: "Conversion Successful",
+        description: `You converted ${amount.toLocaleString()} VSD Lite to ${vsdReceived.toLocaleString()} VSD.`,
+      });
+    } catch (e) {
+       toast({ variant: 'destructive', title: 'Conversion Failed', description: 'An error occurred during the conversion.' });
+    } finally {
+        setIsConvertingLite(false);
+    }
   };
   
   const handleVsdToLiteConversion = async () => {
     const amount = parseFloat(vsdToLiteAmount);
+    if (!firestore || !accountRef) return;
+    
     if (isNaN(amount) || amount <= 0) {
         toast({ variant: 'destructive', title: 'Invalid Amount', description: 'Please enter a positive number.' });
         return;
     }
-    if (amount > vsdBalance) {
+    if (amount > (account?.vsdBalance ?? 0)) {
         toast({ variant: 'destructive', title: 'Insufficient Balance', description: 'You do not have enough VSD to convert.' });
         return;
     }
 
     setIsConvertingVsd(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    const liteReceived = amount * CONVERSION_RATE;
-    setVsdBalance(prev => prev - amount);
-    setLiteBalance(prev => prev + liteReceived);
-    setVsdToLiteAmount('');
-
-    toast({
-      title: "Exchange Successful",
-      description: `You exchanged ${amount.toLocaleString()} VSD for ${liteReceived.toLocaleString()} VSD Lite.`,
-    });
-    setIsConvertingVsd(false);
+    
+    try {
+        await runTransaction(firestore, async (transaction) => {
+            const liteReceived = amount * CONVERSION_RATE;
+            transaction.update(accountRef, {
+                vsdBalance: increment(-amount),
+                vsdLiteBalance: increment(liteReceived)
+            });
+        });
+        setVsdToLiteAmount('');
+        toast({
+            title: "Exchange Successful",
+            description: `You exchanged ${amount.toLocaleString()} VSD for ${(amount * CONVERSION_RATE).toLocaleString()} VSD Lite.`,
+        });
+    } catch (e) {
+         toast({ variant: 'destructive', title: 'Exchange Failed', description: 'An error occurred during the exchange.' });
+    } finally {
+        setIsConvertingVsd(false);
+    }
   };
   
   const activeAds = advertisements?.filter(ad => ad.status === 'Active');
   
-  if (isAuthLoading) {
+  if (isAuthLoading || isAccountLoading) {
     return (
        <div className="space-y-12 py-8">
         <header className="text-center">
@@ -221,11 +238,11 @@ export default function EarnPage() {
           <CardContent className="space-y-4">
              <div className="flex justify-between items-center p-4 rounded-md bg-muted/50">
                 <span className="text-muted-foreground">VSD Lite Balance</span>
-                <span className="font-bold text-2xl text-yellow-400">{liteBalance.toFixed(2)}</span>
+                <span className="font-bold text-2xl text-yellow-400">{(account?.vsdLiteBalance ?? 0).toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center p-4 rounded-md bg-muted/50">
                 <span className="text-muted-foreground">Main VSD Balance</span>
-                <span className="font-bold text-2xl text-primary">{vsdBalance.toLocaleString()}</span>
+                <span className="font-bold text-2xl text-primary">{(account?.vsdBalance ?? 0).toLocaleString()}</span>
             </div>
           </CardContent>
         </Card>
@@ -241,7 +258,7 @@ export default function EarnPage() {
                 <Input
                     id="lite-convert-amount"
                     type="number"
-                    placeholder={`Max: ${liteBalance.toFixed(2)}`}
+                    placeholder={`Max: ${(account?.vsdLiteBalance ?? 0).toFixed(2)}`}
                     value={liteToVsdAmount}
                     onChange={(e) => setLiteToVsdAmount(e.target.value)}
                     className="mt-1"
@@ -267,7 +284,7 @@ export default function EarnPage() {
                 <Input
                     id="vsd-convert-amount"
                     type="number"
-                    placeholder={`Max: ${vsdBalance.toLocaleString()}`}
+                    placeholder={`Max: ${(account?.vsdBalance ?? 0).toLocaleString()}`}
                     value={vsdToLiteAmount}
                     onChange={(e) => setVsdToLiteAmount(e.target.value)}
                     className="mt-1"

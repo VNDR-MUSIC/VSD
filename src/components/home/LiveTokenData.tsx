@@ -12,6 +12,7 @@ import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { collection } from "firebase/firestore";
 import { Skeleton } from "../ui/skeleton";
 import { useBlockchainData } from "@/hooks/use-blockchain-data";
+import type { Account } from "@/types/account";
 
 const tokenData = {
   contractAddress: "0xA37CDC5CE42333A4F57776A4cD93f434E59AB243",
@@ -31,8 +32,15 @@ const DataCard = ({ icon: Icon, title, value, isLoading }: { icon: React.Element
 export function LiveTokenData() {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
+  const firestore = useFirestore();
 
   const { data: blockchainData, isLoading: isLoadingBlockchain, error: blockchainError } = useBlockchainData();
+  const { data: accounts, isLoading: isLoadingAccounts } = useCollection<Account>(
+    useMemoFirebase(() => firestore ? collection(firestore, 'accounts') : null, [firestore])
+  );
+  const { data: transactions, isLoading: isLoadingTransactions } = useCollection(
+    useMemoFirebase(() => firestore ? collection(firestore, 'transactions') : null, [firestore])
+  );
 
   const handleCopy = () => {
     navigator.clipboard.writeText(tokenData.contractAddress);
@@ -70,14 +78,14 @@ export function LiveTokenData() {
             <DataCard 
               icon={Users} 
               title="Holder Wallets" 
-              value={"--"} // This data requires a more complex backend or third-party service.
-              isLoading={false} 
+              value={accounts?.length ?? '--'}
+              isLoading={isLoadingAccounts} 
             />
             <DataCard 
               icon={ArrowRightLeft} 
               title="Total Transfers" 
-              value={"--"} // Displaying a placeholder as fetching all transactions is not feasible on the client for unauth users.
-              isLoading={false} 
+              value={transactions?.length ?? '--'}
+              isLoading={isLoadingTransactions}
             />
             <DataCard 
               icon={FileCode} 

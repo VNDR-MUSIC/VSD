@@ -41,6 +41,7 @@ export function LoginClient() {
             photoURL: user.photoURL || '',
             walletAddress: `0x${user.uid.slice(0,10)}...`, // Placeholder
             vsdBalance: 0,
+            vsdLiteBalance: 0,
             status: 'Active',
             joined: new Date().toISOString(),
             roles: ['user'], // Default role

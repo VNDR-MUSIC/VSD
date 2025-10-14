@@ -6,6 +6,7 @@ export interface Account {
   photoURL?: string;
   walletAddress: string;
   vsdBalance: number;
+  vsdLiteBalance: number;
   status: 'Active' | 'Suspended';
   joined: string;
   roles: ('admin' | 'advertiser' | 'user')[];

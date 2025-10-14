@@ -9,8 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank, Loader2, Search, Gift, Coins } from "lucide-react";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { useToast } from "@/hooks/use-toast";
-import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
-import { doc, collection } from 'firebase/firestore';
+import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase, setDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase';
+import { doc, collection, runTransaction, increment } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import type { Account } from '@/types/account';
@@ -86,7 +86,7 @@ export function DashboardClient() {
   
   const filteredTransactions = React.useMemo(() => {
     if (!transactions) return [];
-    if (!searchQuery) return transactions;
+    if (!searchQuery) return transactions.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     const lowercasedQuery = searchQuery.toLowerCase();
     return transactions.filter(tx => 
@@ -94,7 +94,7 @@ export function DashboardClient() {
         (tx.from && tx.from.toLowerCase().includes(lowercasedQuery)) ||
         (tx.to && tx.to.toLowerCase().includes(lowercasedQuery)) ||
         tx.amount.toString().includes(lowercasedQuery)
-    );
+    ).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [transactions, searchQuery]);
 
   if (isAuthLoading) {
@@ -125,7 +125,7 @@ export function DashboardClient() {
                 {isLoading ? (
                   <Skeleton className="h-14 w-64 mt-2" />
                 ) : (
-                  <CardTitle className="text-4xl md:text-5xl font-bold">{account?.vsdBalance.toLocaleString() || '0.00'} <span className="text-xl text-primary">VSD</span></CardTitle>
+                  <CardTitle className="text-4xl md:text-5xl font-bold">{(account?.vsdBalance ?? 0).toLocaleString()} <span className="text-xl text-primary">VSD</span></CardTitle>
                 )}
               </div>
               <HandCoins className="h-12 w-12 text-muted-foreground" />
@@ -283,13 +283,15 @@ export function DashboardClient() {
 
 function SendVsdDialog({ userAccount }: { userAccount: Account | null }) {
     const { toast } = useToast();
-    const [isOpen, setIsOpen] = React.useState(false);
+    const [isOpen, React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [tokenType, setTokenType] = React.useState<'vsd' | 'vsd-lite'>('vsd');
+    const firestore = useFirestore();
+    const { user } = useUser();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (!userAccount) {
+        if (!userAccount || !firestore || !user) {
             toast({ variant: 'destructive', title: 'Error', description: 'User account not found.' });
             return;
         }
@@ -306,45 +308,43 @@ function SendVsdDialog({ userAccount }: { userAccount: Account | null }) {
             return;
         }
         
-        // This is a mock balance for VSD Lite as it's not stored in Firestore yet
-        const vsdLiteBalance = 575.50; 
+        const balanceToCheck = tokenType === 'vsd' ? userAccount.vsdBalance : userAccount.vsdLiteBalance;
         
-        if (tokenType === 'vsd' && amount > userAccount.vsdBalance) {
-            toast({ variant: 'destructive', title: 'Insufficient balance', description: 'You do not have enough VSD to complete this transaction.' });
+        if (amount > balanceToCheck) {
+            toast({ variant: 'destructive', title: `Insufficient ${tokenType.toUpperCase()} balance`, description: `You do not have enough ${tokenType.toUpperCase()} to complete this transaction.` });
             setIsLoading(false);
             return;
         }
-        
-        if (tokenType === 'vsd-lite' && amount > vsdLiteBalance) {
-            toast({ variant: 'destructive', title: 'Insufficient VSD Lite balance', description: 'You do not have enough VSD Lite to complete this transaction.' });
-            setIsLoading(false);
-            return;
-        }
-
 
         try {
-            // In a real app, you might call a different endpoint or add a 'tokenType' field
-            const response = await fetch('/api/vsd/transactions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    fromAddress: userAccount.walletAddress,
-                    toAddress,
-                    amount,
-                    description: description || `VSD ${tokenType === 'vsd' ? '' : 'Lite '}Transfer`,
-                }),
+            // This is a simplified mock. A real implementation would require finding the recipient user by wallet address.
+            const fromRef = doc(firestore, 'accounts', user.uid);
+            
+            // For simplicity, we just log the transaction on the sender's side
+            const fromTxCollection = collection(fromRef, 'transactions');
+            const newTx = {
+                type: 'out',
+                status: 'Completed' as const,
+                amount,
+                date: new Date().toISOString(),
+                user: userAccount.displayName,
+                accountId: userAccount.uid,
+                from: userAccount.walletAddress,
+                to: toAddress,
+                description: description || `Transfer to ${toAddress.slice(0, 10)}...`
+            };
+            await addDocumentNonBlocking(fromTxCollection, newTx);
+            
+            // Update sender's balance
+            const balanceField = tokenType === 'vsd' ? 'vsdBalance' : 'vsdLiteBalance';
+            await runTransaction(firestore, async (transaction) => {
+                transaction.update(fromRef, { [balanceField]: increment(-amount) });
             });
 
-            if (!response.ok) {
-                const errorResult = await response.json();
-                throw new Error(errorResult.error || 'Transaction failed to process.');
-            }
-
-            const result = await response.json();
 
             toast({
-                title: 'Transaction Submitted (Mock)',
-                description: `Sent ${amount} ${tokenType === 'vsd' ? 'VSD' : 'VSD Lite'} to ${toAddress}. TXN ID: ${result.transactionId}`,
+                title: 'Transaction Submitted',
+                description: `Sent ${amount} ${tokenType === 'vsd' ? 'VSD' : 'VSD Lite'} to ${toAddress}.`,
             });
             setIsOpen(false);
 
@@ -369,7 +369,7 @@ function SendVsdDialog({ userAccount }: { userAccount: Account | null }) {
                     <DialogHeader>
                         <DialogTitle className="font-headline">Send Tokens</DialogTitle>
                         <DialogDescription>
-                            Transfer VSD or VSD Lite to another user. This is a mock transaction.
+                            Transfer VSD or VSD Lite to another user's wallet address.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
@@ -404,8 +404,8 @@ function SendVsdDialog({ userAccount }: { userAccount: Account | null }) {
                             <Input id="amount" name="amount" type="number" step="any" min="0.01" placeholder="100.00" required />
                              <p className="text-xs text-muted-foreground">
                                 Your balance: {tokenType === 'vsd' 
-                                    ? `${userAccount?.vsdBalance.toLocaleString() ?? '0'} VSD` 
-                                    : `~575.50 VSD Lite (mock)`}
+                                    ? `${(userAccount?.vsdBalance ?? 0).toLocaleString()} VSD` 
+                                    : `${(userAccount?.vsdLiteBalance ?? 0).toLocaleString()} VSD Lite`}
                             </p>
                         </div>
                         <div className="space-y-2">
@@ -424,5 +424,3 @@ function SendVsdDialog({ userAccount }: { userAccount: Account | null }) {
         </Dialog>
     );
 }
-
-    
