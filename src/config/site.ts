@@ -4,7 +4,7 @@ import { LayoutDashboard, BrainCircuit, Network, Code, Briefcase, HelpCircle, Fi
 
 export const siteConfig = {
   name: "VSD Network",
-  description: "The official utility token and AI service hub for the Independent Music Group (IMG). Access exclusive AI tools (IMG Services), stake VSD for rewards, and participate in governance.",
+  description: "The official utility token and AI service hub for the Independent Media Group (IMG). Access exclusive AI tools (IMG Services), stake VSD for rewards, and participate in governance.",
   tokenValues: {
     CONVERSION_RATE: 100, // 100 VSD Lite = 1 VSD. Centralizing this value.
   },
