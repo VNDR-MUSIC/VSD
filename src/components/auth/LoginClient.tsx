@@ -30,7 +30,7 @@ export function LoginClient() {
     const user = userCredential.user;
     const isNewUser = userCredential.metadata.creationTime === userCredential.metadata.lastSignInTime;
 
-    if (isNewUser) {
+    if (isNewUser && firestore) {
         console.log("New user detected, creating account document...");
         const accountDoc: Account = {
             uid: user.uid,
@@ -52,6 +52,8 @@ export function LoginClient() {
       description: 'You have successfully signed in.',
     });
     router.push('/dashboard');
+    setIsLoading(false);
+    setGoogleLoading(false);
   };
 
   const handleAuthError = (error: any, action: 'Sign-in' | 'Sign-up') => {
@@ -61,39 +63,36 @@ export function LoginClient() {
       title: `${action} Failed`,
       description: error.message || `An unknown error occurred during ${action.toLowerCase()}.`,
     });
+    setIsLoading(false);
+    setGoogleLoading(false);
   };
 
   const handleEmailPasswordSubmit = async (event: React.FormEvent<HTMLFormElement>, action: 'signin' | 'signup') => {
     event.preventDefault();
+    if (!auth) return;
     setIsLoading(true);
     const formData = new FormData(event.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    try {
-        if (action === 'signup') {
-            initiateEmailSignUp(auth, email, password, handleAuthSuccess, (err) => handleAuthError(err, 'Sign-up'));
-        } else {
-            initiateEmailSignIn(auth, email, password, handleAuthSuccess, (err) => handleAuthError(err, 'Sign-in'));
-        }
-    } catch (error: any) {
-        handleAuthError(error, action === 'signup' ? 'Sign-up' : 'Sign-in');
-    } finally {
-        // isLoading will be reset by the callback in a real scenario
-        // but for now, we'll let it be. The user will be redirected on success.
+    if (action === 'signup') {
+        initiateEmailSignUp(auth, email, password, handleAuthSuccess, (err) => handleAuthError(err, 'Sign-up'));
+    } else {
+        initiateEmailSignIn(auth, email, password, handleAuthSuccess, (err) => handleAuthError(err, 'Sign-in'));
     }
   };
 
   const handleGoogleSignIn = async () => {
+    if (!auth) return;
     setGoogleLoading(true);
     const provider = new GoogleAuthProvider();
     try {
+      // We still use await here because it's a direct user interaction
+      // The non-blocking helpers are more for background-style tasks.
       const userCredential = await signInWithPopup(auth, provider);
       handleAuthSuccess(userCredential);
     } catch (error: any) {
       handleAuthError(error, 'Sign-in');
-    } finally {
-      setGoogleLoading(false);
     }
   };
 
@@ -124,7 +123,7 @@ export function LoginClient() {
               </CardContent>
               <CardFooter className="flex-col gap-4">
                 <Button type="submit" disabled={isLoading || isGoogleLoading} className="w-full">
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isLoading && !isGoogleLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Sign In
                 </Button>
                 <Separator className="my-2" />
@@ -156,7 +155,7 @@ export function LoginClient() {
               </CardContent>
               <CardFooter className="flex-col gap-4">
                 <Button type="submit" disabled={isLoading || isGoogleLoading} className="w-full">
-                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                   {isLoading && !isGoogleLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Create Account
                 </Button>
                  <Separator className="my-2" />
