@@ -111,15 +111,22 @@ export default function AdminDashboardPage() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
 
+  // Public collections - can be fetched by anyone
   const tenantsQuery = useMemoFirebase(() => collection(firestore, 'tenants'), [firestore]);
   const globalTransactionsQuery = useMemoFirebase(() => collection(firestore, 'transactions'), [firestore]);
+
+  // Private collection - only fetch if user is logged in
   const accountsQuery = useMemoFirebase(() => user ? collection(firestore, 'accounts') : null, [firestore, user]);
   
   const { data: tenants, isLoading: tenantsLoading } = useCollection<Tenant>(tenantsQuery);
   const { data: transactions, isLoading: transactionsLoading } = useCollection<Transaction>(globalTransactionsQuery);
+  
+  // Pass the conditional query to useCollection
   const { data: users, isLoading: usersLoading } = useCollection<Account>(accountsQuery);
 
   const totalVsdInCirculation = users?.reduce((acc, user) => acc + user.vsdBalance, 0) || 0;
+
+  const areUsersReady = !isUserLoading && !usersLoading;
 
   return (
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -229,14 +236,16 @@ export default function AdminDashboardPage() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {isUserLoading || usersLoading ? (
+                          {isUserLoading ? (
                             Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} cells={6} />)
                           ) : !user ? (
                              <TableRow>
-                                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                                <TableCell colSpan={6} className="text-center text-muted-foreground py-10">
                                     Please log in to view user data.
                                 </TableCell>
                             </TableRow>
+                          ) : usersLoading ? (
+                             Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} cells={6} />)
                           ) : (
                             users?.map((userAccount) => (
                             <TableRow key={userAccount.uid}>
@@ -558,3 +567,5 @@ function AdminHeader() {
         </header>
     );
 }
+
+    

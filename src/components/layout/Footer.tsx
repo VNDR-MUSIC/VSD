@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { siteConfig } from '@/config/site';
 import { Separator } from '@/components/ui/separator';
 import { Logo } from '../icons/Logo';
+import { cn } from '@/lib/utils';
 
 export function Footer() {
   return (
@@ -21,7 +22,7 @@ export function Footer() {
           </div>
 
           {/* Main Links */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 p-4 rounded-lg footer-menu-background">
             <h4 className="font-bold mb-2">Platform</h4>
             <Link href="/dashboard" className="text-muted-foreground hover:text-primary transition-colors">Dashboard</Link>
             <Link href="/token" className="text-muted-foreground hover:text-primary transition-colors">VSD Token</Link>
@@ -30,7 +31,7 @@ export function Footer() {
           </div>
 
           {/* Developer Links */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 p-4 rounded-lg footer-menu-background">
             <h4 className="font-bold mb-2">Developers</h4>
             {siteConfig.footerNav.slice(0, 4).map((item) => (
                <Link key={item.href} href={item.href} className="text-muted-foreground hover:text-primary transition-colors">{item.title}</Link>
@@ -38,7 +39,7 @@ export function Footer() {
           </div>
 
           {/* Company Links */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 p-4 rounded-lg footer-menu-background">
             <h4 className="font-bold mb-2">Company</h4>
             {siteConfig.footerNav.slice(4).map((item) => (
               <Link key={item.href} href={item.href} className="text-muted-foreground hover:text-primary transition-colors">{item.title}</Link>
@@ -46,7 +47,7 @@ export function Footer() {
           </div>
 
           {/* Partner Link */}
-          <div className="flex flex-col items-start gap-2 col-span-2 md:col-span-1">
+          <div className="flex flex-col items-start gap-2 col-span-2 md:col-span-1 p-4 rounded-lg footer-menu-background">
              <h4 className="font-bold mb-2">Official Partner</h4>
              <Link href="https://indiemedia.llc" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition-opacity">
               <Image
@@ -65,3 +66,5 @@ export function Footer() {
     </footer>
   );
 }
+
+    

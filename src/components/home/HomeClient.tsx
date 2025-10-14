@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 import { ArrowRight, Cpu, FileJson, Banknote, Bot, HandCoins, Network, Gift, DollarSign, BrainCircuit, Users, Sparkles, ShoppingCart } from "lucide-react";
@@ -11,6 +12,8 @@ import { LiveTokenData } from "@/components/home/LiveTokenData";
 import { PresalePopup } from "@/components/home/PresalePopup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useUser } from "@/firebase";
+import { useRouter } from "next/navigation";
 
 const FeatureCard = ({ icon: Icon, title, description }: { icon: React.ElementType, title: string, description: string }) => (
     <Card className="text-center items-center flex flex-col bg-card/70 backdrop-blur-sm border-white/10 shadow-lg h-full">
@@ -49,6 +52,25 @@ const Step = ({ icon: Icon, title, description, stepNumber }: { icon: React.Elem
 
 export function HomeClient() {
   const [isPopupOpen, setIsOpen] = useState(false);
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    // When auth state is resolved and user is logged in, redirect to dashboard
+    if (!isUserLoading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, isUserLoading, router]);
+
+  // While loading auth state, or if user is found (and redirect is imminent),
+  // you can show a loader or a blank page to prevent flicker.
+  if (isUserLoading || user) {
+    return (
+        <div className="flex justify-center items-center min-h-screen">
+            <div className="loader"></div> {/* Or some other loading indicator */}
+        </div>
+    );
+  }
 
   return (
     <>
@@ -191,3 +213,5 @@ export function HomeClient() {
     </>
   );
 }
+
+    
