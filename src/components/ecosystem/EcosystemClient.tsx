@@ -42,7 +42,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 description: "Music streaming platform for indie artists.",
                 link: "https://SoundKlix.com",
                 logoUrl: "https://i.ibb.co/M53tfW4/6afe7afc-3816-4f85-a250-50819e0f1b00.png",
-                hint: "mobile music streaming app interface",
+                hint: "music streaming app interface",
             }
         ]
     },
@@ -56,20 +56,20 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 description: "A decentralized marketplace that revolutionizes music monetization by treating songs as unique digital collectibles.",
                 link: "https://Audio.Exchange",
                 logoUrl: "https://i.ibb.co/fVjNMVpk/logo2.png",
-                hint: "financial tech data visualization",
+                hint: "digital marketplace audio files",
             },
             {
                 name: "Indie Videos TV",
                 description: "A 24/7 indie-only music video platform that pays artists for music video plays.",
                 link: "https://IndieVideos.TV",
                 logoUrl: "https://i.ibb.co/0RzJsCss/image.png",
-                hint: "music video on smart tv screen",
+                hint: "television static screen music videos",
             },
             {
                 name: "ND 24/7 Indie Radio",
                 description: "An all-indie radio station that showcases independent audio artists and pays for plays.",
                 link: "#",
-                hint: "radio broadcast tower night",
+                hint: "vintage radio broadcasting waves",
             }
         ]
     },
@@ -83,7 +83,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 description: "Technology and Innovation Labs that helps create and build MVPs for idea makers for free.",
                 link: "https://blaque.tech",
                 logoUrl: "https://i.ibb.co/r2QMqgJG/Blaque-Tech.png",
-                hint: "futuristic tech innovation lab",
+                hint: "futuristic technology lab clean",
             },
              {
                 name: "Qreatv Branding Agency",
@@ -103,20 +103,20 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 description: "An educational platform offering expert-led courses on the new music economy.",
                 link: "https://musicindustry.university",
                 logoUrl: "https://i.ibb.co/sJV522gj/miu-logo.png",
-                hint: "modern music business classroom",
+                hint: "university lecture hall modern",
             },
             {
                 name: "Music Focus Group",
                 description: "Provides structured, data-driven feedback on music from real listeners to help artists refine their tracks.",
                 link: "https://musicfocus.group",
                 logoUrl: "https://i.ibb.co/tPDWyjWd/Screenshot-2025-07-25-at-10-01-10-AM.png",
-                hint: "music feedback data analysis",
+                hint: "people listening to music with headphones in a modern room",
             },
              {
                 name: "Inner View Podcasts",
                 description: "Podcasts dedicated to indie music and recording artists.",
                 link: "#",
-                hint: "podcast recording studio dark",
+                hint: "podcast recording studio microphone",
             }
         ]
     },
@@ -130,13 +130,13 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 description: "The heart of the community, offering news, resources, and forums specifically for IMG artists.",
                 link: "https://IndieArtist.Network",
                 logoUrl: "https://i.ibb.co/TxdMLzg6/Screenshot-2025-07-27-at-11-09-18-AM.png",
-                hint: "global network community",
+                hint: "global network community connection",
             },
             {
                 name: "ProFile Share",
                 description: "A profile showcasing platform for secure file sharing of demos and press kits.",
                 link: "https://Share.VNDRmusic.com",
-                hint: "secure cloud file sharing interface"
+                hint: "secure file sharing cloud interface"
             }
         ]
     },
@@ -149,7 +149,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 name: "Indie Music News",
                 description: "An independent journalism hub focused on the indie music scene.",
                 link: "#",
-                hint: "vintage newspaper pressroom music",
+                hint: "newspaper press room vintage",
             }
         ]
     },
@@ -162,7 +162,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 name: "Vsd.Network",
                 description: "The IMG banking platform and token distribution network, fueling the entire ecosystem.",
                 link: "https://Vsd.Network",
-                hint: "abstract blockchain network",
+                hint: "blockchain network visualization",
             }
         ]
     }
@@ -193,7 +193,7 @@ export function EcosystemClient() {
                             <CardHeader>
                                 <div className="aspect-video relative mb-4">
                                     <AIImage
-                                        initialSrc={`https://picsum.photos/seed/${encodeURIComponent(sub.name.replace(/\//g, ''))}/600/400`}
+                                        initialSrc={`https://picsum.photos/seed/${encodeURIComponent(sub.hint)}/600/400`}
                                         alt={`Cover art for ${sub.name}`}
                                         width={600}
                                         height={400}
