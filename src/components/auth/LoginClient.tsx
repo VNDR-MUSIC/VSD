@@ -27,7 +27,7 @@ export function LoginClient() {
 
   const handleAuthSuccess = (userCredential: UserCredential) => {
     const user = userCredential.user;
-    const isNewUser = userCredential.metadata.creationTime === userCredential.metadata.lastSignInTime;
+    const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
 
     if (isNewUser && firestore) {
         console.log("New user detected, creating account document...");
