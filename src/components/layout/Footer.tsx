@@ -48,15 +48,9 @@ export function Footer() {
 
           {/* Partner Link */}
           <div className="flex flex-col items-start gap-2 col-span-2 md:col-span-1 p-4 rounded-lg footer-menu-background">
-             <h4 className="font-bold mb-2">Official Partner</h4>
+             <h4 className="font-bold mb-2">An IMG Company</h4>
              <Link href="https://indiemedia.llc" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition-opacity">
-              <Image
-                src="https://indiemedia.llc/img-logo.png"
-                alt="Independent Music Group (IMG) Logo"
-                width={120}
-                height={30}
-                className="filter invert"
-              />
+               <span className="font-headline text-lg">Independent Music Group</span>
             </Link>
           </div>
         </div>
@@ -66,5 +60,3 @@ export function Footer() {
     </footer>
   );
 }
-
-    
