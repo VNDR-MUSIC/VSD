@@ -8,26 +8,36 @@ import { Database, Users, ArrowRightLeft, FileCode, Copy, Check, ArrowUpRightSqu
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection } from "firebase/firestore";
+import { Skeleton } from "../ui/skeleton";
 
 const tokenData = {
   contractAddress: "0xA37CDC5CE42333A4F57776A4cD93f434E59AB243",
   totalSupply: "1000000000",
-  holders: "2,500+", // Placeholder, as this changes
-  transfers: "10,000+", // Placeholder, as this changes
   etherscanUrl: "https://etherscan.io/token/0xA37CDC5CE42333A4F57776A4cD93f434E59AB243",
 };
 
-const DataCard = ({ icon: Icon, title, value }: { icon: React.ElementType, title: string, value: string }) => (
+const DataCard = ({ icon: Icon, title, value, isLoading }: { icon: React.ElementType, title: string, value: string | number, isLoading?: boolean }) => (
   <div className="flex flex-col items-center text-center p-4">
     <Icon className="h-8 w-8 text-primary mb-3" />
     <p className="text-sm text-muted-foreground">{title}</p>
-    <p className="font-headline text-xl sm:text-2xl font-bold">{value}</p>
+    {isLoading ? <Skeleton className="h-7 w-20 mt-1" /> : (
+        <p className="font-headline text-xl sm:text-2xl font-bold">{typeof value === 'number' ? value.toLocaleString() : value}</p>
+    )}
   </div>
 );
 
 export function LiveTokenData() {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
+  const firestore = useFirestore();
+
+  const accountsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'accounts') : null, [firestore]);
+  const transactionsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'transactions') : null, [firestore]);
+
+  const { data: accounts, isLoading: isLoadingAccounts } = useCollection(accountsQuery);
+  const { data: transactions, isLoading: isLoadingTransactions } = useCollection(transactionsQuery);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(tokenData.contractAddress);
@@ -51,8 +61,8 @@ export function LiveTokenData() {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-border/50">
             <DataCard icon={Database} title="Total Supply" value={Number(tokenData.totalSupply).toLocaleString()} />
-            <DataCard icon={Users} title="Holder Wallets" value={tokenData.holders} />
-            <DataCard icon={ArrowRightLeft} title="Total Transfers" value={tokenData.transfers} />
+            <DataCard icon={Users} title="Holder Wallets" value={accounts?.length ?? 0} isLoading={isLoadingAccounts} />
+            <DataCard icon={ArrowRightLeft} title="Total Transfers" value={transactions?.length ?? 0} isLoading={isLoadingTransactions} />
             <DataCard icon={FileCode} title="Decimals" value="18" />
           </div>
           <Separator className="my-6" />
