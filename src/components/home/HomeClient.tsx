@@ -167,14 +167,14 @@ export function HomeClient() {
         <section>
             <div className="text-center mb-12">
                 <h2 className="font-headline text-3xl md:text-4xl font-bold">Get Started in Minutes</h2>
-                <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">Join the VSD ecosystem with a few simple steps.</p>
+                <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">Join the VSD ecosystem with a few simple steps. For a complete guide, read our <Link href="/symbi" className="text-primary hover:underline">knowledge base</Link>.</p>
             </div>
             <div className="max-w-xl mx-auto">
                 <Step 
                     stepNumber={1}
                     icon={ShoppingCart}
                     title="Acquire VSD Tokens"
-                    description="Participate in the presale or purchase VSD tokens to get started. This is your key to the entire ecosystem."
+                    description="Participate in the presale, or start for free by visiting the 'Earn' page to get VSD Lite tokens you can convert to VSD."
                 />
                  <Step 
                     stepNumber={2}
@@ -217,3 +217,5 @@ export function HomeClient() {
     </>
   );
 }
+
+    
