@@ -10,11 +10,11 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 
 const tokenData = {
-  contractAddress: "0x61e47fba038c63afa3818a62af86f1eadea8f308",
+  contractAddress: "0xA37CDC5CE42333A4F57776A4cD93f434E59AB243",
   totalSupply: "1000000000",
   holders: "2,500+", // Placeholder, as this changes
   transfers: "10,000+", // Placeholder, as this changes
-  etherscanUrl: "https://etherscan.io/token/0x61e47fba038c63afa3818a62af86f1eadea8f308",
+  etherscanUrl: "https://etherscan.io/token/0xA37CDC5CE42333A4F57776A4cD93f434E59AB243",
 };
 
 const DataCard = ({ icon: Icon, title, value }: { icon: React.ElementType, title: string, value: string }) => (
