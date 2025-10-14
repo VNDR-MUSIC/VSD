@@ -56,18 +56,9 @@ import { collection, doc, setDoc } from 'firebase/firestore';
 import type { WithId } from '@/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import type { Account } from '@/types/account';
+import { useProtectedRoute } from '@/hooks/use-protected-route';
 
-
-interface Account {
-  uid: string;
-  displayName: string;
-  email: string;
-  walletAddress: string;
-  vsdBalance: number;
-  status: 'Active' | 'Suspended';
-  joined: string;
-  isAdmin?: boolean;
-}
 
 interface Transaction {
     id: string;
@@ -110,8 +101,9 @@ const TableRowSkeleton = ({ cells }: { cells: number }) => (
 )
 
 export function AdminDashboard() {
+  const { isLoading: isAuthLoading } = useProtectedRoute({ adminOnly: true });
   const firestore = useFirestore();
-  const { user, isUserLoading } = useUser();
+  const { user } = useUser();
 
   // Public collections - can be fetched by anyone
   const tenantsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'tenants'): null, [firestore]);
@@ -128,7 +120,16 @@ export function AdminDashboard() {
 
   const totalVsdInCirculation = users?.reduce((acc, user) => acc + user.vsdBalance, 0) || 0;
 
-  const areUsersReady = !isUserLoading && !usersLoading;
+  if (isAuthLoading) {
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center bg-muted/40">
+        <div className="flex flex-col items-center gap-4">
+          <Skeleton className="h-16 w-16 rounded-full" />
+          <p className="text-muted-foreground">Verifying access...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -150,7 +151,7 @@ export function AdminDashboard() {
             </div>
             
             <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-              {(isUserLoading || usersLoading) ? <StatCardSkeleton /> : (
+              {(usersLoading) ? <StatCardSkeleton /> : (
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">VSD in Circulation</CardTitle>
@@ -162,7 +163,7 @@ export function AdminDashboard() {
                     </CardContent>
                 </Card>
               )}
-               {(isUserLoading || usersLoading) ? <StatCardSkeleton /> : (
+               {(usersLoading) ? <StatCardSkeleton /> : (
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Active Users</CardTitle>
@@ -216,7 +217,7 @@ export function AdminDashboard() {
                     <CardHeader>
                       <CardTitle>Users</CardTitle>
                       <CardDescription>
-                        Manage all users and their balances in the VSD ecosystem. Requires authentication.
+                        Manage all users and their balances in the VSD ecosystem.
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -238,21 +239,13 @@ export function AdminDashboard() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {isUserLoading ? (
-                            Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} cells={6} />)
-                          ) : !user ? (
-                             <TableRow>
-                                <TableCell colSpan={6} className="text-center text-muted-foreground py-10">
-                                    Please log in to view user data.
-                                </TableCell>
-                            </TableRow>
-                          ) : usersLoading ? (
+                          {usersLoading ? (
                              Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} cells={6} />)
                           ) : (
                             users?.map((userAccount) => (
                             <TableRow key={userAccount.uid}>
                               <TableCell>
-                                <div className="font-medium">{userAccount.displayName}</div>
+                                <div className="font-medium">{userAccount.displayName}{userAccount.isAdmin && <Badge variant="destructive" className="ml-2">Admin</Badge>}</div>
                                 <div className="hidden text-sm text-muted-foreground md:inline">
                                   {userAccount.email}
                                 </div>
