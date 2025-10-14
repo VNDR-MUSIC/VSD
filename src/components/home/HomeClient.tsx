@@ -154,7 +154,7 @@ export function HomeClient() {
             </div>
              <div className="relative h-80 rounded-lg shadow-2xl shadow-primary/10 border border-primary/20 p-2 flex items-center justify-center">
                  <Image
-                    src="https://i.ibb.co/v64ZGh4/logo-full-256x.png"
+                    src="https://i.ibb.co/3wpP3F4/logo-full-256x.png"
                     alt="VSD Network Full Logo"
                     width={256}
                     height={256}
