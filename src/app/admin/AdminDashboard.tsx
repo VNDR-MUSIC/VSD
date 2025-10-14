@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -16,6 +15,7 @@ import {
   ShieldCheck,
   ShieldOff,
   Clock,
+  Map,
 } from 'lucide-react';
 import {
   Card,
@@ -105,7 +105,7 @@ interface ApiLog {
     status: 'Success' | 'Failure';
     tenantId?: string;
     tenantName?: string;
-    endpoint: string;
+endpoint: string;
     message: string;
 }
 
@@ -139,7 +139,7 @@ export function AdminDashboard() {
   const { toast } = useToast();
 
   const tenantsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'tenants') : null, [firestore]);
-  const globalTransactionsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'transactions') : null, [firestore]);
+  const globalTransactionsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'transactions'), orderBy('date', 'desc')) : null, [firestore]);
   const accountsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'accounts') : null, [firestore]);
   const advertisementsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'advertisements') : null, [firestore]);
   const applicationsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'advertiserApplications'), where('status', '==', 'pending')) : null, [firestore]);
@@ -264,6 +264,7 @@ export function AdminDashboard() {
                         <TabsTrigger value="applications">Advertiser Applications <Badge className="ml-2">{applications?.length || 0}</Badge></TabsTrigger>
                         <TabsTrigger value="api_logs">API Access Log</TabsTrigger>
                         <TabsTrigger value="transactions">Global Activity</TabsTrigger>
+                         <TabsTrigger value="roadmap">Roadmap</TabsTrigger>
                     </TabsList>
                     <div className="ml-auto flex items-center gap-2">
                         <Button asChild variant="outline" size="sm" className="h-8 gap-1">
@@ -278,6 +279,20 @@ export function AdminDashboard() {
                        <AddTenantDialog />
                     </div>
                 </div>
+                 <TabsContent value="roadmap">
+                    <Card>
+                        <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Map /> Roadmap Management</CardTitle>
+                        <CardDescription>
+                            Drag and drop tasks to manage your project goals. This board is ready to be connected to your project management tool.
+                            <Button variant="link" asChild><Link href="/admin/roadmap">Go to Full Roadmap Page <ArrowRightLeft className="ml-2 h-4 w-4" /></Link></Button>
+                        </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                           <p className="text-muted-foreground">The roadmap management interface is available on the <Link href="/admin/roadmap" className="text-primary hover:underline">dedicated roadmap page</Link>.</p>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
                 <TabsContent value="users">
                   <Card>
                     <CardHeader>
@@ -856,3 +871,5 @@ function AddTenantDialog() {
     </Dialog>
   );
 }
+
+    
