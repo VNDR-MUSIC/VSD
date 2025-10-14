@@ -133,12 +133,11 @@ export function AdminDashboard() {
   const firestore = useFirestore();
   const { user } = useUser();
 
-  // Queries are conditional on user being a verified admin
-  const tenantsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'tenants') : null, [firestore, user, isAuthLoading]);
-  const globalTransactionsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'transactions') : null, [firestore, user, isAuthLoading]);
-  const accountsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'accounts') : null, [firestore, user, isAuthLoading]);
-  const advertisementsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? collection(firestore, 'advertisements') : null, [firestore, user, isAuthLoading]);
-  const applicationsQuery = useMemoFirebase(() => !isAuthLoading && user && firestore ? query(collection(firestore, 'advertiserApplications'), where('status', '==', 'pending')) : null, [firestore, user, isAuthLoading]);
+  const tenantsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'tenants') : null, [firestore]);
+  const globalTransactionsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'transactions') : null, [firestore]);
+  const accountsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'accounts') : null, [firestore]);
+  const advertisementsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'advertisements') : null, [firestore]);
+  const applicationsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'advertiserApplications'), where('status', '==', 'pending')) : null, [firestore]);
   
   const { data: tenants, isLoading: tenantsLoading } = useCollection<Tenant>(tenantsQuery);
   const { data: transactions, isLoading: transactionsLoading } = useCollection<Transaction>(globalTransactionsQuery);
@@ -771,3 +770,5 @@ function AddTenantDialog() {
     </Dialog>
   );
 }
+
+    
