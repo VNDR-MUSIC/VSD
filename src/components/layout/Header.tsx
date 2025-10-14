@@ -8,7 +8,7 @@ import { Logo } from '@/components/icons/Logo';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-import { Menu, User, LogOut, ChevronDown, type LucideIcon, ShieldAlert, Share2, Disc, PiggyBank, Briefcase, GraduationCap, Group, Search, Route, Shield } from 'lucide-react';
+import { Menu, User, LogOut, ChevronDown, type LucideIcon, Share2, Disc, PiggyBank, Briefcase, GraduationCap, Group, Search, Route, Shield } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,7 +55,7 @@ const MobileNavLink = ({ href, children, onSelect }: { href: string, children: R
 );
 
 const UserNav = () => {
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
     const auth = useAuth();
     const firestore = useFirestore();
     const router = useRouter();
@@ -71,11 +71,17 @@ const UserNav = () => {
         router.push('/');
     };
 
-    if (isAccountLoading) {
+    if (isUserLoading || (user && isAccountLoading)) {
         return <Skeleton className="h-10 w-10 rounded-full" />;
     }
     
-    if (!user) return null;
+    if (!user) {
+        return (
+            <Button asChild variant="outline">
+                <Link href="/login"><User className="mr-2 h-4 w-4"/>Login</Link>
+            </Button>
+        );
+    }
 
     const userRoles = account?.roles || [];
     const isAdmin = userRoles.includes('admin');
@@ -88,7 +94,7 @@ const UserNav = () => {
                     <Avatar className="h-10 w-10">
                         <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'User'} />
                         <AvatarFallback>
-                            <User className="h-5 w-5" />
+                            {user.displayName?.charAt(0) ?? <User className="h-5 w-5" />}
                         </AvatarFallback>
                     </Avatar>
                 </Button>
@@ -139,7 +145,6 @@ const UserNav = () => {
 
 export function Header() {
   const pathname = usePathname();
-  const { user, isUserLoading } = useUser();
   const [isSheetOpen, setSheetOpen] = React.useState(false);
 
 
@@ -294,15 +299,7 @@ export function Header() {
         </Link>
         
         <div className="flex items-center gap-2">
-           {isUserLoading ? (
-             <Skeleton className="h-10 w-10 rounded-full" />
-           ) : user ? (
-              <UserNav />
-           ) : (
-             <Button asChild variant="outline">
-                <Link href="/login"><User className="mr-2 h-4 w-4"/>Login</Link>
-             </Button>
-           )}
+           <UserNav />
 
             <div>
               <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
