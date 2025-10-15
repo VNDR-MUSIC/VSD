@@ -4,7 +4,7 @@
 import { NextResponse } from 'next/server';
 import { logger } from 'firebase-functions';
 import { randomUUID } from 'crypto';
-import { initializeApp, getApps, cert, App } from 'firebase-admin/app';
+import { initializeApp, getApps, App } from 'firebase-admin/app';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 
 // --- Memoized Firebase Admin SDK Initialization ---
@@ -13,28 +13,17 @@ let adminApp: App | undefined;
 let db: Firestore | undefined;
 
 function getDb(): Firestore {
-    if (!db) {
-        // Safely parse the service account key
-        let serviceAccount;
-        try {
-            if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-                serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-            }
-        } catch (e) {
-            logger.error('FIREBASE_SERVICE_ACCOUNT_PARSE_ERROR: Could not parse the service account JSON.', { error: e });
-            serviceAccount = undefined;
-        }
-
-        if (getApps().length === 0) {
-            adminApp = initializeApp({
-                credential: serviceAccount ? cert(serviceAccount) : undefined,
-            });
-        } else {
-            adminApp = getApps()[0];
-        }
-        db = getFirestore(adminApp);
+  if (!db) {
+    if (getApps().length === 0) {
+      // In a deployed Firebase App Hosting environment, initializeApp() with no arguments
+      // automatically uses the project's service account credentials.
+      adminApp = initializeApp();
+    } else {
+      adminApp = getApps()[0];
     }
-    return db;
+    db = getFirestore(adminApp);
+  }
+  return db;
 }
 // --- End Firebase Admin SDK Initialization ---
 
