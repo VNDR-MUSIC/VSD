@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -7,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank, Loader2, Search, Gift, Coins } from "lucide-react";
-import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
+import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase, setDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase';
 import { doc, collection, runTransaction, increment } from 'firebase/firestore';
@@ -19,6 +18,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface Transaction {
   id: string;
@@ -97,6 +97,8 @@ export function DashboardClient() {
     ).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [transactions, searchQuery]);
 
+  const canSendTokens = (account?.vsdBalance ?? 0) >= 20;
+
   if (isAuthLoading) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
@@ -145,7 +147,20 @@ export function DashboardClient() {
               </div>
             </CardContent>
             <CardFooter className="gap-2">
-              <SendVsdDialog userAccount={account} />
+              <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <div className="w-full">
+                         <SendVsdDialog userAccount={account} isAllowed={canSendTokens} />
+                        </div>
+                    </TooltipTrigger>
+                    {!canSendTokens && (
+                        <TooltipContent>
+                            <p>You need at least 20 VSD to send tokens.</p>
+                        </TooltipContent>
+                    )}
+                </Tooltip>
+              </TooltipProvider>
               <Button variant="outline" className="btn-hover-effect w-full" onClick={() => toast({ title: "Feature Coming Soon", description: "Receiving VSD is active at your wallet address."})}>Receive</Button>
             </CardFooter>
           </Card>
@@ -161,7 +176,7 @@ export function DashboardClient() {
                     <RechartsBarChart data={activityData}>
                       <XAxis dataKey="month" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                       <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}`} />
-                      <Tooltip content={<CustomTooltip />} cursor={{fill: 'hsl(var(--accent))', radius: 'var(--radius)'}} />
+                      <RechartsTooltip content={<CustomTooltip />} cursor={{fill: 'hsl(var(--accent))', radius: 'var(--radius)'}} />
                       <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="VSD Spent" />
                     </RechartsBarChart>
                   </ResponsiveContainer>
@@ -281,7 +296,7 @@ export function DashboardClient() {
   );
 }
 
-function SendVsdDialog({ userAccount }: { userAccount: Account | null }) {
+function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null, isAllowed: boolean }) {
     const { toast } = useToast();
     const [isOpen, setIsOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
@@ -362,7 +377,7 @@ function SendVsdDialog({ userAccount }: { userAccount: Account | null }) {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button className="btn-hover-effect w-full"><Send className="mr-2 h-4 w-4" />Send</Button>
+                <Button className="btn-hover-effect w-full" disabled={!isAllowed}><Send className="mr-2 h-4 w-4" />Send</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <form onSubmit={handleSubmit}>
