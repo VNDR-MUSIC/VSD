@@ -9,7 +9,6 @@ import { Loader2, Music, FileText, ImageIcon, Send } from 'lucide-react';
 import { AIImage } from '@/components/ai/AIImage';
 import { logger } from 'firebase-functions';
 import type { Metadata } from 'next';
-import { randomUUID } from 'crypto';
 
 // This is a client component, so we can't export metadata directly.
 // But we can define it for reference or for moving to a server component later.
