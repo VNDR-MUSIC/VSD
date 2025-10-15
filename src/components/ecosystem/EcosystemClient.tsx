@@ -193,7 +193,7 @@ export function EcosystemClient() {
                                     />
                                     {sub.logoUrl && (
                                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center p-8">
-                                             <div className="relative h-20 w-full">
+                                             <div className="relative h-24 w-full">
                                                 <Image
                                                     src={sub.logoUrl}
                                                     alt={`${sub.name} Logo`}
