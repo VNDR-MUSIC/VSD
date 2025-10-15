@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -118,6 +117,7 @@ export default function RoadmapPage() {
         setTasks(fetchedTasks);
       } catch (error: any) {
         toast({ variant: 'destructive', title: 'Failed to load roadmap', description: error.message || 'Could not connect to the project management API.' });
+        setTasks([]); // Set tasks to an empty array on failure
       } finally {
         setIsLoading(false);
       }

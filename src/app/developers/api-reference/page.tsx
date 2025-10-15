@@ -129,7 +129,7 @@ export default function ApiReferencePage() {
         ]}
         successResponse={`{\n  "imageDataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg..."\n}`}
       >
-        {/* No custom children needed for this section */}
+        <></>
       </ApiSection>
 
       <Separator />
