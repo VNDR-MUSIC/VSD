@@ -1,3 +1,4 @@
+
 {
   "hosting": {
     "source": ".",
@@ -25,13 +26,5 @@
         "firebase-debug.*.log"
       ]
     }
-  ],
-  "build": {
-    "steps": [
-      {
-        "step": "fetch",
-        "description": "Dummy fetch step to satisfy build validation"
-      }
-    ]
-  }
+  ]
 }
