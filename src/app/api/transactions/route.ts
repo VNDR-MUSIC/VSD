@@ -6,7 +6,6 @@ import { logger } from 'firebase-functions';
 import { randomUUID } from 'crypto';
 import { initializeApp, getApps, cert, App } from 'firebase-admin/app';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
-import axios from 'axios';
 
 // --- Memoized Firebase Admin SDK Initialization ---
 // This ensures we initialize only once per serverless function instance.
@@ -32,25 +31,6 @@ function getDb(): Firestore {
 }
 // --- End Firebase Admin SDK Initialization ---
 
-async function createAgileTask(title: string, description: string) {
-    const internalApiUrl = process.env.NEXT_PUBLIC_APP_URL
-        ? `${process.env.NEXT_PUBLIC_APP_URL}/api/agiled/create-task`
-        : 'http://localhost:9002/api/agiled/create-task';
-        
-    try {
-        await axios.post(internalApiUrl, {
-            title,
-            description,
-        });
-        logger.info('AGILED_TASK_CREATED: Successfully created a task for API failure.');
-    } catch (error: any) {
-        logger.error('AGILED_TASK_CREATION_FAILED: Could not create Agiled task.', {
-            errorMessage: error.message,
-            errorData: error.response?.data
-        });
-    }
-}
-
 
 async function logApiRequest(logData: Omit<any, 'id' | 'timestamp'>) {
     try {
@@ -60,12 +40,6 @@ async function logApiRequest(logData: Omit<any, 'id' | 'timestamp'>) {
             timestamp: new Date().toISOString(),
         };
         await firestore.collection('api_logs').add(logEntry);
-
-        if (logData.status === 'Failure') {
-            const title = `API Auth Failure: ${logData.message}`;
-            const description = `An API request failed at ${logEntry.timestamp} from an unknown source trying to access the endpoint: ${logData.endpoint}. Please investigate the source or potential misconfiguration.`;
-            await createAgileTask(title, description);
-        }
     } catch (error) {
         logger.error('API_LOGGING_FAILED: Could not write to api_logs collection.', {
             error,

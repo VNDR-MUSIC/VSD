@@ -70,14 +70,11 @@ export default function AudioExchangePage() {
           description: `Purchase of audio license: ${track.title}`,
       };
       
-      const INTERNAL_API_KEY = process.env.NEXT_PUBLIC_INTERNAL_API_KEY || "your-super-secret-key";
-
-      // Call the secure, central API endpoint
-      const response = await fetch('/api/transactions', {
+      // Call the secure, local bridge API route
+      const response = await fetch('/api/vsd-bridge', {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${INTERNAL_API_KEY}`
         },
         body: JSON.stringify(transactionPayload),
       });
