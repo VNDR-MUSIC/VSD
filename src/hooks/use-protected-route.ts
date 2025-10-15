@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -21,6 +20,7 @@ export function useProtectedRoute({ adminOnly = false, advertiserOnly = false }:
   const { data: account, isLoading: isAccountLoading } = useDoc<Account>(accountDocRef);
   
   const [isCheckingRoles, setIsCheckingRoles] = useState(adminOnly || advertiserOnly);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (isAuthLoading) {
@@ -38,9 +38,10 @@ export function useProtectedRoute({ adminOnly = false, advertiserOnly = false }:
       }
       
       const userRoles = account?.roles || [];
-      const isAdmin = userRoles.includes('admin');
+      const userIsAdmin = userRoles.includes('admin');
+      setIsAdmin(userIsAdmin);
       
-      if (adminOnly && !isAdmin) {
+      if (adminOnly && !userIsAdmin) {
           router.push('/dashboard');
           return;
       }
@@ -62,6 +63,5 @@ export function useProtectedRoute({ adminOnly = false, advertiserOnly = false }:
 
   const isLoading = isAuthLoading || ( (adminOnly || advertiserOnly) && (isAccountLoading || isCheckingRoles));
 
-  return { isLoading };
+  return { isLoading, isCheckingRoles, isAdmin };
 }
-

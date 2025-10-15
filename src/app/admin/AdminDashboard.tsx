@@ -133,18 +133,19 @@ const TableRowSkeleton = ({ cells }: { cells: number }) => (
 )
 
 export function AdminDashboard() {
-  const { isLoading: isAuthLoading } = useProtectedRoute({ adminOnly: true });
+  const { isLoading: isAuthLoading, isCheckingRoles, isAdmin } = useProtectedRoute({ adminOnly: true });
   const firestore = useFirestore();
   const { user } = useUser();
   const { toast } = useToast();
 
-  // Queries are now dependent on `user` as well to prevent running them when not authenticated.
-  const tenantsQuery = useMemoFirebase(() => user && firestore ? collection(firestore, 'tenants') : null, [firestore, user]);
-  const globalTransactionsQuery = useMemoFirebase(() => user && firestore ? query(collection(firestore, 'transactions'), orderBy('date', 'desc')) : null, [firestore, user]);
-  const accountsQuery = useMemoFirebase(() => user && firestore ? collection(firestore, 'accounts') : null, [firestore, user]);
-  const advertisementsQuery = useMemoFirebase(() => user && firestore ? collection(firestore, 'advertisements') : null, [firestore, user]);
-  const applicationsQuery = useMemoFirebase(() => user && firestore ? query(collection(firestore, 'advertiserApplications'), where('status', '==', 'pending')) : null, [firestore, user]);
-  const apiLogsQuery = useMemoFirebase(() => user && firestore ? query(collection(firestore, 'api_logs'), orderBy('timestamp', 'desc')) : null, [firestore, user]);
+  const tenantsQuery = useMemoFirebase(() => firestore && user ? collection(firestore, 'tenants') : null, [firestore, user]);
+  const accountsQuery = useMemoFirebase(() => firestore && user && isAdmin ? collection(firestore, 'accounts') : null, [firestore, user, isAdmin]);
+  const advertisementsQuery = useMemoFirebase(() => firestore && user ? collection(firestore, 'advertisements') : null, [firestore, user]);
+  const applicationsQuery = useMemoFirebase(() => firestore && user && isAdmin ? query(collection(firestore, 'advertiserApplications'), where('status', '==', 'pending')) : null, [firestore, user, isAdmin]);
+  
+  // Admin-only queries, now dependent on `isAdmin` flag from the protected route hook
+  const globalTransactionsQuery = useMemoFirebase(() => firestore && user && isAdmin ? query(collection(firestore, 'transactions'), orderBy('date', 'desc')) : null, [firestore, user, isAdmin]);
+  const apiLogsQuery = useMemoFirebase(() => firestore && user && isAdmin ? query(collection(firestore, 'api_logs'), orderBy('timestamp', 'desc')) : null, [firestore, user, isAdmin]);
   
   const { data: tenants, isLoading: tenantsLoading } = useCollection<Tenant>(tenantsQuery);
   const { data: transactions, isLoading: transactionsLoading } = useCollection<Transaction>(globalTransactionsQuery);
@@ -177,7 +178,7 @@ export function AdminDashboard() {
   };
 
 
-  if (isAuthLoading || !user) {
+  if (isAuthLoading || !user || isCheckingRoles) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-muted/40">
         <div className="flex flex-col items-center gap-4">
