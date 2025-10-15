@@ -1,4 +1,3 @@
-
 'use client';
 
 import './globals.css';
@@ -12,8 +11,6 @@ import { BackgroundVideo } from '@/components/layout/BackgroundVideo';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
-import Script from 'next/script';
-import { SessionRewindIdentifier } from '@/components/auth/SessionRewindIdentifier';
 
 const fontHeadline = Orbitron({
   subsets: ['latin'],
@@ -62,24 +59,7 @@ export default function RootLayout({
         <meta name="twitter:image" content="https://indiemedia.llc/vsd-og-image.jpg" />
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col relative bg-background">
-        <Script id="session-rewind-config" strategy="afterInteractive">
-          {`
-            !function (o) {
-              var w = window;
-              w.SessionRewindConfig = o;
-              var f = document.createElement("script");
-              f.async = 1, f.crossOrigin = "anonymous",
-                f.src = "https://rec.sessionrewind.com/srloader.js";
-              var g = document.getElementsByTagName("head")[0];
-              g.insertBefore(f, g.firstChild);
-            }({
-              apiKey: 'P5ytM37jER8kxBLqXGq9H9vgmeCq6Hw19ojgWNFv',
-              startRecording: true,
-            });
-          `}
-        </Script>
         <FirebaseClientProvider>
-          <SessionRewindIdentifier />
           {!isSpecialLayout && <BackgroundVideo />}
           <div className={cn("relative z-0 flex flex-col min-h-screen", !isSpecialLayout && "bg-black/85")}>
             <Header />
