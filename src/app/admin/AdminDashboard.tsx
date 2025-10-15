@@ -140,13 +140,13 @@ export function AdminDashboard() {
   const { toast } = useToast();
 
   const tenantsQuery = useMemoFirebase(() => firestore && user ? collection(firestore, 'tenants') : null, [firestore, user]);
-  const accountsQuery = useMemoFirebase(() => firestore && user && isAdmin ? collection(firestore, 'accounts') : null, [firestore, user, isAdmin]);
   const advertisementsQuery = useMemoFirebase(() => firestore && user ? collection(firestore, 'advertisements') : null, [firestore, user]);
-  const applicationsQuery = useMemoFirebase(() => firestore && user && isAdmin ? query(collection(firestore, 'advertiserApplications'), where('status', '==', 'pending')) : null, [firestore, user, isAdmin]);
+  const applicationsQuery = useMemoFirebase(() => firestore && isAdmin ? query(collection(firestore, 'advertiserApplications'), where('status', '==', 'pending')) : null, [firestore, isAdmin]);
   
   // Admin-only queries, now dependent on `isAdmin` flag from the protected route hook
-  const globalTransactionsQuery = useMemoFirebase(() => firestore && user && isAdmin ? query(collection(firestore, 'transactions'), orderBy('date', 'desc')) : null, [firestore, user, isAdmin]);
-  const apiLogsQuery = useMemoFirebase(() => firestore && user && isAdmin ? query(collection(firestore, 'api_logs'), orderBy('timestamp', 'desc')) : null, [firestore, user, isAdmin]);
+  const accountsQuery = useMemoFirebase(() => firestore && isAdmin ? collection(firestore, 'accounts') : null, [firestore, isAdmin]);
+  const globalTransactionsQuery = useMemoFirebase(() => firestore && isAdmin ? query(collection(firestore, 'transactions'), orderBy('date', 'desc')) : null, [firestore, isAdmin]);
+  const apiLogsQuery = useMemoFirebase(() => firestore && isAdmin ? query(collection(firestore, 'api_logs'), orderBy('timestamp', 'desc')) : null, [firestore, isAdmin]);
   
   const { data: tenants, isLoading: tenantsLoading } = useCollection<Tenant>(tenantsQuery);
   const { data: transactions, isLoading: transactionsLoading } = useCollection<Transaction>(globalTransactionsQuery);
