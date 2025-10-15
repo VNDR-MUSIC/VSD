@@ -10,7 +10,7 @@ import { Orbitron, Inter } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { BackgroundVideo } from '@/components/layout/BackgroundVideo';
 import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import Script from 'next/script';
 import { SessionRewindIdentifier } from '@/components/auth/SessionRewindIdentifier';
@@ -32,13 +32,34 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  // We determine if the special layouts are used to avoid showing the main footer and background video.
+  const shouldReduceMotion = useReducedMotion();
   const isSpecialLayout = pathname.startsWith('/admin') || pathname.startsWith('/advertiser');
   
+  const pageVariants = {
+    initial: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: shouldReduceMotion ? 0 : -20 },
+  };
+
+  const pageTransition = {
+    duration: shouldReduceMotion ? 0 : 0.5,
+    ease: 'easeInOut',
+  };
+
   return (
     <html lang="en" className={cn("dark", fontHeadline.variable, fontBody.variable)}>
       <head>
          <link rel="icon" href="https://indiemedia.llc/vsdlogo.jpg" />
+         <meta name="description" content={siteConfig.description} />
+        <meta property="og:title" content={siteConfig.name} />
+        <meta property="og:description" content={siteConfig.description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002'} />
+        <meta property="og:image" content="https://indiemedia.llc/vsd-og-image.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={siteConfig.name} />
+        <meta name="twitter:description" content={siteConfig.description} />
+        <meta name="twitter:image" content="https://indiemedia.llc/vsd-og-image.jpg" />
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col relative bg-background">
         <Script id="session-rewind-config" strategy="afterInteractive">
@@ -65,10 +86,11 @@ export default function RootLayout({
             <AnimatePresence mode="wait">
               <motion.main
                 key={pathname}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5, ease: 'easeInOut' }}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                variants={pageVariants}
+                transition={pageTransition}
                 className="flex-grow"
               >
                 {children}
