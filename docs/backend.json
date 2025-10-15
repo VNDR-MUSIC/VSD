@@ -91,7 +91,7 @@
       "description": "Represents a single ledger activity within the VSD Network.",
       "properties": {
         "id": { "type": "string" },
-        "type": { "type": "string", "enum": ["Mint (Stripe)", "Transfer", "Burn (Refund)", "API Spend", "Staking Reward", "Royalty Payout", "in", "out", "VSD Lite Transfer", "VSD Lite Exchange"] },
+        "type": { "type": "string", "enum": ["in", "out", "Mint (Stripe)", "API Spend", "Staking Reward", "Royalty Payout"] },
         "status": { "type": "string", "enum": ["Completed", "Pending", "Failed"] },
         "amount": { "type": "number", "description": "The transaction amount in VSD." },
         "date": { "type": "string", "format": "date-time" },

@@ -7,12 +7,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Music, FileText, ImageIcon, Send } from 'lucide-react';
 import { AIImage } from '@/components/ai/AIImage';
-import { logger } from 'firebase-functions';
 import type { Metadata } from 'next';
-import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { useCollection, useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { collection, doc } from 'firebase/firestore';
 import type { Account } from '@/types/account';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // This is a client component, so we can't export metadata directly.
 // But we can define it for reference or for moving to a server component later.
@@ -21,30 +21,13 @@ const metadata: Metadata = {
   description: 'Demonstration of a partner project using the VSD Network API for token transactions and AI-generated content, showcasing the potential of the ecosystem.',
 };
 
-// Mock data for audio tracks
-const mockTracks = [
-  {
-    id: 'track-01',
-    title: 'Synthwave Dreams',
-    artist: 'Analog Grains',
-    price: 150, // VSD
-    hint: 'retro synthwave album cover'
-  },
-  {
-    id: 'track-02',
-    title: 'LoFi Morning Coffee',
-    artist: 'Chill Beats Collective',
-    price: 100, // VSD
-    hint: 'lofi chill anime girl studying'
-  },
-  {
-    id: 'track-03',
-    title: 'Orchestral Epic',
-    artist: 'Symphonia',
-    price: 250, // VSD
-    hint: 'epic fantasy battle cinematic'
-  }
-];
+interface Advertisement {
+    id: string;
+    title: string;
+    url: string;
+    reward: number; // For the sake of demo, we'll treat 'reward' as 'price'
+}
+
 
 // This component now makes REAL API calls to the VSD Network backend
 export default function AudioExchangePage() {
@@ -56,11 +39,16 @@ export default function AudioExchangePage() {
 
   const accountRef = useMemoFirebase(() => user && firestore ? doc(firestore, 'accounts', user.uid) : null, [firestore, user]);
   const { data: account } = useDoc<Account>(accountRef);
+  
+  // Fetch 'advertisements' to use as mock tracks for this demo
+  const adsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'advertisements') : null, [firestore]);
+  const { data: tracks, isLoading: isLoadingTracks } = useCollection<Advertisement>(adsQuery);
+
 
   // MOCK recipient wallet address
   const MOCK_RECIPIENT_ADDRESS = "0xDef...456";
 
-  const handlePurchase = async (track: typeof mockTracks[0]) => {
+  const handlePurchase = async (track: Advertisement) => {
     setIsLoading(track.id);
     
     if (!account || !account.walletAddress) {
@@ -72,13 +60,13 @@ export default function AudioExchangePage() {
     try {
       toast({
         title: "Processing Transaction...",
-        description: `Simulating a VSD transaction for ${track.price} VSD.`,
+        description: `Simulating a VSD transaction for ${track.reward} VSD.`,
       });
 
       const transactionPayload = {
           fromAddress: account.walletAddress,
           toAddress: MOCK_RECIPIENT_ADDRESS,
-          amount: track.price,
+          amount: track.reward, // Using reward as price for demo
           description: `Purchase of audio license: ${track.title}`,
       };
       
@@ -129,59 +117,69 @@ export default function AudioExchangePage() {
       </header>
       
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-        {mockTracks.map(track => (
-          <Card key={track.id} className="flex flex-col shadow-lg bg-card/80 backdrop-blur-sm">
-            <CardHeader>
-               <div className="aspect-video relative mb-4">
-                 <AIImage
-                    initialSrc={`https://picsum.photos/seed/${encodeURIComponent(track.hint)}/600/400`}
-                    alt={`Cover art for ${track.title}`}
-                    width={600}
-                    height={400}
-                    className="rounded-t-lg object-cover"
-                    hint={track.hint}
-                    layout="fill"
-                    objectFit="cover"
-                 />
-                 <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
-                    <ImageIcon className="h-3 w-3" />
-                    <span>Album Art</span>
+        {isLoadingTracks ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <Card key={i} className="flex flex-col shadow-lg bg-card/80 backdrop-blur-sm">
+              <Skeleton className="w-full h-[450px]" />
+            </Card>
+          ))
+        ) : tracks && tracks.length > 0 ? (
+          tracks.map(track => (
+            <Card key={track.id} className="flex flex-col shadow-lg bg-card/80 backdrop-blur-sm">
+              <CardHeader>
+                 <div className="aspect-video relative mb-4">
+                   <AIImage
+                      initialSrc={`https://picsum.photos/seed/${encodeURIComponent(track.title)}/600/400`}
+                      alt={`Cover art for ${track.title}`}
+                      width={600}
+                      height={400}
+                      className="rounded-t-lg object-cover"
+                      hint={`music album cover for a song called ${track.title}`}
+                      layout="fill"
+                      objectFit="cover"
+                   />
+                   <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
+                      <ImageIcon className="h-3 w-3" />
+                      <span>Album Art</span>
+                   </div>
                  </div>
-               </div>
-              <CardTitle className="font-headline text-xl sm:text-2xl">{track.title}</CardTitle>
-              <CardDescription>By {track.artist}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-grow space-y-2">
-                <div className="flex justify-between items-center p-3 rounded-md bg-muted/50">
-                    <span className="text-muted-foreground">Price</span>
-                    <span className="font-bold text-xl text-primary">{track.price} VSD</span>
-                </div>
-                <p className="text-xs text-muted-foreground flex items-center gap-2 pt-2">
-                    <FileText className="h-4 w-4" />
-                    <span>Purchase includes a simulated on-chain record via the VSD Transaction API.</span>
-                </p>
-            </CardContent>
-            <CardFooter>
-               <Button 
-                className="w-full btn-hover-effect" 
-                onClick={() => handlePurchase(track)}
-                disabled={!!isLoading}
-               >
-                {isLoading === track.id ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Send className="mr-2 h-4 w-4" />
-                    Buy with {track.price} VSD
-                  </>
-                )}
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+                <CardTitle className="font-headline text-xl sm:text-2xl">{track.title}</CardTitle>
+                <CardDescription>By Anonymous Artist</CardDescription>
+              </CardHeader>
+              <CardContent className="flex-grow space-y-2">
+                  <div className="flex justify-between items-center p-3 rounded-md bg-muted/50">
+                      <span className="text-muted-foreground">Price</span>
+                      <span className="font-bold text-xl text-primary">{track.reward} VSD</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground flex items-center gap-2 pt-2">
+                      <FileText className="h-4 w-4" />
+                      <span>Purchase includes a simulated on-chain record via the VSD Transaction API.</span>
+                  </p>
+              </CardContent>
+              <CardFooter>
+                 <Button 
+                  className="w-full btn-hover-effect" 
+                  onClick={() => handlePurchase(track)}
+                  disabled={!!isLoading || !account}
+                 >
+                  {isLoading === track.id ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="mr-2 h-4 w-4" />
+                      Buy with {track.reward} VSD
+                    </>
+                  )}
+                </Button>
+              </CardFooter>
+            </Card>
+          ))
+        ) : (
+           <p className="text-muted-foreground col-span-full text-center">No tracks available for purchase.</p>
+        )}
       </div>
     </div>
   );

@@ -169,8 +169,8 @@ export default function NetworkStatusPage() {
                             <TableCell className="text-right"><Skeleton className="h-5 w-1/2 ml-auto" /></TableCell>
                         </TableRow>
                     ))
-                ) : (
-                tenants?.map((tenant) => (
+                ) : tenants && tenants.length > 0 ? (
+                tenants.map((tenant) => (
                   <TableRow key={tenant.id} className="hover:bg-muted/50">
                     <TableCell className="font-medium">
                       {tenant.name}
@@ -188,7 +188,11 @@ export default function NetworkStatusPage() {
                         {formatDistanceToNow(new Date(tenant.createdAt), { addSuffix: true })}
                     </TableCell>
                   </TableRow>
-                )))}
+                ))) : (
+                  <TableRow>
+                    <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">No tenants are connected.</TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </div>
