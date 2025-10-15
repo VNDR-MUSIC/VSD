@@ -10,7 +10,6 @@ export const siteConfig = {
   },
   mainNav: [
     { title: "Home", href: "/", icon: LayoutDashboard },
-    { title: "Network Status", href: "/network-status", icon: Signal, description: "Live API Connections" },
     { 
       title: "Token", 
       href: "/token", 
