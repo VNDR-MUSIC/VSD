@@ -110,9 +110,9 @@ export default function AudioExchangePage() {
     <div className="space-y-12 py-8">
       <header className="text-center">
         <Music className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
-        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Audio Exchange</h1>
+        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Network in Action</h1>
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-          A demonstration of how a partner project can leverage the VSD Bank APIs for payments, contracts, and AI services.
+          This page is a live proof-of-concept demonstrating how a partner project, the "Audio Exchange," integrates with the VSD Network. It showcases three core functionalities: using VSD tokens for payments, secure communication with the central API, and leveraging shared AI services for features like dynamic album art.
         </p>
       </header>
       
