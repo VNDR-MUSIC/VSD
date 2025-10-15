@@ -1,3 +1,4 @@
+
 {
   "hosting": {
     "source": ".",
@@ -9,8 +10,7 @@
     "frameworksBackend": {
       "id": "vsd-network",
       "region": "us-central1"
-    },
-    "public": "build"
+    }
   },
   "database": {
     "rules": "database.rules.json"
