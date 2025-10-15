@@ -16,6 +16,7 @@ import {
   ShieldOff,
   Clock,
   Map,
+  ArrowRight,
 } from 'lucide-react';
 import {
   Card,
@@ -287,7 +288,7 @@ export function AdminDashboard() {
                         <CardTitle className="flex items-center gap-2"><Map /> Roadmap Management</CardTitle>
                         <CardDescription>
                             Drag and drop tasks to manage your project goals. This board is ready to be connected to your project management tool.
-                            <Button variant="link" asChild><Link href="/admin/roadmap">Go to Full Roadmap Page <ArrowRightLeft className="ml-2 h-4 w-4" /></Link></Button>
+                            <Button variant="link" asChild><Link href="/admin/roadmap">Go to Full Roadmap Page <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
                         </CardDescription>
                         </CardHeader>
                         <CardContent>
