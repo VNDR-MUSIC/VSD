@@ -35,9 +35,6 @@ export function LiveTokenData() {
   const firestore = useFirestore();
 
   const { data: blockchainData, isLoading: isLoadingBlockchain, error: blockchainError } = useBlockchainData();
-  const { data: accounts, isLoading: isLoadingAccounts } = useCollection<Account>(
-    useMemoFirebase(() => firestore ? collection(firestore, 'accounts') : null, [firestore])
-  );
   const { data: transactions, isLoading: isLoadingTransactions } = useCollection(
     useMemoFirebase(() => firestore ? collection(firestore, 'transactions') : null, [firestore])
   );
@@ -68,18 +65,12 @@ export function LiveTokenData() {
                 <p className="text-sm">{blockchainError}</p>
             </div>
           )}
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-border/50">
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border/50">
             <DataCard 
               icon={Database} 
               title="Total Supply" 
               value={blockchainData.totalSupply ? Number(blockchainData.totalSupply).toLocaleString() : '--'} 
               isLoading={isLoadingBlockchain} 
-            />
-            <DataCard 
-              icon={Users} 
-              title="Holder Wallets" 
-              value={accounts?.length ?? '--'}
-              isLoading={isLoadingAccounts} 
             />
             <DataCard 
               icon={ArrowRightLeft} 
