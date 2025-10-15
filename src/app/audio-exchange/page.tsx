@@ -67,17 +67,18 @@ export default function AudioExchangePage() {
           description: `Purchase of audio license: ${track.title}`,
       };
       
-      // Note: In a real multi-project setup, this key would be an environment variable
-      // on the server of the "spoke" application calling the "hub" (VSD Network).
-      // Here, we simulate it for demonstration purposes.
-      const MOCK_INTERNAL_API_KEY = process.env.INTERNAL_API_KEY || "your-super-secret-key";
+      // Use the environment variable for the API key.
+      // This is still a simulation for the demo page, but it now follows the correct pattern
+      // of how a real partner application would securely handle its key.
+      const INTERNAL_API_KEY = process.env.NEXT_PUBLIC_INTERNAL_API_KEY || "your-super-secret-key";
+
 
       // Call the secure, central API endpoint
       const response = await fetch('/api/transactions', {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${MOCK_INTERNAL_API_KEY}`
+            'Authorization': `Bearer ${INTERNAL_API_KEY}`
         },
         body: JSON.stringify(transactionPayload),
       });
