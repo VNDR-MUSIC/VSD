@@ -5,6 +5,7 @@ import Image, { type ImageProps } from 'next/image';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { logger } from 'firebase-functions';
 
 interface AIImageProps extends Omit<ImageProps, 'src' | 'alt'> {
   hint: string;
@@ -16,6 +17,25 @@ interface AIImageProps extends Omit<ImageProps, 'src' | 'alt'> {
   priority?: boolean;
   layout?: "fill" | "fixed" | "intrinsic" | "responsive" | undefined;
   objectFit?: "contain" | "cover" | "fill" | "none" | "scale-down" | undefined;
+}
+
+// This function now securely calls our backend API route
+async function generateImageViaApi(hint: string): Promise<string> {
+    const response = await fetch('/api/generate-image', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ hint }),
+    });
+
+    if (!response.ok) {
+        const errorResult = await response.json();
+        throw new Error(errorResult.error || 'Failed to generate image via API.');
+    }
+
+    const result = await response.json();
+    return result.imageDataUri;
 }
 
 
@@ -36,11 +56,45 @@ export function AIImage({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // This component now just displays the initialSrc.
-    // The image generation logic has been removed to prevent client-side errors.
-    setCurrentImageSrc(initialSrc);
-    setIsLoading(false);
-  }, [initialSrc]); 
+    let isMounted = true;
+
+    const generateImage = async () => {
+      if (!hint) {
+        setIsLoading(false);
+        return;
+      };
+
+      try {
+        const generatedImageUri = await generateImageViaApi(hint);
+        if (isMounted) {
+          setCurrentImageSrc(generatedImageUri);
+          setError(null);
+        }
+      } catch (err: any) {
+        if (isMounted) {
+            const errorMessage = err.message || 'An unknown error occurred during image generation.';
+            console.error("AI_IMAGE_EXCEPTION: Client-side catch for image generation failure.", {
+              hint,
+              error: errorMessage,
+              errorObject: err,
+            });
+            setError(errorMessage);
+            // Fallback to initialSrc on error
+            setCurrentImageSrc(initialSrc);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    generateImage();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [hint, initialSrc]);
 
   const isDataUri = currentImageSrc.startsWith('data:');
 

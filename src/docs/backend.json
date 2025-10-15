@@ -1,6 +1,17 @@
 
 {
   "entities": {
+    "Admin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Admin",
+      "type": "object",
+      "description": "Represents an administrator user. The document ID is the user's UID.",
+      "properties": {
+        "uid": { "type": "string", "description": "The Firebase Authentication User ID of the admin." },
+        "addedAt": { "type": "string", "format": "date-time", "description": "ISO timestamp of when admin privileges were granted." }
+      },
+      "required": ["uid", "addedAt"]
+    },
     "Account": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Account",
@@ -33,6 +44,10 @@
           "type": "number",
           "description": "The user's VSD token balance."
         },
+        "vsdLiteBalance": {
+          "type": "number",
+          "description": "The user's VSD Lite token balance (off-chain reward points)."
+        },
         "status": {
           "type": "string",
           "description": "The status of the account (e.g., Active, Suspended).",
@@ -52,7 +67,7 @@
           }
         }
       },
-      "required": ["uid", "email", "walletAddress", "vsdBalance", "status", "joined", "roles"]
+      "required": ["uid", "email", "walletAddress", "vsdBalance", "vsdLiteBalance", "status", "joined", "roles"]
     },
     "Tenant": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -105,12 +120,48 @@
             "status": { "type": "string", "enum": ["Active", "Paused"], "description": "The status of the advertisement campaign." }
         },
         "required": ["id", "advertiserId", "title", "type", "url", "reward", "createdAt", "status", "clicks"]
+    },
+    "AdvertiserApplication": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Advertiser Application",
+        "type": "object",
+        "description": "Represents an application submitted by a user to become an advertiser.",
+        "properties": {
+            "userId": { "type": "string", "description": "The UID of the applicant." },
+            "userName": { "type": "string", "description": "The applicant's display name." },
+            "userEmail": { "type": "string", "format": "email", "description": "The applicant's email." },
+            "companyName": { "type": "string", "description": "The name of the advertiser's company." },
+            "website": { "type": "string", "format": "uri", "description": "The company's website." },
+            "businessDescription": { "type": "string", "description": "A description of the business and advertising goals." },
+            "status": { "type": "string", "enum": ["pending", "approved", "rejected"], "description": "The status of the application." },
+            "submittedAt": { "type": "string", "format": "date-time", "description": "ISO timestamp of when the application was submitted." }
+        },
+        "required": ["userId", "userName", "userEmail", "companyName", "website", "status", "submittedAt"]
+    },
+    "ApiLog": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "API Access Log",
+      "type": "object",
+      "description": "Records an incoming request to a VSD Network API endpoint.",
+      "properties": {
+        "timestamp": { "type": "string", "format": "date-time", "description": "ISO timestamp of the request." },
+        "status": { "type": "string", "enum": ["Success", "Failure"], "description": "Whether the API key was validated successfully." },
+        "tenantId": { "type": "string", "description": "The ID of the tenant that made the request (if key was valid)." },
+        "tenantName": { "type": "string", "description": "The name of the tenant." },
+        "endpoint": { "type": "string", "description": "The API endpoint that was accessed." },
+        "message": { "type": "string", "description": "A summary of the request or error." }
+      },
+      "required": ["timestamp", "status", "endpoint", "message"]
     }
   },
   "auth": {
     "providers": [ "google.com", "password" ]
   },
   "firestore": {
+     "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/Admin" },
+      "description": "Stores a list of admin UIDs for role-based access control."
+    },
     "/accounts/{accountId}": {
       "schema": { "$ref": "#/entities/Account" },
       "description": "Stores individual user account data, keyed by Firebase Auth UID."
@@ -130,6 +181,14 @@
     "/advertisements/{advertisementId}": {
         "schema": { "$ref": "#/entities/Advertisement" },
         "description": "Stores all advertisement campaigns that users can interact with to earn VSD Lite."
+    },
+    "/advertiserApplications/{applicationId}": {
+        "schema": { "$ref": "#/entities/AdvertiserApplication" },
+        "description": "Stores applications from users wishing to become advertisers."
+    },
+    "/api_logs/{logId}": {
+      "schema": { "$ref": "#/entities/ApiLog" },
+      "description": "Stores a log of all incoming requests to protected VSD Network API endpoints for monitoring and debugging."
     }
   }
 }
