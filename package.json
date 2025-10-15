@@ -5,11 +5,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack -p 9002",
+    "prebuild": "node ./scripts/prebuild-check.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "deploy": "firebase deploy --only hosting || (echo '⚠️ Deploy failed, rolling back...' && rm -rf build && mv build_backup build)"
   },
   "engines": {
     "node": "18.x"
