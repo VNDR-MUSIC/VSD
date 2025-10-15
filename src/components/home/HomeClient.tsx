@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from "react";
@@ -8,7 +7,6 @@ import { ArrowRight, Cpu, FileJson, Banknote, Bot, HandCoins, Network, Gift, Dol
 import Image from "next/image";
 import Link from "next/link";
 import { AIImage } from "@/components/ai/AIImage";
-import { LiveTokenData } from "@/components/home/LiveTokenData";
 import { PresalePopup } from "@/components/home/PresalePopup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -204,18 +202,7 @@ export function HomeClient() {
             </div>
         </section>
 
-        {/* --- Live Token Data & Presale --- */}
-        <section>
-             <div className="text-center mb-12">
-                <h2 className="font-headline text-3xl md:text-4xl font-bold">Join the VSD Presale</h2>
-                <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">Become an early adopter and secure your stake in the IMG ecosystem's future. The official token contract is live and verified.</p>
-            </div>
-            <LiveTokenData />
-        </section>
-
       </div>
     </>
   );
 }
-
-    
