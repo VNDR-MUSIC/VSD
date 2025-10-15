@@ -51,7 +51,7 @@ export default function TokenPage() {
                </p>
             </div>
              <AIImage
-                initialSrc="https://placehold.co/700x350.png"
+                initialSrc="https://picsum.photos/seed/token-music/700/350"
                 alt="VSD Token powering AI services for IMG"
                 width={700}
                 height={350}
@@ -123,12 +123,12 @@ export default function TokenPage() {
                     </ul>
                 </div>
                  <AIImage
-                    initialSrc="https://placehold.co/700x400.png"
-                    alt="VSD Token Allocation Chart"
+                    initialSrc="https://picsum.photos/seed/token-pie/700/400"
+                    alt="VSD Token Allocation Chart with music elements"
                     width={700}
                     height={400}
                     className="rounded-md shadow-md mx-auto"
-                    hint="token allocation pie chart"
+                    hint="token allocation music"
                  />
             </div>
             <div className="text-center pt-4">

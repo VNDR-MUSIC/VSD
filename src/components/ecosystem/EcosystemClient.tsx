@@ -112,7 +112,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 description: "Provides structured, data-driven feedback on music from real listeners to help artists refine their tracks.",
                 link: "https://musicfocus.group",
                 logoUrl: "https://i.ibb.co/tPDWyjWd/Screenshot-2025-07-25-at-10-01-10-AM.png",
-                hint: "people listening to music with headphones in a modern room",
+                hint: "people listening with headphones",
             },
              {
                 name: "Inner View Podcasts",
@@ -132,13 +132,13 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 description: "The heart of the community, offering news, resources, and forums specifically for IMG artists.",
                 link: "https://IndieArtist.Network",
                 logoUrl: "https://i.ibb.co/TxdMLzg6/Screenshot-2025-07-27-at-11-09-18-AM.png",
-                hint: "global network community connection",
+                hint: "global music network",
             },
             {
                 name: "ProFile Share",
                 description: "A profile showcasing platform for secure file sharing of demos and press kits.",
                 link: "https://Share.VNDRmusic.com",
-                hint: "secure file sharing cloud interface"
+                hint: "secure music file sharing"
             }
         ]
     },
@@ -151,7 +151,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 name: "Indie Music News",
                 description: "An independent journalism hub focused on the indie music scene.",
                 link: "#",
-                hint: "newspaper press room vintage",
+                hint: "music journalism newspaper",
             }
         ]
     },
