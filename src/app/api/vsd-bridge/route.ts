@@ -1,4 +1,6 @@
 
+'use server';
+
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 import { logger } from 'firebase-functions';
