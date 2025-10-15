@@ -5,7 +5,7 @@ import Image, { type ImageProps } from 'next/image';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { generateImageFromHint, type GenerateImageOutput } from '@/ai/flows/generate-image-from-hint-flow';
+// Note: We are no longer importing the flow directly.
 
 interface AIImageProps extends Omit<ImageProps, 'src' | 'alt'> {
   hint: string;
@@ -18,6 +18,27 @@ interface AIImageProps extends Omit<ImageProps, 'src' | 'alt'> {
   layout?: "fill" | "fixed" | "intrinsic" | "responsive" | undefined;
   objectFit?: "contain" | "cover" | "fill" | "none" | "scale-down" | undefined;
 }
+
+// This function now lives inside the component or could be in a client-side service file.
+async function generateImageViaApi(hint: string): Promise<{ imageDataUri: string }> {
+  // Calls the new secure API endpoint.
+  const response = await fetch('/api/generate-image', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // The API key is handled on the server, not here.
+    },
+    body: JSON.stringify({ hint }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to generate image.');
+  }
+
+  return response.json();
+}
+
 
 export function AIImage({
   hint,
@@ -42,8 +63,8 @@ export function AIImage({
       setError(null);
       setCurrentImageSrc(initialSrc); // Show placeholder while loading new image
 
-      generateImageFromHint({ hint })
-        .then((response: GenerateImageOutput) => {
+      generateImageViaApi(hint) // Call the API wrapper function
+        .then((response) => {
           if (isMounted && response && response.imageDataUri) {
             setCurrentImageSrc(response.imageDataUri);
           } else if (isMounted) {
