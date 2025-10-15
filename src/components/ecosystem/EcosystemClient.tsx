@@ -35,6 +35,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 name: "VNDR Music Distribution",
                 description: "Music Distribution and music publishing platform.",
                 link: "https://VNDRmusic.com",
+                logoUrl: "https://i.ibb.co/LzYSVCtz/Background-Eraser-20251014-181324183.png",
                 hint: "music producer digital audio workstation",
             },
             {
