@@ -74,20 +74,22 @@ export default function SymbiPage() {
         </Section>
 
         <Section icon={Users} title="How to Get Started: A Guide for Users and Advertisers">
-            <h3 className="text-lg font-bold mt-4">For General Users:</h3>
-            <ol>
-                <li><strong>Earn or Buy Tokens:</strong> You can start for free by visiting the "Earn" page and completing tasks to get VSD Lite tokens. Alternatively, you can purchase the main VSD token directly through the "Buy" page or our official presale.</li>
-                <li><strong>Create an Account:</strong> By logging in (e.g., with Google), you create a secure account and a wallet is associated with it on our platform. This is where your tokens will be held.</li>
-                <li><strong>Visit Your Dashboard:</strong> The "Dashboard" is your personal banking suite. Here you can see your token balances, view your transaction history, and access other features like sending tokens or staking.</li>
-                <li><strong>Explore and Use Services:</strong> With a VSD balance, you can now explore the ecosystem. For example, you could visit the "Audio Exchange" demo to see how VSD can be used for purchases, or you could use your VSD to power AI tools.</li>
-            </ol>
-            <h3 className="text-lg font-bold mt-4">For Advertisers:</h3>
-             <ol>
-                <li><strong>Become an Advertiser:</strong> After creating a standard user account, you can request the "advertiser" role from a VSD Network admin.</li>
-                <li><strong>Access the Advertiser Dashboard:</strong> Once approved, you gain access to a special "Advertiser Dashboard" where you can see real-time performance of your campaigns, including total clicks.</li>
-                <li><strong>Fund Your Account:</strong> To run campaigns, you must have "Ad Credits". This is a prepaid balance that is funded by purchasing credits with VSD tokens.</li>
-                <li><strong>Launch Campaigns:</strong> A VSD admin will create your campaigns (e.g., a video to watch or a link to click) on your behalf. The total reward payout for the campaign is debited from your Ad Credit balance. When users engage with your ad, they are paid VSD Lite tokens from this budget.</li>
-            </ol>
+            <div>
+                <h3 className="text-lg font-bold mt-4">For General Users:</h3>
+                <ol>
+                    <li><strong>Earn or Buy Tokens:</strong> You can start for free by visiting the "Earn" page and completing tasks to get VSD Lite tokens. Alternatively, you can purchase the main VSD token directly through the "Buy" page or our official presale.</li>
+                    <li><strong>Create an Account:</strong> By logging in (e.g., with Google), you create a secure account and a wallet is associated with it on our platform. This is where your tokens will be held.</li>
+                    <li><strong>Visit Your Dashboard:</strong> The "Dashboard" is your personal banking suite. Here you can see your token balances, view your transaction history, and access other features like sending tokens or staking.</li>
+                    <li><strong>Explore and Use Services:</strong> With a VSD balance, you can now explore the ecosystem. For example, you could visit the "Audio Exchange" demo to see how VSD can be used for purchases, or you could use your VSD to power AI tools.</li>
+                </ol>
+                <h3 className="text-lg font-bold mt-4">For Advertisers:</h3>
+                <ol>
+                    <li><strong>Become an Advertiser:</strong> After creating a standard user account, you can request the "advertiser" role from a VSD Network admin.</li>
+                    <li><strong>Access the Advertiser Dashboard:</strong> Once approved, you gain access to a special "Advertiser Dashboard" where you can see real-time performance of your campaigns, including total clicks.</li>
+                    <li><strong>Fund Your Account:</strong> To run campaigns, you must have "Ad Credits". This is a prepaid balance that is funded by purchasing credits with VSD tokens.</li>
+                    <li><strong>Launch Campaigns:</strong> A VSD admin will create your campaigns (e.g., a video to watch or a link to click) on your behalf. The total reward payout for the campaign is debited from your Ad Credit balance. When users engage with your ad, they are paid VSD Lite tokens from this budget.</li>
+                </ol>
+            </div>
         </Section>
 
         <Section icon={Cpu} title="The Independent Media Group (IMG) Ecosystem">
@@ -164,3 +166,5 @@ export default function SymbiPage() {
     </div>
   );
 }
+
+    

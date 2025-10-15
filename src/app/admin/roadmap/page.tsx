@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Cpu, Zap, Milestone, Users, GripVertical, ArrowRight } from 'lucide-react';
+import { PlusCircle, Cpu, Zap, Milestone, Users, GripVertical, ArrowRight, AlertTriangle } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -12,35 +12,27 @@ import Link from 'next/link';
 
 
 // --- DATA INTERFACES & API ---
-// These interfaces now match what we expect from our new backend route.
+// These interfaces are now placeholders as the backend connection has been removed for stability.
 
 interface RoadmapTask {
   id: string;
   title: string;
   description: string;
-  status: 'todo' | 'in-progress' | 'done' | 'backlog'; // Mapped from Agiled status
-  phase: 'foundation' | 'launch' | 'expansion' | 'growth'; // Mapped from Agiled project name
+  status: 'todo' | 'in-progress' | 'done' | 'backlog';
+  phase: 'foundation' | 'launch' | 'expansion' | 'growth';
   assignee?: {
     name: string;
     avatarUrl?: string;
   };
 }
 
-// The API object now points to our internal Next.js route
+// The API object is now a placeholder with a clear error message.
 const api = {
   getTasks: async (): Promise<RoadmapTask[]> => {
-    const response = await fetch('/api/agiled/tasks');
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to fetch roadmap tasks.');
-    }
-    const data = await response.json();
-    return data.tasks;
+    throw new Error('Project management integration is not configured.');
   },
-  // Update function is now a placeholder as we don't have write access logic yet.
   updateTaskStatus: async (taskId: string, newPhase: RoadmapTask['phase']) => {
-    console.log(`Updating task ${taskId} to phase ${newPhase}. (This is a simulation)`);
-    // In a real app, you would have a corresponding backend route to update Agiled
+    console.log(`Simulating update for task ${taskId} to phase ${newPhase}. (No backend)`);
     await new Promise(resolve => setTimeout(resolve, 500));
     return { success: true };
   }
@@ -51,9 +43,7 @@ const api = {
 const TaskCard = ({ task }: { task: RoadmapTask }) => {
   return (
     <Card 
-      draggable
-      onDragStart={(e) => e.dataTransfer.setData("taskId", task.id)}
-      className="mb-4 bg-background/80 cursor-grab active:cursor-grabbing"
+      className="mb-4 bg-background/80"
     >
       <CardHeader className="p-4">
         <CardTitle className="text-base">{task.title}</CardTitle>
@@ -80,13 +70,10 @@ const TaskCard = ({ task }: { task: RoadmapTask }) => {
 };
 
 
-const RoadmapColumn = ({ title, icon: Icon, phase, tasks, onDrop, onDragOver }: { title: string, icon: React.ElementType, phase: RoadmapTask['phase'], tasks: RoadmapTask[], onDrop: (e: React.DragEvent<HTMLDivElement>, phase: RoadmapTask['phase']) => void, onDragOver: (e: React.DragEvent<HTMLDivElement>) => void }) => {
+const RoadmapColumn = ({ title, icon: Icon, phase, tasks }: { title: string, icon: React.ElementType, phase: RoadmapTask['phase'], tasks: RoadmapTask[] }) => {
     return (
         <div 
             className="flex-1 p-4 bg-muted/50 rounded-lg min-h-[500px] border-2 border-dashed border-transparent transition-colors min-w-[300px]"
-            onDrop={(e) => onDrop(e, phase)}
-            onDragOver={onDragOver}
-            onDragLeave={(e) => (e.currentTarget as HTMLDivElement).classList.remove('border-primary', 'bg-primary/10')}
             data-phase={phase}
         >
             <div className="flex items-center gap-3 mb-4">
@@ -108,15 +95,18 @@ export default function RoadmapPage() {
   const { toast } = useToast();
   const [tasks, setTasks] = useState<RoadmapTask[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTasks = async () => {
       setIsLoading(true);
+      setError(null);
       try {
         const fetchedTasks = await api.getTasks();
         setTasks(fetchedTasks);
       } catch (error: any) {
         toast({ variant: 'destructive', title: 'Failed to load roadmap', description: error.message || 'Could not connect to the project management API.' });
+        setError(error.message || 'Could not connect to the project management API.');
         setTasks([]); // Set tasks to an empty array on failure
       } finally {
         setIsLoading(false);
@@ -124,32 +114,6 @@ export default function RoadmapPage() {
     };
     fetchTasks();
   }, [toast]);
-  
-  const handleDrop = async (e: React.DragEvent<HTMLDivElement>, targetPhase: RoadmapTask['phase']) => {
-    e.preventDefault();
-    (e.currentTarget as HTMLDivElement).classList.remove('border-primary', 'bg-primary/10');
-    const taskId = e.dataTransfer.getData("taskId");
-    const draggedTask = tasks.find(t => t.id === taskId);
-    
-    if (draggedTask && draggedTask.phase !== targetPhase) {
-      // Optimistic UI update
-      setTasks(prevTasks => prevTasks.map(t => t.id === taskId ? { ...t, phase: targetPhase } : t));
-
-      try {
-        await api.updateTaskStatus(taskId, targetPhase);
-        toast({ title: 'Task Phase Moved', description: `"${draggedTask.title}" moved to ${targetPhase}.` });
-      } catch {
-        toast({ variant: 'destructive', title: 'Update Failed', description: 'Could not save changes to the roadmap.' });
-        // Revert UI on failure
-        setTasks(prevTasks => prevTasks.map(t => t.id === taskId ? { ...t, phase: draggedTask.phase } : t));
-      }
-    }
-  };
-  
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-     e.preventDefault(); // Necessary to allow drop
-     (e.currentTarget as HTMLDivElement).classList.add('border-primary', 'bg-primary/10');
-  };
 
   const columns = [
     { id: 'foundation', title: 'Foundation & Presale', icon: Milestone, tasks: tasks.filter(t => t.phase === 'foundation') },
@@ -183,12 +147,12 @@ export default function RoadmapPage() {
         <div className="flex items-center justify-between">
             <div>
                  <h1 className="font-headline text-2xl font-semibold">Project Roadmap</h1>
-                 <p className="text-muted-foreground">Syncs with Agiled.app to track progress across the VSD Network development lifecycle.</p>
+                 <p className="text-muted-foreground">Track progress across the VSD Network development lifecycle. (Backend not connected)</p>
             </div>
             <div className="flex items-center gap-4">
                  <Button disabled>
                     <PlusCircle className="mr-2 h-4 w-4"/>
-                    New Task (via Agiled)
+                    New Task (via PM Tool)
                 </Button>
                 <Button variant="outline" asChild>
                     <Link href="/admin">Back to Dashboard</Link>
@@ -196,7 +160,20 @@ export default function RoadmapPage() {
             </div>
         </div>
         
-        <div className="flex gap-6 overflow-x-auto pb-4" onDragLeave={(e) => (e.currentTarget as HTMLDivElement).classList.remove('border-primary', 'bg-primary/10')}>
+        {error && (
+            <Card className="bg-destructive/10 border-destructive">
+                <CardHeader className="flex-row items-center gap-3 space-y-0">
+                    <AlertTriangle className="h-5 w-5 text-destructive-foreground"/>
+                    <CardTitle className="text-destructive-foreground">Integration Error</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-sm text-destructive-foreground">{error}</p>
+                    <p className="text-xs text-destructive-foreground/80 mt-2">The backend for the roadmap is not connected. To enable this, an administrator must provide a valid API key for your project management tool (e.g., Agiled) as an environment variable.</p>
+                </CardContent>
+            </Card>
+        )}
+
+        <div className="flex gap-6 overflow-x-auto pb-4">
             {columns.map(col => (
                 <RoadmapColumn 
                     key={col.id}
@@ -204,8 +181,6 @@ export default function RoadmapPage() {
                     icon={col.icon}
                     phase={col.id as RoadmapTask['phase']}
                     tasks={col.tasks}
-                    onDrop={handleDrop}
-                    onDragOver={handleDragOver}
                 />
             ))}
         </div>

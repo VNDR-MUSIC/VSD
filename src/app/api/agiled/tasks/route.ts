@@ -1,94 +1,79 @@
-
-import { NextResponse } from 'next/server';
-import axios from 'axios';
-
-// --- DATA MAPPING & INTERFACES ---
-
-interface AgiledTask {
-    id: number;
-    name: string;
-    description: string;
-    status: {
-        id: number;
-        name: string; // e.g., "In Progress", "Completed", "Not Started"
-        color: string;
-        type: string;
-    };
-    project_name: string;
-    start_date: string;
-    due_date: string;
-    assigned_users: {
-        id: number;
-        first_name: string;
-        last_name: string;
-        avatar: string | null;
-    }[];
-}
-
-type RoadmapPhase = 'foundation' | 'launch' | 'expansion' | 'growth' | 'backlog';
-type TaskStatus = 'todo' | 'in-progress' | 'done' | 'backlog';
-
-// Function to map Agiled project names to our roadmap phases
-function mapProjectToPhase(projectName: string): RoadmapPhase {
-    const name = projectName.toLowerCase();
-    if (name.includes('foundation')) return 'foundation';
-    if (name.includes('launch')) return 'launch';
-    if (name.includes('expansion')) return 'expansion';
-    if (name.includes('growth')) return 'growth';
-    return 'backlog'; // Default phase
-}
-
-// Function to map Agiled task statuses to our simplified statuses
-function mapAgiledStatus(agiledStatusName: string): TaskStatus {
-    const status = agiledStatusName.toLowerCase();
-    if (status.includes('completed') || status.includes('done')) return 'done';
-    if (status.includes('in progress')) return 'in-progress';
-    if (status.includes('not started')) return 'todo';
-    return 'backlog';
-}
-
-// --- API ROUTE HANDLER ---
-
-export async function GET() {
-    const AGILED_API_KEY = process.env.AGILED_API_KEY;
-    const AGILED_API_URL = 'https://my.agiled.app/api/v1/tasks';
-
-    if (!AGILED_API_KEY) {
-        console.error("Agiled API key is not configured in environment variables.");
-        return NextResponse.json({ error: 'Server configuration error: Missing API key.' }, { status: 500 });
-    }
-
-    try {
-        const response = await axios.get(AGILED_API_URL, {
-            headers: {
-                'Authorization': `Bearer ${AGILED_API_KEY}`,
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (response.status !== 200) {
-            throw new Error(`Agiled API responded with status ${response.status}`);
-        }
-
-        const agiledTasks: AgiledTask[] = response.data.data;
-        
-        // Transform the data into the format our frontend expects
-        const tasks = agiledTasks.map(task => ({
-            id: String(task.id),
-            title: task.name,
-            description: task.description,
-            status: mapAgiledStatus(task.status.name),
-            phase: mapProjectToPhase(task.project_name),
-            assignee: task.assigned_users.length > 0 ? {
-                name: `${task.assigned_users[0].first_name} ${task.assigned_users[0].last_name}`,
-                avatarUrl: task.assigned_users[0].avatar || undefined,
-            } : undefined,
-        }));
-        
-        return NextResponse.json({ tasks });
-
-    } catch (error: any) {
-        console.error("Error fetching from Agiled API:", error.response?.data || error.message);
-        return NextResponse.json({ error: 'Failed to fetch data from project management tool.' }, { status: 502 }); // 502 Bad Gateway
-    }
+{
+  "name": "nextn",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack -p 9002",
+    "prebuild": "node ./scripts/prebuild-check.js",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "jest --watch",
+    "deploy": "firebase deploy --only hosting || (echo '⚠️ Deploy failed, rolling back...' && rm -rf build && mv build_backup build)"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.16.0",
+    "@hookform/resolvers": "^4.1.3",
+    "@radix-ui/react-accordion": "^1.2.3",
+    "@radix-ui/react-alert-dialog": "^1.1.6",
+    "@radix-ui/react-avatar": "^1.1.3",
+    "@radix-ui/react-checkbox": "^1.1.4",
+    "@radix-ui/react-dialog": "^1.1.6",
+    "@radix-ui/react-dropdown-menu": "^2.1.6",
+    "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-menubar": "^1.1.6",
+    "@radix-ui/react-popover": "^1.1.6",
+    "@radix-ui/react-progress": "^1.1.2",
+    "@radix-ui/react-radio-group": "^1.2.3",
+    "@radix-ui/react-scroll-area": "^1.2.3",
+    "@radix-ui/react-select": "^2.1.6",
+    "@radix-ui/react-separator": "^1.1.2",
+    "@radix-ui/react-slider": "^1.2.3",
+    "@radix-ui/react-slot": "^1.1.2",
+    "@radix-ui/react-switch": "^1.1.3",
+    "@radix-ui/react-tabs": "^1.1.3",
+    "@radix-ui/react-toast": "^1.2.6",
+    "@radix-ui/react-tooltip": "^1.1.8",
+    "@stripe/stripe-js": "^4.1.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "embla-carousel-autoplay": "^8.1.8",
+    "embla-carousel-react": "^8.1.8",
+    "ethers": "^6.13.1",
+    "firebase": "^10.12.2",
+    "framer-motion": "^11.2.10",
+    "genkit": "^1.12.0",
+    "@genkit-ai/google-genai": "latest",
+    "lucide-react": "^0.475.0",
+    "next": "15.3.3",
+    "react": "^18.3.1",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "^18.3.1",
+    "react-firebase-hooks": "^5.1.1",
+    "react-hook-form": "^7.54.2",
+    "recharts": "^2.15.1",
+    "stripe": "^16.5.0",
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.5",
+    "@testing-library/react": "^16.0.0",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  }
 }
