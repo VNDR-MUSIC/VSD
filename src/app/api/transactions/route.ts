@@ -14,9 +14,16 @@ let db: Firestore | undefined;
 
 function getDb(): Firestore {
     if (!db) {
-        const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
-            ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-            : undefined;
+        // Safely parse the service account key
+        let serviceAccount;
+        try {
+            if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+                serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+            }
+        } catch (e) {
+            logger.error('FIREBASE_SERVICE_ACCOUNT_PARSE_ERROR: Could not parse the service account JSON.', { error: e });
+            serviceAccount = undefined;
+        }
 
         if (getApps().length === 0) {
             adminApp = initializeApp({
@@ -39,6 +46,7 @@ async function logApiRequest(logData: Omit<any, 'id' | 'timestamp'>) {
             ...logData,
             timestamp: new Date().toISOString(),
         };
+        // Use addDocumentNonBlocking to avoid waiting and improve resilience
         await firestore.collection('api_logs').add(logEntry);
     } catch (error) {
         logger.error('API_LOGGING_FAILED: Could not write to api_logs collection.', {
@@ -66,7 +74,6 @@ export async function POST(request: Request) {
           errorMessage: dbError.message,
           endpoint,
       });
-      // Return a generic error without trying to log to the DB, as it's the source of the problem.
       return NextResponse.json({ error: 'Internal Server Error: Could not verify credentials.' }, { status: 500 });
   }
 
