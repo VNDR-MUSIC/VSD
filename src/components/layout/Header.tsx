@@ -35,16 +35,12 @@ import { NavItem } from '@/types/nav';
 const NavLink = ({ href, children, currentPathname }: { href: string, children: React.ReactNode, currentPathname: string }) => (
     <Link
         href={href}
-        passHref
-        legacyBehavior
-    >
-        <a className={cn(
+        className={cn(
             "text-sm font-medium transition-colors hover:text-primary",
             currentPathname === href ? "text-primary" : "text-foreground/70"
         )}
-        >
-            {children}
-        </a>
+    >
+        {children}
     </Link>
 );
 
@@ -185,11 +181,9 @@ export function Header() {
   return (
     <header className={cn(headerClasses)}>
       <div className="container flex h-16 max-w-screen-2xl items-center">
-        <Link href="/" passHref legacyBehavior>
-            <a className="flex items-center space-x-2 mr-6">
-                <Logo size={36} />
-                <span className="font-bold sm:inline-block">VSD Network</span>
-            </a>
+        <Link href="/" className="flex items-center space-x-2 mr-6">
+            <Logo size={36} />
+            <span className="font-bold sm:inline-block">VSD Network</span>
         </Link>
         
         <div className="hidden md:flex items-center space-x-1 flex-grow">

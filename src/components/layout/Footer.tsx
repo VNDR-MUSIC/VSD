@@ -24,17 +24,17 @@ export function Footer() {
           {/* Main Links */}
           <div className="flex flex-col gap-2 p-4 rounded-lg footer-menu-background">
             <h4 className="font-bold mb-2">Platform</h4>
-            <Link href="/dashboard" passHref legacyBehavior><a className="text-muted-foreground hover:text-primary transition-colors">Dashboard</a></Link>
-            <Link href="/token" passHref legacyBehavior><a className="text-muted-foreground hover:text-primary transition-colors">VSD Token</a></Link>
-            <Link href="/ecosystem" passHref legacyBehavior><a className="text-muted-foreground hover:text-primary transition-colors">Ecosystem</a></Link>
-            <Link href="/buy" passHref legacyBehavior><a className="text-muted-foreground hover:text-primary transition-colors">Buy VSD</a></Link>
+            <Link href="/dashboard" className="text-muted-foreground hover:text-primary transition-colors">Dashboard</Link>
+            <Link href="/token" className="text-muted-foreground hover:text-primary transition-colors">VSD Token</Link>
+            <Link href="/ecosystem" className="text-muted-foreground hover:text-primary transition-colors">Ecosystem</Link>
+            <Link href="/buy" className="text-muted-foreground hover:text-primary transition-colors">Buy VSD</Link>
           </div>
 
           {/* Developer Links */}
           <div className="flex flex-col gap-2 p-4 rounded-lg footer-menu-background">
             <h4 className="font-bold mb-2">Developers</h4>
             {siteConfig.footerNav.slice(0, 4).map((item) => (
-               <Link key={item.href} href={item.href} passHref legacyBehavior><a className="text-muted-foreground hover:text-primary transition-colors">{item.title}</a></Link>
+               <Link key={item.href} href={item.href} className="text-muted-foreground hover:text-primary transition-colors">{item.title}</Link>
             ))}
           </div>
 
@@ -42,23 +42,21 @@ export function Footer() {
           <div className="flex flex-col gap-2 p-4 rounded-lg footer-menu-background">
             <h4 className="font-bold mb-2">Company</h4>
             {siteConfig.footerNav.slice(4).map((item) => (
-              <Link key={item.href} href={item.href} passHref legacyBehavior><a className="text-muted-foreground hover:text-primary transition-colors">{item.title}</a></Link>
+              <Link key={item.href} href={item.href} className="text-muted-foreground hover:text-primary transition-colors">{item.title}</Link>
             ))}
           </div>
 
           {/* Partner Link */}
           <div className="flex flex-col items-start gap-2 col-span-2 md:col-span-1 p-4 rounded-lg footer-menu-background">
              <h4 className="font-bold mb-2">An IMG Company</h4>
-             <Link href="https://indiemedia.llc" passHref legacyBehavior>
-                <a target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition-opacity w-32">
-                    <Image
-                        src="https://i.ibb.co/3wpP3F4/logo-full-256x.png"
-                        alt="Independent Media Group Logo"
-                        width={128}
-                        height={128}
-                        className="object-contain"
-                    />
-                </a>
+             <Link href="https://indiemedia.llc" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition-opacity w-32">
+                <Image
+                    src="https://i.ibb.co/3wpP3F4/logo-full-256x.png"
+                    alt="Independent Media Group Logo"
+                    width={128}
+                    height={128}
+                    className="object-contain"
+                />
              </Link>
           </div>
         </div>
