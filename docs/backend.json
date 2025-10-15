@@ -152,6 +152,21 @@
         "message": { "type": "string", "description": "A summary of the request or error." }
       },
       "required": ["timestamp", "status", "endpoint", "message"]
+    },
+    "Leaderboard": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Leaderboard",
+      "type": "object",
+      "description": "A pre-computed list of top accounts for a specific metric.",
+      "properties": {
+          "updatedAt": { "type": "string", "format": "date-time", "description": "ISO timestamp of when the leaderboard was last updated."},
+          "topHolders": {
+              "type": "array",
+              "description": "An array of the top account holders.",
+              "items": { "$ref": "#/entities/Account" }
+          }
+      },
+      "required": ["updatedAt", "topHolders"]
     }
   },
   "auth": {
@@ -189,6 +204,10 @@
     "/api_logs/{logId}": {
       "schema": { "$ref": "#/entities/ApiLog" },
       "description": "Stores a log of all incoming requests to protected VSD Network API endpoints for monitoring and debugging."
+    },
+    "/leaderboards/topHolders": {
+        "schema": { "$ref": "#/entities/Leaderboard" },
+        "description": "A single document containing a pre-computed list of the top VSD token holders. This is designed for public read access."
     }
   }
 }

@@ -5,11 +5,10 @@ import type { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Wifi, Signal, ServerCrash, Clock, View, Users } from 'lucide-react';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, limit } from 'firebase/firestore';
+import { Wifi, Signal, Users } from 'lucide-react';
+import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, doc } from 'firebase/firestore';
 import type { Account } from '@/types/account';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -23,6 +22,11 @@ interface Tenant {
     createdAt: string;
 }
 
+interface Leaderboard {
+    updatedAt: string;
+    topHolders: Account[];
+}
+
 const StatusIndicator = ({ status }: { status: string }) => {
   const baseClasses = "h-3 w-3 rounded-full mr-2 inline-block";
   if (status === 'Active') {
@@ -34,17 +38,16 @@ const StatusIndicator = ({ status }: { status: string }) => {
 const TopHoldersCard = () => {
     const firestore = useFirestore();
     
-    // Create a query to get top 5 accounts by vsdBalance
-    const topHoldersQuery = useMemoFirebase(() => {
+    // Create a reference to the specific leaderboard document.
+    const leaderboardDocRef = useMemoFirebase(() => {
         if (!firestore) return null;
-        return query(
-            collection(firestore, 'accounts'),
-            orderBy('vsdBalance', 'desc'),
-            limit(5)
-        );
+        return doc(firestore, 'leaderboards', 'topHolders');
     }, [firestore]);
 
-    const { data: topHolders, isLoading } = useCollection<Account>(topHoldersQuery);
+    // Use useDoc to fetch the single leaderboard document.
+    const { data: leaderboard, isLoading } = useDoc<Leaderboard>(leaderboardDocRef);
+
+    const topHolders = leaderboard?.topHolders;
 
     return (
         <Card className="shadow-2xl bg-card/80 backdrop-blur-sm">
@@ -54,7 +57,12 @@ const TopHoldersCard = () => {
                     Top 5 VSD Holders
                 </CardTitle>
                 <CardDescription>
-                    A real-time leaderboard of the top wallet balances in the network. This data is for informational purposes only.
+                    A snapshot of the top wallet balances in the network. This data is for informational purposes only.
+                    {leaderboard?.updatedAt && (
+                        <span className="block text-xs mt-1">
+                            Last updated: {formatDistanceToNow(new Date(leaderboard.updatedAt), { addSuffix: true })}
+                        </span>
+                    )}
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -97,7 +105,7 @@ const TopHoldersCard = () => {
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={3} className="text-center py-10 text-muted-foreground">
-                                    No holder data available.
+                                    Leaderboard data is not yet available.
                                 </TableCell>
                             </TableRow>
                         )}

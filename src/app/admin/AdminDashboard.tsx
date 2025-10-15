@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -17,6 +18,7 @@ import {
   Clock,
   Map,
   ArrowRight,
+  RefreshCw,
 } from 'lucide-react';
 import {
   Card,
@@ -49,7 +51,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useCollection, useFirestore, useUser, useMemoFirebase, updateDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase';
-import { collection, doc, query, where, arrayUnion, orderBy } from 'firebase/firestore';
+import { collection, doc, query, where, arrayUnion, orderBy, getDocs, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Account } from '@/types/account';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
@@ -106,7 +108,7 @@ interface ApiLog {
     status: 'Success' | 'Failure';
     tenantId?: string;
     tenantName?: string;
-endpoint: string;
+    endpoint: string;
     message: string;
 }
 
@@ -138,6 +140,7 @@ export function AdminDashboard() {
   const firestore = useFirestore();
   const { user } = useUser();
   const { toast } = useToast();
+  const [isUpdatingLeaderboard, setIsUpdatingLeaderboard] = React.useState(false);
 
   const tenantsQuery = useMemoFirebase(() => firestore && user ? collection(firestore, 'tenants') : null, [firestore, user]);
   const advertisementsQuery = useMemoFirebase(() => firestore && user ? collection(firestore, 'advertisements') : null, [firestore, user]);
@@ -176,6 +179,37 @@ export function AdminDashboard() {
       title: `Application ${newStatus}`,
       description: `The application has been successfully ${newStatus}.`,
     });
+  };
+
+  const handleUpdateLeaderboard = async () => {
+    if (!firestore || !isAdmin) return;
+
+    setIsUpdatingLeaderboard(true);
+    toast({ title: 'Updating Leaderboard...', description: 'Fetching top holders and writing to the leaderboard document.' });
+
+    try {
+        const topHoldersQuery = query(
+            collection(firestore, 'accounts'),
+            orderBy('vsdBalance', 'desc'),
+            limit(5)
+        );
+
+        const snapshot = await getDocs(topHoldersQuery);
+        const topHolders = snapshot.docs.map(d => d.data() as Account);
+
+        const leaderboardRef = doc(firestore, 'leaderboards', 'topHolders');
+        await setDocumentNonBlocking(leaderboardRef, {
+            topHolders: topHolders,
+            updatedAt: new Date().toISOString()
+        });
+
+        toast({ title: 'Leaderboard Updated', description: 'The public leaderboard has been successfully updated.' });
+    } catch (error: any) {
+        console.error("Failed to update leaderboard:", error);
+        toast({ variant: 'destructive', title: 'Leaderboard Update Failed', description: error.message });
+    } finally {
+        setIsUpdatingLeaderboard(false);
+    }
   };
 
 
@@ -270,6 +304,18 @@ export function AdminDashboard() {
                          <TabsTrigger value="roadmap">Roadmap</TabsTrigger>
                     </TabsList>
                     <div className="ml-auto flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 gap-1"
+                          onClick={handleUpdateLeaderboard}
+                          disabled={isUpdatingLeaderboard}
+                        >
+                          <RefreshCw className={`h-3.5 w-3.5 ${isUpdatingLeaderboard ? 'animate-spin' : ''}`} />
+                          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                            {isUpdatingLeaderboard ? 'Updating...' : 'Update Leaderboard'}
+                          </span>
+                        </Button>
                         <Button asChild variant="outline" size="sm" className="h-8 gap-1">
                           <Link href="/admin/integration-prompt">
                             <FileText className="h-3.5 w-3.5" />
