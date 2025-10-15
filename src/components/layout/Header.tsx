@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -34,12 +35,16 @@ import { NavItem } from '@/types/nav';
 const NavLink = ({ href, children, currentPathname }: { href: string, children: React.ReactNode, currentPathname: string }) => (
     <Link
         href={href}
-        className={cn(
+        passHref
+        legacyBehavior
+    >
+        <a className={cn(
             "text-sm font-medium transition-colors hover:text-primary",
             currentPathname === href ? "text-primary" : "text-foreground/70"
         )}
-    >
-        {children}
+        >
+            {children}
+        </a>
     </Link>
 );
 
@@ -91,7 +96,7 @@ const UserNav = () => {
     
     if (!user) {
         return (
-            <Button asChild variant="outline">
+            <Button asChild>
                 <Link href="/login"><User className="mr-2 h-4 w-4"/>Login</Link>
             </Button>
         );
@@ -180,9 +185,11 @@ export function Header() {
   return (
     <header className={cn(headerClasses)}>
       <div className="container flex h-16 max-w-screen-2xl items-center">
-        <Link href="/" className="flex items-center space-x-2 mr-6">
-            <Logo size={36} />
-            <span className="font-bold sm:inline-block">VSD Network</span>
+        <Link href="/" passHref legacyBehavior>
+            <a className="flex items-center space-x-2 mr-6">
+                <Logo size={36} />
+                <span className="font-bold sm:inline-block">VSD Network</span>
+            </a>
         </Link>
         
         <div className="hidden md:flex items-center space-x-1 flex-grow">
