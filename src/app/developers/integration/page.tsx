@@ -80,8 +80,8 @@ export default function IntegrationPage() {
 
       <div className="space-y-8">
         <StepCard icon={KeyRound} title="Get Registered & Receive API Key" step={1}>
-            <p>First, an administrator must register your project as a "Tenant" in the VSD Network's <Link href="/admin">Admin Dashboard</Link>.</p>
-            <p>During this process, the admin will:</p>
+            <p>First, your project must be registered as a "Tenant" in the VSD Network. If you are not yet registered, please complete the <Link href="/for-businesses/register">API registration form</Link>.</p>
+            <p>Once your application is approved, an administrator will register your project in the <Link href="/admin">Admin Dashboard</Link>. During this process, the admin will:</p>
             <ul>
                 <li>Add your project's name (e.g., "My Awesome App") and domain.</li>
                 <li>Generate a unique `INTERNAL_API_KEY` for your project.</li>
