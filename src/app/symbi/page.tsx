@@ -126,7 +126,7 @@ export default function SymbiPage() {
 
                 <h4 className="font-bold flex items-center gap-2"><BookOpen className="text-primary"/>News & Media</h4>
                 <ul>
-                    <li><strong>Indie Music News:</strong> A news outlet focused on independent journalism for the indie music scene.</li>
+                    <li><strong>Indie Music News:</strong> An independent journalism hub focused on the indie music scene.</li>
                 </ul>
 
                 <h4 className="font-bold flex items-center gap-2"><Route className="text-primary"/>Ecosystem Infrastructure</h4>
@@ -162,5 +162,3 @@ export default function SymbiPage() {
     </div>
   );
 }
-
-    
