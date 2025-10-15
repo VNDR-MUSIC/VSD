@@ -1,4 +1,4 @@
-# VSD Network - The Currency for the Creator Economy
+ run bbild# VSD Network - The Currency for the Creator Economy
 
 This is a Next.js project bootstrapped with Firebase and Genkit for the VSD Network, the official financial ecosystem for the Independent Media Group (IMG).
 
