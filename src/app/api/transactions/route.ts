@@ -2,13 +2,11 @@
 'use server';
 
 import { NextResponse } from 'next/server';
-import { logger } from 'firebase-functions';
 import { randomUUID } from 'crypto';
 import { initializeApp, getApps, App } from 'firebase-admin/app';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 
 // --- Memoized Firebase Admin SDK Initialization ---
-// This ensures we initialize only once per serverless function instance.
 let adminApp: App | undefined;
 let db: Firestore | undefined;
 
@@ -35,10 +33,9 @@ async function logApiRequest(logData: Omit<any, 'id' | 'timestamp'>) {
             ...logData,
             timestamp: new Date().toISOString(),
         };
-        // Use addDocumentNonBlocking to avoid waiting and improve resilience
         await firestore.collection('api_logs').add(logEntry);
     } catch (error) {
-        logger.error('API_LOGGING_FAILED: Could not write to api_logs collection.', {
+        console.error('API_LOGGING_FAILED: Could not write to api_logs collection.', {
             error,
             logData,
         });
@@ -59,7 +56,7 @@ export async function POST(request: Request) {
     tenantDoc = tenantsSnapshot.docs[0];
     tenant = tenantDoc?.data();
   } catch (dbError: any) {
-      logger.error('FIRESTORE_CONNECTION_ERROR: Failed to connect to Firestore to validate API key.', {
+      console.error('FIRESTORE_CONNECTION_ERROR: Failed to connect to Firestore to validate API key.', {
           errorMessage: dbError.message,
           endpoint,
       });
@@ -112,17 +109,17 @@ export async function POST(request: Request) {
       description: description || 'VSD Transfer',
     };
 
-    logger.info('API_TRANSACTION_SUCCESS: A transaction was processed.', { transaction: transaction, tenant: tenant.name });
+    console.log('API_TRANSACTION_SUCCESS: A transaction was processed.', { transaction: transaction, tenant: tenant.name });
 
     return NextResponse.json(transaction, { status: 201 });
 
   } catch (error: any) {
     if (error instanceof SyntaxError) {
-        logger.warn('API_INVALID_JSON: Failed to parse request body.', { path: endpoint, tenant: tenant.name });
+        console.warn('API_INVALID_JSON: Failed to parse request body.', { path: endpoint, tenant: tenant.name });
         return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 });
     }
 
-    logger.error('API_TRANSACTION_UNHANDLED_EXCEPTION: Unhandled error in endpoint.', {
+    console.error('API_TRANSACTION_UNHANDLED_EXCEPTION: Unhandled error in endpoint.', {
       path: endpoint,
       tenant: tenant.name,
       errorMessage: error.message,

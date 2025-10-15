@@ -39,36 +39,38 @@ export default function SymbiPage() {
         </Section>
 
         <Section icon={DollarSign} title="The Two-Token System: VSD and VSD Lite">
-            <p>The VSD Network uses two different tokens to power its economy. Understanding both is key to understanding our platform.</p>
-            
-            <h3 className="text-lg font-bold mt-4">1. The VSD Token (The Main Utility Token)</h3>
-            <p>This is the primary, official currency of the entire IMG ecosystem. It is a real cryptocurrency (an ERC-20 token) that has tangible value and multiple uses.</p>
-            <ul>
-                <li><strong>What is its main purpose?</strong> To be used as "digital fuel" to access services and participate in the economy. Think of it like an arcade token needed to play the games in our digital arcade.</li>
-                <li><strong>What can you do with it?</strong>
-                    <ul>
-                        <li><strong>Access AI Services:</strong> Use VSD to pay for powerful AI tools, like the "IMG Services" suite which can generate images and other content.</li>
-                        <li><strong>Fund Ad Campaigns:</strong> Advertisers use VSD to purchase "Ad Credits" to fund their campaigns on the network.</li>
-                        <li><strong>Vote on the Future (Governance):</strong> VSD holders can vote on important decisions about how the network is run and what features get built next.</li>
-                        <li><strong>Earn More Tokens (Staking):</strong> You can "stake" (lock up) your VSD tokens to help secure the network and earn rewards for your participation.</li>
-                        <li><strong>Buy and Sell:</strong> Use VSD as the currency to buy, sell, or license digital goods on partner platforms like the Audio.Exchange.</li>
-                    </ul>
-                </li>
-                <li><strong>How do you get VSD Tokens?</strong> Initially, they are available through our official presale. Later, they will be available on cryptocurrency exchanges. You can also get them by converting VSD Lite tokens.</li>
-            </ul>
+             <div>
+                <p>The VSD Network uses two different tokens to power its economy. Understanding both is key to understanding our platform.</p>
+                
+                <h3 className="text-lg font-bold mt-4">1. The VSD Token (The Main Utility Token)</h3>
+                <p>This is the primary, official currency of the entire IMG ecosystem. It is a real cryptocurrency (an ERC-20 token) that has tangible value and multiple uses.</p>
+                <ul>
+                    <li><strong>What is its main purpose?</strong> To be used as "digital fuel" to access services and participate in the economy. Think of it like an arcade token needed to play the games in our digital arcade.</li>
+                    <li><strong>What can you do with it?</strong>
+                        <ul>
+                            <li><strong>Access AI Services:</strong> Use VSD to pay for powerful AI tools, like the "IMG Services" suite which can generate images and other content.</li>
+                            <li><strong>Fund Ad Campaigns:</strong> Advertisers use VSD to purchase "Ad Credits" to fund their campaigns on the network.</li>
+                            <li><strong>Vote on the Future (Governance):</strong> VSD holders can vote on important decisions about how the network is run and what features get built next.</li>
+                            <li><strong>Earn More Tokens (Staking):</strong> You can "stake" (lock up) your VSD tokens to help secure the network and earn rewards for your participation.</li>
+                            <li><strong>Buy and Sell:</strong> Use VSD as the currency to buy, sell, or license digital goods on partner platforms like the Audio.Exchange.</li>
+                        </ul>
+                    </li>
+                    <li><strong>How do you get VSD Tokens?</strong> Initially, they are available through our official presale. Later, they will be available on cryptocurrency exchanges. You can also get them by converting VSD Lite tokens.</li>
+                </ul>
 
-            <h3 className="text-lg font-bold mt-4">2. The VSD Lite Token (The Rewards Token)</h3>
-            <p>VSD Lite is a rewards point system. It is **not** a cryptocurrency and exists only within our website. It is designed to be earned and spent within the VSD ecosystem.</p>
-            <ul>
-                <li><strong>What is its purpose?</strong> To reward our community for their engagement and help them get started in our ecosystem without needing to spend money.</li>
-                 <li><strong>How do you get VSD Lite?</strong> You earn it by completing simple tasks on the "Earn" page, such as watching videos or visiting the websites of our advertising partners.</li>
-                 <li><strong>What can you do with it?</strong> 
-                    <ul>
-                        <li>Its primary function is to be **converted into the main VSD Token**. The current conversion rate is 100 VSD Lite = 1 VSD Token. This allows users to turn their time and engagement into real value within our ecosystem.</li>
-                        <li>Users can also **transfer VSD Lite** to other users on the platform.</li>
-                    </ul>
-                </li>
-            </ul>
+                <h3 className="text-lg font-bold mt-4">2. The VSD Lite Token (The Rewards Token)</h3>
+                <p>VSD Lite is a rewards point system. It is **not** a cryptocurrency and exists only within our website. It is designed to be earned and spent within the VSD ecosystem.</p>
+                <ul>
+                    <li><strong>What is its purpose?</strong> To reward our community for their engagement and help them get started in our ecosystem without needing to spend money.</li>
+                    <li><strong>How do you get VSD Lite?</strong> You earn it by completing simple tasks on the "Earn" page, such as watching videos or visiting the websites of our advertising partners.</li>
+                    <li><strong>What can you do with it?</strong> 
+                        <ul>
+                            <li>Its primary function is to be **converted into the main VSD Token**. The current conversion rate is 100 VSD Lite = 1 VSD Token. This allows users to turn their time and engagement into real value within our ecosystem.</li>
+                            <li>Users can also **transfer VSD Lite** to other users on the platform.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </Section>
 
         <Section icon={Users} title="How to Get Started: A Guide for Users and Advertisers">
