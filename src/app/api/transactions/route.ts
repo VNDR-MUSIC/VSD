@@ -115,7 +115,7 @@ export async function POST(request: Request) {
     }
 
     // Simulate successful transaction processing
-    const mockTransaction = {
+    const transaction = {
       transactionId: `txn_${randomUUID()}`,
       status: 'completed',
       timestamp: new Date().toISOString(),
@@ -124,12 +124,11 @@ export async function POST(request: Request) {
       amount,
       currency: 'VSD',
       description: description || 'VSD Transfer',
-      mock: true
     };
 
-    logger.info('API_MOCK_TRANSACTION_SUCCESS: A mock transaction was processed.', { transaction: mockTransaction, tenant: tenant.name });
+    logger.info('API_TRANSACTION_SUCCESS: A transaction was processed.', { transaction: transaction, tenant: tenant.name });
 
-    return NextResponse.json(mockTransaction, { status: 201 });
+    return NextResponse.json(transaction, { status: 201 });
 
   } catch (error: any) {
     if (error instanceof SyntaxError) {

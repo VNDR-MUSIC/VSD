@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -9,7 +10,7 @@ import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy,
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase, setDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase';
-import { doc, collection, runTransaction, increment } from 'firebase/firestore';
+import { doc, collection, runTransaction, increment, query, where, getDocs } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import type { Account } from '@/types/account';
@@ -193,32 +194,32 @@ export function DashboardClient() {
           <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><PiggyBank className="h-6 w-6"/>Staking</CardTitle>
-              <CardDescription>Earn rewards for participating in the network.</CardDescription>
+              <CardDescription>Feature on the VSD Network Roadmap.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <p className="text-sm text-muted-foreground">Staked Amount</p>
-                <p className="text-2xl font-bold">0 VSD</p>
+                <p className="text-2xl font-bold">Coming Soon</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Estimated APY</p>
-                <p className="text-2xl font-bold text-green-400">~8.75%</p>
+                <p className="text-2xl font-bold text-green-400">TBD</p>
               </div>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full btn-hover-effect" onClick={() => toast({ title: "Feature Coming Soon", description: "The staking portal will be available after the presale."})}>Stake Now</Button>
+              <Button variant="outline" className="w-full" disabled>Stake Now (Coming Soon)</Button>
             </CardFooter>
           </Card>
           <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><FileJson className="h-5 w-5" />My Contracts</CardTitle>
-              <CardDescription>Status of your smart contracts.</CardDescription>
+              <CardDescription>Feature on the VSD Network Roadmap.</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-center text-muted-foreground">No active contracts found.</p>
+              <p className="text-center text-muted-foreground">Smart contract management is coming soon.</p>
             </CardContent>
             <CardFooter>
-              <Button className="w-full btn-hover-effect" onClick={() => toast({ title: "Feature Coming Soon", description: "The Smart Contract Engine is in development."})}>Create New Contract</Button>
+              <Button className="w-full" disabled>Create New Contract (Coming Soon)</Button>
             </CardFooter>
           </Card>
         </div>
@@ -316,6 +317,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
         const toAddress = formData.get('toAddress') as string;
         const amount = Number(formData.get('amount'));
         const description = formData.get('description') as string;
+        const finalDescription = description || `Transfer to ${toAddress.slice(0, 10)}...`;
 
         if (!toAddress || !amount || amount <= 0) {
             toast({ variant: 'destructive', title: 'Invalid input', description: 'Please fill out all fields correctly.' });
@@ -324,6 +326,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
         }
         
         const balanceToCheck = tokenType === 'vsd' ? userAccount.vsdBalance : userAccount.vsdLiteBalance;
+        const balanceField = tokenType === 'vsd' ? 'vsdBalance' : 'vsdLiteBalance';
         
         if (amount > balanceToCheck) {
             toast({ variant: 'destructive', title: `Insufficient ${tokenType.toUpperCase()} balance`, description: `You do not have enough ${tokenType.toUpperCase()} to complete this transaction.` });
@@ -332,34 +335,60 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
         }
 
         try {
-            // This is a simplified mock. A real implementation would require finding the recipient user by wallet address.
-            const fromRef = doc(firestore, 'accounts', user.uid);
-            
-            // For simplicity, we just log the transaction on the sender's side
-            const fromTxCollection = collection(fromRef, 'transactions');
-            const newTx = {
+            const accountsRef = collection(firestore, 'accounts');
+            const q = query(accountsRef, where('walletAddress', '==', toAddress), limit(1));
+            const recipientSnapshot = await getDocs(q);
+
+            if (recipientSnapshot.empty) {
+                toast({ variant: 'destructive', title: 'Recipient Not Found', description: 'No user found with that wallet address.' });
+                setIsLoading(false);
+                return;
+            }
+
+            const recipientDoc = recipientSnapshot.docs[0];
+            const recipientAccount = recipientDoc.data() as Account;
+
+            await runTransaction(firestore, async (transaction) => {
+                const fromRef = doc(firestore, 'accounts', user.uid);
+                const toRef = doc(firestore, 'accounts', recipientDoc.id);
+
+                // 1. Decrement sender's balance
+                transaction.update(fromRef, { [balanceField]: increment(-amount) });
+                // 2. Increment recipient's balance
+                transaction.update(toRef, { [balanceField]: increment(amount) });
+            });
+
+            // 3. Log transaction for sender
+            const fromTxCollection = collection(firestore, 'accounts', user.uid, 'transactions');
+            await addDocumentNonBlocking(fromTxCollection, {
                 type: 'out',
-                status: 'Completed' as const,
+                status: 'Completed',
                 amount,
                 date: new Date().toISOString(),
                 user: userAccount.displayName,
                 accountId: userAccount.uid,
                 from: userAccount.walletAddress,
                 to: toAddress,
-                description: description || `Transfer to ${toAddress.slice(0, 10)}...`
-            };
-            await addDocumentNonBlocking(fromTxCollection, newTx);
+                description: finalDescription
+            });
             
-            // Update sender's balance
-            const balanceField = tokenType === 'vsd' ? 'vsdBalance' : 'vsdLiteBalance';
-            await runTransaction(firestore, async (transaction) => {
-                transaction.update(fromRef, { [balanceField]: increment(-amount) });
+            // 4. Log transaction for recipient
+            const toTxCollection = collection(firestore, 'accounts', recipientDoc.id, 'transactions');
+            await addDocumentNonBlocking(toTxCollection, {
+                type: 'in',
+                status: 'Completed',
+                amount,
+                date: new Date().toISOString(),
+                user: recipientAccount.displayName,
+                accountId: recipientDoc.id,
+                from: userAccount.walletAddress,
+                to: toAddress,
+                description: finalDescription
             });
 
-
             toast({
-                title: 'Transaction Submitted',
-                description: `Sent ${amount} ${tokenType === 'vsd' ? 'VSD' : 'VSD Lite'} to ${toAddress}.`,
+                title: 'Transaction Successful',
+                description: `Sent ${amount} ${tokenType.toUpperCase()} to ${recipientAccount.displayName}.`,
             });
             setIsOpen(false);
 

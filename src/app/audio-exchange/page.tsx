@@ -9,6 +9,10 @@ import { Loader2, Music, FileText, ImageIcon, Send } from 'lucide-react';
 import { AIImage } from '@/components/ai/AIImage';
 import { logger } from 'firebase-functions';
 import type { Metadata } from 'next';
+import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import type { Account } from '@/types/account';
+import { useProtectedRoute } from '@/hooks/use-protected-route';
 
 // This is a client component, so we can't export metadata directly.
 // But we can define it for reference or for moving to a server component later.
@@ -44,15 +48,26 @@ const mockTracks = [
 
 // This component now makes REAL API calls to the VSD Network backend
 export default function AudioExchangePage() {
+  useProtectedRoute();
   const { toast } = useToast();
+  const { user } = useUser();
+  const firestore = useFirestore();
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
-  // MOCK user wallet addresses
-  const MOCK_SENDER_ADDRESS = "0xAbc...123";
+  const accountRef = useMemoFirebase(() => user && firestore ? doc(firestore, 'accounts', user.uid) : null, [firestore, user]);
+  const { data: account } = useDoc<Account>(accountRef);
+
+  // MOCK recipient wallet address
   const MOCK_RECIPIENT_ADDRESS = "0xDef...456";
 
   const handlePurchase = async (track: typeof mockTracks[0]) => {
     setIsLoading(track.id);
+    
+    if (!account || !account.walletAddress) {
+      toast({ variant: "destructive", title: "Wallet Not Found", description: "Your wallet address could not be found. Please ensure your account is set up correctly." });
+      setIsLoading(null);
+      return;
+    }
     
     try {
       toast({
@@ -61,17 +76,13 @@ export default function AudioExchangePage() {
       });
 
       const transactionPayload = {
-          fromAddress: MOCK_SENDER_ADDRESS,
+          fromAddress: account.walletAddress,
           toAddress: MOCK_RECIPIENT_ADDRESS,
           amount: track.price,
           description: `Purchase of audio license: ${track.title}`,
       };
       
-      // Use the environment variable for the API key.
-      // This is still a simulation for the demo page, but it now follows the correct pattern
-      // of how a real partner application would securely handle its key.
       const INTERNAL_API_KEY = process.env.NEXT_PUBLIC_INTERNAL_API_KEY || "your-super-secret-key";
-
 
       // Call the secure, central API endpoint
       const response = await fetch('/api/transactions', {
@@ -91,8 +102,8 @@ export default function AudioExchangePage() {
       const transactionResult: any = await response.json();
 
       toast({
-        title: "Transaction Confirmed! (Mock)",
-        description: `Mock TXN ID: ${transactionResult.transactionId}. Your purchase is complete.`,
+        title: "Transaction Confirmed",
+        description: `TXN ID: ${transactionResult.transactionId}. Your purchase is complete.`,
       });
       
     } catch (error: any) {
