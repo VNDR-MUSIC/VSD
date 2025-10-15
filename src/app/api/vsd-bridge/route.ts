@@ -3,7 +3,6 @@
 
 import { NextResponse } from 'next/server';
 import axios from 'axios';
-import { logger } from 'firebase-functions';
 
 // This is the secure backend bridge. It receives a request from our own app's
 // frontend, attaches the SECRET API key, and forwards it to the main VSD Transaction API.
@@ -16,7 +15,7 @@ export async function POST(request: Request) {
   const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY;
 
   if (!INTERNAL_API_KEY) {
-    logger.error('VSD_BRIDGE_ERROR: INTERNAL_API_KEY is not set in environment variables.');
+    console.error('VSD_BRIDGE_ERROR: INTERNAL_API_KEY is not set in environment variables.');
     return NextResponse.json({ error: 'Server configuration error.' }, { status: 500 });
   }
 
@@ -35,7 +34,7 @@ export async function POST(request: Request) {
     return NextResponse.json(vsdApiResponse.data, { status: vsdApiResponse.status });
 
   } catch (error: any) {
-    logger.error('VSD_BRIDGE_AXIOS_ERROR: Error forwarding request to VSD API.', {
+    console.error('VSD_BRIDGE_AXIOS_ERROR: Error forwarding request to VSD API.', {
       errorMessage: error.message,
       errorData: error.response?.data,
     });

@@ -1,8 +1,8 @@
+
 'use server';
 
 import { NextResponse } from 'next/server';
 import { generateImageFromHint } from '@/ai/flows/generate-image-from-hint-flow';
-import { logger } from 'firebase-functions';
 
 export async function POST(request: Request) {
   // This API route is protected by the global API key check in middleware or can be added here.
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const { hint } = body;
 
     if (!hint || typeof hint !== 'string' || hint.trim() === '') {
-      logger.warn('GENERATE_IMAGE_API_VALIDATION_FAIL: Hint is missing or invalid.');
+      console.warn('GENERATE_IMAGE_API_VALIDATION_FAIL: Hint is missing or invalid.');
       return NextResponse.json({ error: 'A valid "hint" is required.' }, { status: 400 });
     }
     
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     const result = await generateImageFromHint({ hint });
     
     if (!result || !result.imageDataUri) {
-        logger.error('GENERATE_IMAGE_API_EMPTY_RESPONSE: Genkit flow did not return image data.', { hint });
+        console.error('GENERATE_IMAGE_API_EMPTY_RESPONSE: Genkit flow did not return image data.', { hint });
         return NextResponse.json({ error: 'Image generation failed on the server.' }, { status: 500 });
     }
 
@@ -30,11 +30,11 @@ export async function POST(request: Request) {
 
   } catch (error: any) {
     if (error instanceof SyntaxError) {
-        logger.warn('GENERATE_IMAGE_API_INVALID_JSON: Failed to parse request body.');
+        console.warn('GENERATE_IMAGE_API_INVALID_JSON: Failed to parse request body.');
         return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 });
     }
 
-    logger.error('GENERATE_IMAGE_API_UNHANDLED_EXCEPTION: An unhandled error occurred.', {
+    console.error('GENERATE_IMAGE_API_UNHANDLED_EXCEPTION: An unhandled error occurred.', {
       errorMessage: error.message,
       errorStack: error.stack,
     });

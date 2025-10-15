@@ -5,7 +5,6 @@ import Image, { type ImageProps } from 'next/image';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { logger } from 'firebase-functions';
 
 interface AIImageProps extends Omit<ImageProps, 'src' | 'alt'> {
   hint: string;
