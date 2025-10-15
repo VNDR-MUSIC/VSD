@@ -6,6 +6,7 @@ import { logger } from 'firebase-functions';
 import { randomUUID } from 'crypto';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import axios from 'axios';
 
 // --- Initialize Firebase Admin SDK ---
 // This ensures we can securely write logs to Firestore from the server.
@@ -21,14 +22,42 @@ if (getApps().length === 0) {
 const db = getFirestore();
 // --- End Firebase Admin SDK Initialization ---
 
+async function createAgileTask(title: string, description: string) {
+    // This function will call our own app's API route, which then securely calls Agiled.
+    // This is the "bridge" pattern.
+    const internalApiUrl = process.env.NEXT_PUBLIC_APP_URL
+        ? `${process.env.NEXT_PUBLIC_APP_URL}/api/agiled/create-task`
+        : 'http://localhost:9002/api/agiled/create-task';
+        
+    try {
+        await axios.post(internalApiUrl, {
+            title,
+            description,
+        });
+        logger.info('AGILED_TASK_CREATED: Successfully created a task for API failure.');
+    } catch (error: any) {
+        logger.error('AGILED_TASK_CREATION_FAILED: Could not create Agiled task.', {
+            errorMessage: error.message,
+            errorData: error.response?.data
+        });
+    }
+}
+
+
 async function logApiRequest(logData: Omit<any, 'id' | 'timestamp'>) {
     try {
         const logEntry = {
             ...logData,
             timestamp: new Date().toISOString(),
         };
-        // Use addDoc for auto-generated IDs. This is a non-blocking operation on the server.
         await db.collection('api_logs').add(logEntry);
+
+        // If the status is 'Failure', trigger the autonomous task creation.
+        if (logData.status === 'Failure') {
+            const title = `API Auth Failure: ${logData.message}`;
+            const description = `An API request failed at ${logEntry.timestamp} from an unknown source trying to access the endpoint: ${logData.endpoint}. Please investigate the source or potential misconfiguration.`;
+            await createAgileTask(title, description);
+        }
     } catch (error) {
         logger.error('API_LOGGING_FAILED: Could not write to api_logs collection.', {
             error,
@@ -53,9 +82,9 @@ export async function POST(request: Request) {
   }
 
   // --- Find Tenant by API Key ---
-  // In a real app, this would be a single, efficient query.
-  const tenantsSnapshot = await db.collection('tenants').get();
-  const tenant = tenantsSnapshot.docs.find(doc => doc.data().apiKey === apiKey)?.data();
+  const tenantsSnapshot = await db.collection('tenants').where('apiKey', '==', apiKey).limit(1).get();
+  const tenantDoc = tenantsSnapshot.docs[0];
+  const tenant = tenantDoc?.data();
 
   if (!tenant) {
      await logApiRequest({
@@ -69,7 +98,7 @@ export async function POST(request: Request) {
   // At this point, the key is valid. Log the successful authentication.
   await logApiRequest({
       status: 'Success',
-      tenantId: tenant.id,
+      tenantId: tenantDoc.id,
       tenantName: tenant.name,
       endpoint,
       message: `Request from ${tenant.name} to ${endpoint}`,
