@@ -5,7 +5,6 @@ import Image, { type ImageProps } from 'next/image';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-// Note: We are no longer importing the flow directly.
 
 interface AIImageProps extends Omit<ImageProps, 'src' | 'alt'> {
   hint: string;
@@ -17,26 +16,6 @@ interface AIImageProps extends Omit<ImageProps, 'src' | 'alt'> {
   priority?: boolean;
   layout?: "fill" | "fixed" | "intrinsic" | "responsive" | undefined;
   objectFit?: "contain" | "cover" | "fill" | "none" | "scale-down" | undefined;
-}
-
-// This function now lives inside the component or could be in a client-side service file.
-async function generateImageViaApi(hint: string): Promise<{ imageDataUri: string }> {
-  // Calls the new secure API endpoint.
-  const response = await fetch('/api/generate-image', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      // The API key is handled on the server, not here.
-    },
-    body: JSON.stringify({ hint }),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error || 'Failed to generate image.');
-  }
-
-  return response.json();
 }
 
 
@@ -57,49 +36,11 @@ export function AIImage({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
-    if (hint) {
-      setIsLoading(true);
-      setError(null);
-      setCurrentImageSrc(initialSrc); // Show placeholder while loading new image
-
-      generateImageViaApi(hint) // Call the API wrapper function
-        .then((response) => {
-          if (isMounted && response && response.imageDataUri) {
-            setCurrentImageSrc(response.imageDataUri);
-          } else if (isMounted) {
-            const errorMessage = 'AIImage: Image generation returned empty or invalid data URI.';
-            console.error(errorMessage, { hint, response });
-            setError(errorMessage);
-            setCurrentImageSrc(initialSrc); 
-          }
-        })
-        .catch((err) => {
-          if (isMounted) {
-            const errorMessage = err.message || 'An unknown error occurred during image generation.';
-            console.error("AI_IMAGE_EXCEPTION: Client-side catch for image generation failure.", {
-              hint,
-              error: errorMessage,
-              errorObject: err,
-            });
-            setError(errorMessage);
-            setCurrentImageSrc(initialSrc); 
-          }
-        })
-        .finally(() => {
-          if (isMounted) {
-            setIsLoading(false);
-          }
-        });
-    } else {
-      setCurrentImageSrc(initialSrc);
-      setIsLoading(false);
-    }
-
-    return () => {
-      isMounted = false; 
-    };
-  }, [hint, initialSrc]); 
+    // This component now just displays the initialSrc.
+    // The image generation logic has been removed to prevent client-side errors.
+    setCurrentImageSrc(initialSrc);
+    setIsLoading(false);
+  }, [initialSrc]); 
 
   const isDataUri = currentImageSrc.startsWith('data:');
 
@@ -127,12 +68,11 @@ export function AIImage({
       data-ai-hint={hint}
       layout={layout}
       objectFit={objectFit}
+      onLoad={() => setIsLoading(false)}
       onError={() => {
-        console.error(`AIImage: Error loading image source (could be AI-generated or initialSrc): ${currentImageSrc}. Falling back to initialSrc if not already there.`);
+        console.error(`AIImage: Error loading image source: ${currentImageSrc}.`);
         setError('Image source failed to load.');
-        if (currentImageSrc !== initialSrc) { // Avoid infinite loop if initialSrc itself is bad
-          setCurrentImageSrc(initialSrc);
-        }
+        // To prevent potential loops if the initialSrc is also bad, we just log the error.
       }}
       {...props}
     />

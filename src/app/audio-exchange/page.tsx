@@ -134,7 +134,7 @@ export default function AudioExchangePage() {
                  />
                  <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
                     <ImageIcon className="h-3 w-3" />
-                    <span>Art by VSD AI</span>
+                    <span>Album Art</span>
                  </div>
                </div>
               <CardTitle className="font-headline text-xl sm:text-2xl">{track.title}</CardTitle>
