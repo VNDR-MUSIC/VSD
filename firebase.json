@@ -1,17 +1,15 @@
 {
   "hosting": {
-    "public": "build",
+    "source": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
-    "rewrites": [
-      {
-        "source": "**",
-        "function": "nextn"
-      }
-    ]
+    "frameworksBackend": {
+      "id": "vsd-network",
+      "region": "us-central1"
+    }
   },
   "database": {
     "rules": "database.rules.json"
