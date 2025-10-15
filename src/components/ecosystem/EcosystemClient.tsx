@@ -41,7 +41,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 name: "SoundKlix",
                 description: "Music streaming platform for indie artists.",
                 link: "https://SoundKlix.com",
-                logoUrl: "https://i.ibb.co/M53tfW4r/6afe7afc-3816-4f85-a250-50819e0f1b00.png",
+                logoUrl: "https://i.ibb.co/M53tfW4/6afe7afc-3816-4f85-a250-50819e0f1b00.png",
                 hint: "music streaming app interface",
             }
         ]
@@ -154,19 +154,6 @@ const imgEcosystem: SubsidiaryCategory[] = [
             }
         ]
     },
-    {
-        category: "Ecosystem Infrastructure",
-        id: "ecosystem-infrastructure",
-        icon: Route,
-        subsidiaries: [
-            {
-                name: "Vsd.Network",
-                description: "The IMG banking platform and token distribution network, fueling the entire ecosystem.",
-                link: "https://Vsd.Network",
-                hint: "blockchain network visualization",
-            }
-        ]
-    }
 ];
 
 export function EcosystemClient() {
