@@ -58,6 +58,7 @@ import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import { Checkbox } from '@/components/ui/checkbox';
 
 
 interface Transaction {
@@ -404,7 +405,9 @@ export function AdminDashboard() {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
                                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                      <DropdownMenuItem>View Details</DropdownMenuItem>
+                                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                        <ManageRolesDialog userAccount={userAccount} />
+                                      </DropdownMenuItem>
                                       <DropdownMenuItem>Adjust Balance</DropdownMenuItem>
                                       <DropdownMenuSeparator />
                                       <DropdownMenuItem className="text-destructive">Suspend User</DropdownMenuItem>
@@ -706,6 +709,73 @@ export function AdminDashboard() {
   );
 }
 
+function ManageRolesDialog({ userAccount }: { userAccount: Account }) {
+  const { toast } = useToast();
+  const firestore = useFirestore();
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [isAdmin, setIsAdmin] = React.useState(userAccount.roles.includes('admin'));
+  const [isAdvertiser, setIsAdvertiser] = React.useState(userAccount.roles.includes('advertiser'));
+
+  const handleSaveChanges = () => {
+    if (!firestore) {
+      toast({ variant: 'destructive', title: 'Firestore not available' });
+      return;
+    }
+
+    const newRoles = ['user']; // Every user has the 'user' role
+    if (isAdmin) newRoles.push('admin');
+    if (isAdvertiser) newRoles.push('advertiser');
+
+    const userDocRef = doc(firestore, 'accounts', userAccount.uid);
+    
+    updateDocumentNonBlocking(userDocRef, { roles: newRoles });
+
+    toast({
+      title: 'Roles Updated',
+      description: `Successfully updated roles for ${userAccount.displayName}.`,
+    });
+    setIsOpen(false);
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <div className="w-full text-left cursor-pointer" onClick={() => setIsOpen(true)}>
+          Manage Roles
+        </div>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Manage Roles for {userAccount.displayName}</DialogTitle>
+          <DialogDescription>
+            Grant or revoke special permissions for this user.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div className="flex items-center space-x-2">
+            <Checkbox id="admin-role" checked={isAdmin} onCheckedChange={(checked) => setIsAdmin(checked as boolean)} />
+            <Label htmlFor="admin-role">Admin</Label>
+            <Badge variant="destructive">Admin</Badge>
+          </div>
+          <p className="text-xs text-muted-foreground pl-6">Admins have full access to the admin dashboard and can manage users, tenants, and site settings.</p>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox id="advertiser-role" checked={isAdvertiser} onCheckedChange={(checked) => setIsAdvertiser(checked as boolean)} />
+            <Label htmlFor="advertiser-role">Advertiser</Label>
+            <Badge variant="secondary">Advertiser</Badge>
+          </div>
+           <p className="text-xs text-muted-foreground pl-6">Advertisers can access the advertiser dashboard to view their campaign performance.</p>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
+          <Button onClick={handleSaveChanges}>Save Changes</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+
 function AddAdvertisementDialog() {
     const { toast } = useToast();
     const { user } = useUser();
@@ -920,3 +990,5 @@ function AddTenantDialog() {
     </Dialog>
   );
 }
+
+    
