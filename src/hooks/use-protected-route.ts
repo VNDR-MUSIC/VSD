@@ -31,6 +31,16 @@ export function useProtectedRoute({ adminOnly = false, advertiserOnly = false }:
       router.push('/login');
       return;
     }
+    
+    // --- Super Admin Bootstrap ---
+    // This grants initial access to the first admin.
+    const isSuperAdmin = user.email === 'preston@vndrmusic.com';
+    if (adminOnly && isSuperAdmin) {
+        setIsAdmin(true);
+        setIsCheckingRoles(false);
+        return; // Bypass further checks for the super admin
+    }
+    // --- End Super Admin Bootstrap ---
 
     if (adminOnly || advertiserOnly) {
       if (isAccountLoading) {
