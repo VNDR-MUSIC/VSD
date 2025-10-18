@@ -49,8 +49,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { useCollection, useFirestore, useUser, useMemoFirebase, updateDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase';
-import { collection, doc, query, where, arrayUnion, orderBy, getDocs, limit } from 'firebase/firestore';
+import { useCollection, useFirestore, useUser, useMemoFirebase, updateDocumentNonBlocking, setDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase';
+import { collection, doc, query, where, arrayUnion, orderBy, getDocs, limit, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Account } from '@/types/account';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
@@ -148,14 +148,13 @@ export function AdminDashboard() {
     setIsClient(true);
   }, []);
 
+  // Admin-only queries, dependent on `isAdmin` flag
   const tenantsQuery = useMemoFirebase(() => firestore && isAdmin ? collection(firestore, 'tenants') : null, [firestore, isAdmin]);
   const advertisementsQuery = useMemoFirebase(() => firestore && isAdmin ? collection(firestore, 'advertisements') : null, [firestore, isAdmin]);
   const applicationsQuery = useMemoFirebase(() => firestore && isAdmin ? query(collection(firestore, 'advertiserApplications'), where('status', '==', 'pending')) : null, [firestore, isAdmin]);
-  
-  // Admin-only queries, now dependent on `isAdmin` flag from the protected route hook
   const accountsQuery = useMemoFirebase(() => firestore && isAdmin ? collection(firestore, 'accounts') : null, [firestore, isAdmin]);
-  const globalTransactionsQuery = useMemoFirebase(() => firestore && isAdmin ? query(collection(firestore, 'transactions'), orderBy('date', 'desc')) : null, [firestore, isAdmin]);
-  const apiLogsQuery = useMemoFirebase(() => firestore && isAdmin ? query(collection(firestore, 'api_logs'), orderBy('timestamp', 'desc')) : null, [firestore, isAdmin]);
+  const globalTransactionsQuery = useMemoFirebase(() => firestore && isAdmin ? query(collection(firestore, 'transactions'), orderBy('date', 'desc'), limit(50)) : null, [firestore, isAdmin]);
+  const apiLogsQuery = useMemoFirebase(() => firestore && isAdmin ? query(collection(firestore, 'api_logs'), orderBy('timestamp', 'desc'), limit(50)) : null, [firestore, isAdmin]);
   
   const { data: tenants, isLoading: tenantsLoading } = useCollection<Tenant>(tenantsQuery);
   const { data: transactions, isLoading: transactionsLoading } = useCollection<Transaction>(globalTransactionsQuery);
@@ -166,20 +165,24 @@ export function AdminDashboard() {
 
   const totalVsdInCirculation = users?.reduce((acc, user) => acc + user.vsdBalance, 0) || 0;
 
-  const handleApplicationAction = (applicationId: string, userId: string, action: 'approve' | 'reject') => {
-    if (!firestore) return;
+  const handleApplicationAction = async (applicationId: string, userId: string, action: 'approve' | 'reject') => {
+    if (!firestore || !user || !isAdmin) {
+      toast({ variant: 'destructive', title: 'Permission Denied' });
+      return;
+    }
+
+    const newStatus = action === 'approve' ? 'approved' : 'rejected';
+    const batch = writeBatch(firestore);
 
     const appRef = doc(firestore, 'advertiserApplications', applicationId);
-    const newStatus = action === 'approve' ? 'approved' : 'rejected';
-
-    updateDocumentNonBlocking(appRef, { status: newStatus });
+    batch.update(appRef, { status: newStatus });
 
     if (action === 'approve') {
       const userAccountRef = doc(firestore, 'accounts', userId);
-      updateDocumentNonBlocking(userAccountRef, {
-        roles: arrayUnion('advertiser')
-      });
+      batch.update(userAccountRef, { roles: arrayUnion('advertiser') });
     }
+    
+    await batch.commit();
 
     toast({
       title: `Application ${newStatus}`,
@@ -197,7 +200,7 @@ export function AdminDashboard() {
         const topHoldersQuery = query(
             collection(firestore, 'accounts'),
             orderBy('vsdBalance', 'desc'),
-            limit(5)
+            limit(10)
         );
 
         const snapshot = await getDocs(topHoldersQuery);
@@ -206,7 +209,7 @@ export function AdminDashboard() {
         const leaderboardRef = doc(firestore, 'leaderboards', 'topHolders');
         await setDocumentNonBlocking(leaderboardRef, {
             topHolders: topHolders,
-            updatedAt: new Date().toISOString()
+            updatedAt: serverTimestamp()
         });
 
         toast({ title: 'Leaderboard Updated', description: 'The public leaderboard has been successfully updated.' });
@@ -218,15 +221,36 @@ export function AdminDashboard() {
     }
   };
 
-  if (!isClient || isAuthLoading || !user || isCheckingRoles) {
+  if (!isClient || isAuthLoading || isCheckingRoles) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-muted/40">
         <div className="flex flex-col items-center gap-4">
           <Skeleton className="h-16 w-16 rounded-full" />
-          <p className="text-muted-foreground">Verifying access...</p>
+          <p className="text-muted-foreground">Verifying admin access...</p>
         </div>
       </div>
     );
+  }
+  
+  if (!isAdmin) {
+      return (
+         <div className="flex min-h-screen w-full items-center justify-center bg-muted/40">
+            <Card className="max-w-md text-center">
+                <CardHeader>
+                    <CardTitle className="text-destructive">Access Denied</CardTitle>
+                    <CardDescription>You do not have permission to view this page.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p>Please contact an administrator if you believe this is an error.</p>
+                </CardContent>
+                <CardFooter>
+                    <Button asChild className="w-full">
+                        <Link href="/dashboard">Go to Dashboard</Link>
+                    </Button>
+                </CardFooter>
+            </Card>
+        </div>
+      )
   }
 
   return (
@@ -720,7 +744,7 @@ function ManageRolesDialog({ userAccount }: { userAccount: Account }) {
   const [isAdmin, setIsAdmin] = React.useState(userAccount.roles.includes('admin'));
   const [isAdvertiser, setIsAdvertiser] = React.useState(userAccount.roles.includes('advertiser'));
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     if (!firestore) {
       toast({ variant: 'destructive', title: 'Firestore not available' });
       return;
@@ -732,7 +756,7 @@ function ManageRolesDialog({ userAccount }: { userAccount: Account }) {
 
     const userDocRef = doc(firestore, 'accounts', userAccount.uid);
     
-    updateDocumentNonBlocking(userDocRef, { roles: newRoles });
+    await updateDocumentNonBlocking(userDocRef, { roles: newRoles });
 
     toast({
       title: 'Roles Updated',
@@ -744,7 +768,7 @@ function ManageRolesDialog({ userAccount }: { userAccount: Account }) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <div className="w-full text-left cursor-pointer" onClick={() => setIsOpen(true)}>
+        <div className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50" onClick={(e) => e.stopPropagation()}>
           Manage Roles
         </div>
       </DialogTrigger>
@@ -806,8 +830,7 @@ function AddAdvertisementDialog() {
         return;
       }
       
-      const adId = title.toLowerCase().replace(/\s+/g, '-').slice(0, 20) + `-${Date.now()}`;
-      const newAdvertisement: Omit<Advertisement, 'id'> = {
+      const newAdvertisement = {
         advertiserId,
         title,
         type,
@@ -816,6 +839,7 @@ function AddAdvertisementDialog() {
         clicks: 0,
         status: "Active",
         createdAt: new Date().toISOString(),
+        userId: user.uid, // For ownership rules
       };
   
       if (!firestore) {
@@ -823,9 +847,7 @@ function AddAdvertisementDialog() {
           return;
       }
   
-      const docRef = doc(firestore, 'advertisements', adId);
-  
-      setDocumentNonBlocking(docRef, newAdvertisement, { merge: true });
+      addDocumentNonBlocking(collection(firestore, 'advertisements'), newAdvertisement);
   
       toast({
         title: "Advertisement Campaign Created",
@@ -923,11 +945,11 @@ function AddTenantDialog() {
     }
     
     const tenantId = name.toLowerCase().replace(/\s+/g, '-');
-    const newTenant: Omit<Tenant, 'id'> = {
+    const newTenant = {
       name,
       domain,
       status: "Active",
-      apiKey: `vsd_key_${crypto.randomUUID()}`, // In production, generate this securely on the backend
+      apiKey: `vsd_key_${crypto.randomUUID()}`,
       createdAt: new Date().toISOString(),
       userId: user.uid, // Associate the tenant with the creating admin
     };
