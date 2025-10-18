@@ -150,7 +150,7 @@ h1, h2, h3, h4, h5, h6, .font-headline {
     z-index: -1;
     margin: -1px; /* The width of the border */
     border-radius: inherit; /* Follow the parent's border-radius */
-    background: linear-gradient(90deg, hsl(var(--primary) / 0.2), hsl(var(--primary) / 0.8), hsl(var(--primary) / 0.2));
+    background: linear-gradient(90deg, hsl(var(--border)), #a0a0a0, hsl(var(--border)));
     background-size: 200% 100%;
     animation: animated-border-gradient 3s linear infinite;
   }
