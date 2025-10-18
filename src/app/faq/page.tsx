@@ -2,16 +2,16 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BrainCircuit, DollarSign, Users, Cpu, Briefcase, Code, Link as LinkIcon, PiggyBank, Disc, GraduationCap, Group, BookOpen, Route } from 'lucide-react';
+import { BrainCircuit, DollarSign, Users, Cpu, Briefcase, Code, Link as LinkIcon, PiggyBank, Disc, GraduationCap, Group, BookOpen, Route, Gift } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'VSD Network Symbiote Document',
+  title: 'VSD Network: The Complete Guide',
   description: 'A comprehensive, non-technical overview of the VSD Network, its tokens, ecosystem, mission, and functionalities, designed for informational AI systems.',
   robots: 'noindex, nofollow' // Prevents search engines from indexing this page
 };
 
-const Section = ({ icon: Icon, title, children }: { icon: React.ElementType, title: string, children: React.ReactNode }) => (
-    <Card className="shadow-lg bg-card/80 backdrop-blur-sm mt-8">
+const Section = ({ icon: Icon, title, children, id }: { icon: React.ElementType, title: string, children: React.ReactNode, id?: string }) => (
+    <Card className="shadow-lg bg-card/80 backdrop-blur-sm mt-8" id={id}>
         <CardHeader>
             <div className="flex items-center space-x-3 mb-2">
                 <Icon className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
@@ -24,7 +24,7 @@ const Section = ({ icon: Icon, title, children }: { icon: React.ElementType, tit
     </Card>
 );
 
-export default function SymbiotePage() {
+export default function KnowledgeBasePage() {
   return (
     <div className="container mx-auto py-8">
         <header className="text-center">
@@ -35,15 +35,15 @@ export default function SymbiotePage() {
             </p>
         </header>
 
-        <Section icon={Briefcase} title="Our Mission and Purpose">
+        <Section icon={Briefcase} title="Our Mission and Purpose" id="mission">
             <p>The VSD Network is the official financial ecosystem for the **Independent Media Group (IMG)**, a large family of companies focused on music, technology, and media. Our main goal is to give creators, artists, and developers access to powerful tools, especially in Artificial Intelligence (AI), that were previously too expensive or difficult to use. We do this by creating a self-sustaining economy powered by our own digital currency, the VSD Token, and funded in part by a unique advertising model.</p>
         </Section>
 
-        <Section icon={DollarSign} title="The Two-Token System: VSD and VSD Lite">
+        <Section icon={DollarSign} title="The Two-Token System: VSD and VSD Lite" id="tokens">
              <div>
                 <p>The VSD Network uses two different tokens to power its economy. Understanding both is key to understanding our platform.</p>
                 
-                <h3 className="text-lg font-bold mt-4">1. The VSD Token (The Main Utility Token)</h3>
+                <h3 className="text-lg font-bold mt-4 text-primary">1. The VSD Token (The Main Utility Token)</h3>
                 <p>This is the primary, official currency of the entire IMG ecosystem. It is a real cryptocurrency (an ERC-20 token) that has tangible value and multiple uses.</p>
                 <ul>
                     <li><strong>What is its main purpose?</strong> To be used as "digital fuel" to access services and participate in the economy. Think of it like an arcade token needed to play the games in our digital arcade.</li>
@@ -59,7 +59,7 @@ export default function SymbiotePage() {
                     <li><strong>How do you get VSD Tokens?</strong> Initially, they are available through our official presale. Later, they will be available on cryptocurrency exchanges. You can also get them by converting VSD Lite tokens.</li>
                 </ul>
 
-                <h3 className="text-lg font-bold mt-4">2. The VSD Lite Token (The Rewards Token)</h3>
+                <h3 className="text-lg font-bold mt-4 text-yellow-400">2. The VSD Lite Token (The Rewards Token)</h3>
                 <p>VSD Lite is a rewards point system. It is **not** a cryptocurrency and exists only within our website. It is designed to be earned and spent within the VSD ecosystem.</p>
                 <ul>
                     <li><strong>What is its purpose?</strong> To reward our community for their engagement and help them get started in our ecosystem without needing to spend money.</li>
@@ -74,7 +74,7 @@ export default function SymbiotePage() {
             </div>
         </Section>
 
-        <Section icon={Users} title="How to Get Started: A Guide for Users and Advertisers">
+        <Section icon={Users} title="How to Get Started: A Guide for Users and Advertisers" id="getting-started">
             <div>
                 <h3 className="text-lg font-bold mt-4">For General Users:</h3>
                 <ol>
@@ -94,7 +94,7 @@ export default function SymbiotePage() {
             </div>
         </Section>
 
-        <Section icon={Cpu} title="The Independent Media Group (IMG) Ecosystem">
+        <Section icon={Cpu} title="The Independent Media Group (IMG) Ecosystem" id="ecosystem">
             <p>The VSD Network serves as the central bank for a wide range of companies. Here is a list of our subsidiaries and partners:</p>
             <div className="space-y-4 mt-4">
                 
@@ -113,7 +113,7 @@ export default function SymbiotePage() {
 
                 <h4 className="font-bold flex items-center gap-2"><Briefcase className="text-primary"/>Business Development & Innovation</h4>
                 <ul>
-                    <li><strong>Blaque.Tech:</strong> An innovation lab that helps people with great ideas build their first product (MVP) for free.</li>
+                    <li><strong>Blaque Tech:</strong> An innovation lab that helps people with great ideas build their first product (MVP) for free.</li>
                     <li><strong>Qreatv Branding Agency:</strong> An agency that helps artists develop their brand and market presence.</li>
                 </ul>
                 
@@ -142,7 +142,7 @@ export default function SymbiotePage() {
             </div>
         </Section>
         
-        <Section icon={LinkIcon} title="Website Pages Explained">
+        <Section icon={LinkIcon} title="Website Pages Explained" id="pages">
              <ul>
                 <li><strong>Home:</strong> The main landing page introducing the VSD Network.</li>
                 <li><strong>Network Status:</strong> A page showing the live operational status of all connected services and partner APIs.</li>
@@ -156,7 +156,7 @@ export default function SymbiotePage() {
              </ul>
         </Section>
         
-        <Section icon={Code} title="For Developers and Partners: Integration">
+        <Section icon={Code} title="For Developers and Partners: Integration" id="integration">
             <p>For companies in the IMG ecosystem, integrating with the VSD Network is straightforward. The process is designed to be secure and simple:</p>
             <ol>
                 <li><strong>Registration:</strong> An administrator registers the partner company (called a "Tenant") in the VSD Admin Dashboard.</li>
@@ -168,5 +168,3 @@ export default function SymbiotePage() {
     </div>
   );
 }
-
-    

@@ -51,7 +51,7 @@ export default function TokenPage() {
                </p>
             </div>
              <AIImage
-                initialSrc="https://picsum.photos/seed/token-music/700/350"
+                initialSrc="https://picsum.photos/seed/power/700/350"
                 alt="VSD Token powering AI services for IMG"
                 width={700}
                 height={350}
@@ -128,7 +128,7 @@ export default function TokenPage() {
                     width={700}
                     height={400}
                     className="rounded-md shadow-md w-full h-auto max-w-md mx-auto"
-                    hint="financial pie chart"
+                    hint="financial pie chart dark"
                  />
             </div>
             <div className="text-center pt-4">
@@ -184,6 +184,9 @@ export default function TokenPage() {
             <p className="mb-2"><strong>IMPORTANT:</strong> The VSD Token is a utility token designed to grant access to services and features within the VSD Network ecosystem. VSD Tokens are not intended to constitute securities in any jurisdiction. This website, the whitepaper, or any related materials do not constitute a prospectus or offer document of any sort and are not intended to constitute an offer of securities or a solicitation for investment in securities.</p>
             <p className="mb-2">The information herein is not advice, nor a recommendation to acquire VSD Tokens. Participation in any token sale is at your own risk. Please consult with your legal, financial, and tax advisors before making any decisions. The VSD Network project is under development and subject to change. </p>
             <p>The VSD Foundation (or similar entity) is intended to be registered in a crypto-friendly jurisdiction and will operate in compliance with applicable local regulations. Citizens and residents of certain jurisdictions may be restricted from participating in the token sale. It is your responsibility to ensure compliance with the laws of your jurisdiction.</p>
+            <p className="mt-4 text-center">
+              <Link href="/compliance#sec-compliance" className="underline hover:text-primary">Read more about our approach to SEC compliance and token sales.</Link>
+            </p>
           </CardContent>
         </Card>
       </section>
