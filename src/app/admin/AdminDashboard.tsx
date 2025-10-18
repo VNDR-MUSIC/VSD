@@ -1,19 +1,11 @@
-
 'use client';
 
 import * as React from 'react';
 import {
-  Activity,
   ArrowUpRight,
-  CircleUser,
-  CreditCard,
   DollarSign,
-  Menu,
-  Package2,
-  Search,
   Users,
   KeyRound,
-  List,
   Coins
 } from 'lucide-react';
 import {
@@ -32,14 +24,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
-import type { Tenant } from '@/types/tenant';
-import type { Account } from '@/types/account';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { useAdminProxy } from '@/firebase';
+import type { Account } from '@/types/account';
+import type { Tenant } from '@/types/tenant';
 
 interface AdvertiserApplication {
     id: string;
@@ -64,15 +55,10 @@ const StatCard = ({ title, value, icon: Icon, description, isLoading }: { title:
 
 export function AdminDashboard() {
   useProtectedRoute({ adminOnly: true });
-  const firestore = useFirestore();
 
-  const tenantsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'tenants') : null, [firestore]);
-  const accountsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'accounts') : null, [firestore]);
-  const applicationsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'advertiserApplications') : null, [firestore]);
-
-  const { data: tenants, isLoading: tenantsLoading } = useCollection<Tenant>(tenantsQuery);
-  const { data: accounts, isLoading: accountsLoading } = useCollection<Account>(accountsQuery);
-  const { data: applications, isLoading: applicationsLoading } = useCollection<AdvertiserApplication>(applicationsQuery);
+  const { data: tenants, isLoading: tenantsLoading } = useAdminProxy<Tenant>('tenants');
+  const { data: accounts, isLoading: accountsLoading } = useAdminProxy<Account>('accounts');
+  const { data: applications, isLoading: applicationsLoading } = useAdminProxy<AdvertiserApplication>('advertiserApplications');
 
   const totalVSD = accounts?.reduce((sum, acc) => sum + (acc.vsdBalance || 0), 0) ?? 0;
   const totalVSDLite = accounts?.reduce((sum, acc) => sum + (acc.vsdLiteBalance || 0), 0) ?? 0;
@@ -85,6 +71,7 @@ export function AdminDashboard() {
     ?.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 5);
 
+  const isLoading = tenantsLoading || accountsLoading || applicationsLoading;
 
   return (
     <>
@@ -97,28 +84,28 @@ export function AdminDashboard() {
             value={accounts?.length.toLocaleString() ?? '0'}
             icon={Users}
             description="Total registered accounts in the network."
-            isLoading={accountsLoading}
+            isLoading={isLoading}
         />
          <StatCard 
             title="Connected Tenants" 
             value={tenants?.length.toLocaleString() ?? '0'}
             icon={KeyRound}
             description="Number of integrated partner applications."
-            isLoading={tenantsLoading}
+            isLoading={isLoading}
         />
          <StatCard 
             title="Total VSD Supply" 
             value={totalVSD.toLocaleString()}
             icon={DollarSign}
             description="Total circulating VSD across all users."
-            isLoading={accountsLoading}
+            isLoading={isLoading}
         />
          <StatCard 
             title="Total VSD Lite Supply" 
             value={totalVSDLite.toLocaleString()}
             icon={Coins}
             description="Total rewards points across all users."
-            isLoading={accountsLoading}
+            isLoading={isLoading}
         />
       </div>
       <div className="grid gap-4 md:gap-8 lg:grid-cols-2">
@@ -147,7 +134,7 @@ export function AdminDashboard() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {tenantsLoading ? (
+                        {isLoading ? (
                             Array.from({length: 3}).map((_, i) => (
                                 <TableRow key={i}>
                                     <TableCell><Skeleton className="h-5 w-24"/></TableCell>
@@ -193,7 +180,7 @@ export function AdminDashboard() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                         {applicationsLoading ? (
+                         {isLoading ? (
                             Array.from({length: 3}).map((_, i) => (
                                 <TableRow key={i}>
                                     <TableCell><Skeleton className="h-5 w-24"/></TableCell>

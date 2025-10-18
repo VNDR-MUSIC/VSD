@@ -6,13 +6,11 @@ import { usePathname } from 'next/navigation';
 import {
   Bell,
   Home,
-  Package2,
   Users,
   KeyRound,
   BarChart2,
   List,
   Coins,
-  Settings,
   Shield,
   LayoutDashboard,
 } from 'lucide-react';
@@ -62,7 +60,7 @@ const adminNavItems: NavItem[] = [
     { href: "/admin", title: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/api-management", title: "API Management", icon: KeyRound },
     { href: "/admin/token-distribution", title: "Token Distribution", icon: Coins },
-    { href: "/admin/activity", title: "Activity Logs", icon: List },
+    { href F": "/admin/activity", title: "Activity Logs", icon: List },
     { href: "/admin/analytics", title: "Analytics", icon: BarChart2 },
     { href: "/admin/notifications", title: "Notifications", icon: Bell },
     { href: "/admin/users", title: "User Management", icon: Users },

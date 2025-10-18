@@ -5,16 +5,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatDistanceToNow } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
+import { useAdminProxy } from '@/firebase';
 
 interface ApiLog {
     id: string;
-    timestamp: string;
+    timestamp: { _seconds: number; _nanoseconds: number } | string;
     status: 'Success' | 'Failure';
     tenantId?: string;
     tenantName?: string;
@@ -32,27 +31,35 @@ const LogRowSkeleton = () => (
     </TableRow>
 );
 
+const formatTimestamp = (timestamp: ApiLog['timestamp']): Date => {
+    if (typeof timestamp === 'string') {
+        return new Date(timestamp);
+    }
+    // Handle Firestore ServerTimestamp (proxied as object)
+    if (timestamp && typeof timestamp === 'object' && '_seconds' in timestamp) {
+        return new Date(timestamp._seconds * 1000);
+    }
+    return new Date();
+};
+
+
 export function ActivityLogsClient() {
     useProtectedRoute({ adminOnly: true });
-    const firestore = useFirestore();
     const [searchQuery, setSearchQuery] = React.useState('');
-
-    const logsQuery = useMemoFirebase(
-        () => firestore ? query(collection(firestore, 'api_logs'), orderBy('timestamp', 'desc')) : null,
-        [firestore]
-    );
-    const { data: logs, isLoading } = useCollection<ApiLog>(logsQuery);
+    
+    const { data: logs, isLoading, error } = useAdminProxy<ApiLog>('vsd_api_logs');
 
     const filteredLogs = React.useMemo(() => {
         if (!logs) return [];
-        if (!searchQuery) return logs;
+        const sortedLogs = logs.sort((a,b) => formatTimestamp(b.timestamp).getTime() - formatTimestamp(a.timestamp).getTime())
+        if (!searchQuery) return sortedLogs;
         
         const lowercasedQuery = searchQuery.toLowerCase();
-        return logs.filter(log =>
+        return sortedLogs.filter(log =>
             log.tenantName?.toLowerCase().includes(lowercasedQuery) ||
-            log.endpoint.toLowerCase().includes(lowercasedQuery) ||
-            log.message.toLowerCase().includes(lowercasedQuery) ||
-            log.status.toLowerCase().includes(lowercasedQuery)
+            log.endpoint?.toLowerCase().includes(lowercasedQuery) ||
+            log.message?.toLowerCase().includes(lowercasedQuery) ||
+            log.status?.toLowerCase().includes(lowercasedQuery)
         );
     }, [logs, searchQuery]);
 
@@ -77,6 +84,7 @@ export function ActivityLogsClient() {
                     <CardDescription>A real-time log of all incoming requests to protected VSD Network API endpoints.</CardDescription>
                 </CardHeader>
                 <CardContent>
+                    {error && <p className="text-destructive">Error: {error}</p>}
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -100,7 +108,7 @@ export function ActivityLogsClient() {
                                             <Badge variant={log.status === 'Success' ? 'default' : 'destructive'}>{log.status}</Badge>
                                         </TableCell>
                                         <TableCell className="text-right hidden sm:table-cell text-muted-foreground text-xs">
-                                            {formatDistanceToNow(new Date(log.timestamp), { addSuffix: true })}
+                                            {formatDistanceToNow(formatTimestamp(log.timestamp), { addSuffix: true })}
                                         </TableCell>
                                     </TableRow>
                                 ))

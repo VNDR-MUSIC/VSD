@@ -5,9 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { useCollection, useFirestore, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
-import type { Account } from '@/types/account';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -15,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Check, X, MoreHorizontal, UserCog } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useAdminProxy, adminProxyWrite } from '@/firebase';
+import type { Account } from '@/types/account';
 
 interface AdvertiserApplication {
     id: string;
@@ -37,37 +36,25 @@ const UserRowSkeleton = () => (
 
 export function UserManagementClient() {
     useProtectedRoute({ adminOnly: true });
-    const firestore = useFirestore();
     const { toast } = useToast();
 
-    const accountsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'accounts') : null, [firestore]);
-    const applicationsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'advertiserApplications') : null, [firestore]);
-
-    const { data: accounts, isLoading: accountsLoading } = useCollection<Account>(accountsQuery);
-    const { data: applications, isLoading: applicationsLoading } = useCollection<AdvertiserApplication>(applicationsQuery);
+    const { data: accounts, isLoading: accountsLoading, error: accountsError } = useAdminProxy<Account>('accounts');
+    const { data: applications, isLoading: applicationsLoading, error: applicationsError } = useAdminProxy<AdvertiserApplication>('advertiserApplications');
 
     const pendingApplications = React.useMemo(() => {
         return applications?.filter(app => app.status === 'pending') || [];
     }, [applications]);
     
     const handleApplication = async (application: AdvertiserApplication, newStatus: 'approved' | 'rejected') => {
-        if (!firestore) return;
-
         try {
             // Update the application status
-            const appRef = doc(firestore, 'advertiserApplications', application.id);
-            updateDocumentNonBlocking(appRef, { status: newStatus });
+            await adminProxyWrite('advertiserApplications', application.id, { status: newStatus });
 
-            // If approved, update the user's role
             if (newStatus === 'approved') {
-                const userAccountRef = doc(firestore, 'accounts', application.userId);
-                // To prevent duplicates, we need to read the user doc first.
-                // For simplicity in this non-blocking UI, we'll just assume we add it.
-                // A robust solution would use a transaction or a Cloud Function to handle this array update.
                 const userDoc = accounts?.find(acc => acc.uid === application.userId);
                 if (userDoc && !userDoc.roles.includes('advertiser')) {
                     const updatedRoles = [...userDoc.roles, 'advertiser'];
-                    updateDocumentNonBlocking(userAccountRef, { roles: updatedRoles });
+                    await adminProxyWrite('accounts', application.userId, { roles: updatedRoles });
                 }
             }
 
@@ -75,6 +62,8 @@ export function UserManagementClient() {
                 title: `Application ${newStatus}`,
                 description: `${application.userName}'s application has been ${newStatus}.`,
             });
+            // Note: A full state refresh would be ideal here, or optimistic UI updates.
+            // For now, the user will see the change on next refresh.
         } catch (error: any) {
             toast({
                 variant: 'destructive',
@@ -97,6 +86,7 @@ export function UserManagementClient() {
                     <CardDescription>Review and approve applications from users wishing to become advertisers.</CardDescription>
                 </CardHeader>
                 <CardContent>
+                    {applicationsError && <p className="text-destructive">Error: {applicationsError}</p>}
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -146,6 +136,7 @@ export function UserManagementClient() {
                     <CardDescription>View, search, and manage all user accounts in the ecosystem.</CardDescription>
                 </CardHeader>
                 <CardContent>
+                   {accountsError && <p className="text-destructive">Error: {accountsError}</p>}
                    <Table>
                         <TableHeader>
                             <TableRow>

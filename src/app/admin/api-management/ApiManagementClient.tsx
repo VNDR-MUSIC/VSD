@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -7,15 +6,14 @@ import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { MoreHorizontal, PlusCircle, Copy, Check } from 'lucide-react';
+import { MoreHorizontal, Copy, Check } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useCollection, useFirestore, useMemoFirebase, addDocumentNonBlocking } from '@/firebase';
-import { collection } from 'firebase/firestore';
-import type { Tenant } from '@/types/tenant';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { CreateTenantDialog } from './CreateTenantDialog';
+import { useAdminProxy } from '@/firebase';
+import type { Tenant } from '@/types/tenant';
 
 const TenantRowSkeleton = () => (
     <TableRow>
@@ -29,12 +27,10 @@ const TenantRowSkeleton = () => (
 
 export function ApiManagementClient() {
     useProtectedRoute({ adminOnly: true });
-    const firestore = useFirestore();
     const { toast } = useToast();
     const [copiedKey, setCopiedKey] = React.useState<string | null>(null);
 
-    const tenantsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'tenants') : null, [firestore]);
-    const { data: tenants, isLoading } = useCollection<Tenant>(tenantsQuery);
+    const { data: tenants, isLoading, error } = useAdminProxy<Tenant>('tenants');
 
     const handleCopy = (apiKey: string) => {
         navigator.clipboard.writeText(apiKey);
@@ -55,6 +51,7 @@ export function ApiManagementClient() {
                     <CardDescription>Manage API keys and access for integrated partner applications.</CardDescription>
                 </CardHeader>
                 <CardContent>
+                    {error && <p className="text-destructive">Error: {error}</p>}
                     <Table>
                         <TableHeader>
                             <TableRow>

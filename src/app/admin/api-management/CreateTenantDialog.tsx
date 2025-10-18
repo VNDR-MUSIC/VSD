@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -11,8 +10,7 @@ import { PlusCircle, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useFirestore, addDocumentNonBlocking } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { adminProxyCreate } from '@/firebase';
 
 const tenantSchema = z.object({
     name: z.string().min(3, "Tenant name must be at least 3 characters."),
@@ -30,7 +28,6 @@ function generateApiKey() {
 export function CreateTenantDialog() {
     const [isOpen, setIsOpen] = React.useState(false);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
-    const firestore = useFirestore();
     const { toast } = useToast();
     
     const form = useForm<TenantFormValues>({
@@ -39,8 +36,6 @@ export function CreateTenantDialog() {
     });
 
     const onSubmit = async (data: TenantFormValues) => {
-        if (!firestore) return;
-
         setIsSubmitting(true);
         const newTenant = {
             ...data,
@@ -50,8 +45,7 @@ export function CreateTenantDialog() {
         };
 
         try {
-            const tenantsCollection = collection(firestore, 'tenants');
-            await addDocumentNonBlocking(tenantsCollection, newTenant);
+            await adminProxyCreate('tenants', newTenant);
             toast({
                 title: 'Tenant Created',
                 description: `Successfully created tenant "${data.name}".`,
@@ -126,4 +120,3 @@ export function CreateTenantDialog() {
         </Dialog>
     );
 }
-
