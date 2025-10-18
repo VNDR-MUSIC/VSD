@@ -25,7 +25,7 @@ const Section = ({ icon: Icon, title, children }: { icon: React.ElementType, tit
 
 export default function SymbiPage() {
   return (
-    <div className="py-8">
+    <div className="container mx-auto py-8">
         <header className="text-center">
             <BrainCircuit className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
             <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Network: The Complete Guide</h1>
@@ -166,5 +166,3 @@ export default function SymbiPage() {
     </div>
   );
 }
-
-    

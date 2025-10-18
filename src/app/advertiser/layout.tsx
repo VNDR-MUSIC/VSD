@@ -14,11 +14,9 @@ export default function AdvertiserLayout({
 }) {
   return (
     <div className={cn("min-h-screen w-full flex flex-col bg-muted/40")}>
-        <div className="flex-grow container mx-auto px-4 py-8">
+        <div className="container mx-auto flex-grow px-4 py-8">
             {children}
         </div>
     </div>
   );
 }
-
-    

@@ -96,28 +96,31 @@ export default function FaqPage() {
         </p>
       </header>
 
-      <Card className="shadow-xl bg-card/80 backdrop-blur-sm">
-        <CardContent className="p-4 sm:p-6 md:p-8">
-          <Accordion type="single" collapsible className="w-full">
-            {faqs.sort((a, b) => faqs.indexOf(a) - faqs.indexOf(b)).map((faq) => (
-              <AccordionItem value={faq.id} key={faq.id}>
-                <AccordionTrigger className="text-md sm:text-lg md:text-xl text-left hover:no-underline py-4 sm:py-6">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div
-                    className="text-sm sm:text-base md:text-lg text-muted-foreground prose prose-sm sm:prose-base prose-invert max-w-none prose-a:text-primary hover:prose-a:text-primary/80"
-                    dangerouslySetInnerHTML={{ __html: faq.answer }}
-                  />
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </CardContent>
-      </Card>
+      <div className="max-w-4xl mx-auto">
+        <Card className="shadow-xl bg-card/80 backdrop-blur-sm">
+          <CardContent className="p-4 sm:p-6 md:p-8">
+            <Accordion type="single" collapsible className="w-full">
+              {faqs.sort((a, b) => faqs.indexOf(a) - faqs.indexOf(b)).map((faq) => (
+                <AccordionItem value={faq.id} key={faq.id}>
+                  <AccordionTrigger className="text-md sm:text-lg md:text-xl text-left hover:no-underline py-4 sm:py-6">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div
+                      className="text-sm sm:text-base md:text-lg text-muted-foreground prose prose-sm sm:prose-base prose-invert max-w-none prose-a:text-primary hover:prose-a:text-primary/80"
+                      dangerouslySetInnerHTML={{ __html: faq.answer }}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </CardContent>
+        </Card>
+      </div>
+
 
       <section className="mt-12 sm:mt-16 text-center">
-        <Card className="inline-block p-6 sm:p-8 bg-card/70 backdrop-blur-sm shadow-lg">
+        <Card className="inline-block p-6 sm:p-8 bg-card/70 backdrop-blur-sm shadow-lg max-w-lg">
             <CardHeader>
                 <BrainCircuit className="h-8 w-8 sm:h-10 sm:w-10 text-primary mx-auto mb-3" />
                 <CardTitle className="font-headline text-xl sm:text-2xl">Still Have Questions?</CardTitle>
@@ -137,5 +140,3 @@ export default function FaqPage() {
     </div>
   );
 }
-
-    
