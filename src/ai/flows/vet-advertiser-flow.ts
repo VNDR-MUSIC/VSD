@@ -22,7 +22,7 @@ export const VetAdvertiserOutputSchema = z.object({
   reason: z.string().describe('A concise, professional, and clear justification for the decision. This will be shown to the applicant.'),
   nextSteps: z.string().describe('Clear, actionable next steps for the applicant if they are approved. This should guide them on how to get their first campaign running. If rejected, this can be a generic closing statement.'),
 });
-export type VetAdvertiserOutput = z-infer<typeof VetAdvertiserOutputSchema>;
+export type VetAdvertiserOutput = z.infer<typeof VetAdvertiserOutputSchema>;
 
 export async function vetAdvertiser(input: VetAdvertiserInput): Promise<VetAdvertiserOutput> {
   return vetAdvertiserFlow(input);
