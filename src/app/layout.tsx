@@ -72,9 +72,11 @@ export default function RootLayout({
                 exit="exit"
                 variants={pageVariants}
                 transition={pageTransition}
-                className="flex-grow container px-4 sm:px-6 lg:px-8"
+                className="flex-grow"
               >
-                {children}
+                <div className="container px-4 sm:px-6 lg:px-8 h-full">
+                  {children}
+                </div>
               </motion.main>
             </AnimatePresence>
             {!isSpecialLayout && <Footer />}
