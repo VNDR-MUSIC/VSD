@@ -88,7 +88,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Transaction",
       "type": "object",
-      "description": "Represents a single ledger activity within the VSD Network.",
+      "description": "Represents a single ledger activity within the VSD Network. For API calls, amounts are typically in VSD and converted by the API, but internal transactions can be in VSD or VSD Lite.",
       "properties": {
         "id": { "type": "string" },
         "type": { "type": "string", "enum": ["in", "out", "Mint (Stripe)", "API Spend", "Staking Reward", "Royalty Payout", "Transfer", "VSD Lite Exchange"] },

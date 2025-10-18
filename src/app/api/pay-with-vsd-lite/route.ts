@@ -4,6 +4,9 @@
 import { NextResponse } from 'next/server';
 import { getApps, getApp, initializeApp, type App } from 'firebase-admin/app';
 import { getFirestore, Firestore, FieldValue } from 'firebase-admin/firestore';
+import { siteConfig } from '@/config/site';
+
+const { CONVERSION_RATE } = siteConfig.tokenValues;
 
 // --- Memoized Firebase Admin SDK Initialization ---
 let adminApp: App | undefined;
@@ -83,15 +86,18 @@ export async function POST(request: Request) {
   // 2. Process the Payment
   try {
     const body = await request.json();
-    const { userId, amount, description } = body;
+    const { userId, amount: vsdAmount, description } = body;
 
-    if (!userId || typeof amount !== 'number' || amount <= 0) {
-      return NextResponse.json({ error: 'Invalid request: userId and a positive amount are required.' }, { status: 400 });
+    if (!userId || typeof vsdAmount !== 'number' || vsdAmount <= 0) {
+      return NextResponse.json({ error: 'Invalid request: userId and a positive amount (in VSD) are required.' }, { status: 400 });
     }
 
     const firestore = getDb();
     const userAccountRef = firestore.collection('accounts').doc(userId);
     
+    // Convert the VSD amount to the VSD Lite amount
+    const vsdLiteAmount = vsdAmount * CONVERSION_RATE;
+
     const result = await firestore.runTransaction(async (transaction) => {
         const userDoc = await transaction.get(userAccountRef);
         if (!userDoc.exists) {
@@ -99,27 +105,27 @@ export async function POST(request: Request) {
         }
 
         const currentBalance = userDoc.data()?.vsdLiteBalance || 0;
-        if (currentBalance < amount) {
+        if (currentBalance < vsdLiteAmount) {
             throw new Error('Insufficient VSD Lite balance.');
         }
 
         // Debit the user's VSD Lite balance
         transaction.update(userAccountRef, {
-            vsdLiteBalance: FieldValue.increment(-amount)
+            vsdLiteBalance: FieldValue.increment(-vsdLiteAmount)
         });
 
         // Log the transaction in the user's subcollection
         const userTransactionsRef = userAccountRef.collection('transactions').doc();
         transaction.set(userTransactionsRef, {
             type: 'out',
-            amount: amount,
+            amount: vsdLiteAmount,
             date: new Date().toISOString(),
             status: 'Completed',
             description: description || `Payment on ${tenant.name}`,
             to: tenant.name,
         });
 
-        return { success: true, newBalance: currentBalance - amount };
+        return { success: true, newBalance: currentBalance - vsdLiteAmount, amountDebited: vsdLiteAmount, currency: 'VSD Lite' };
     });
 
     // Return a success response
