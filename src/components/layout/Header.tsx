@@ -98,10 +98,13 @@ const UserNav = () => {
         );
     }
 
-    // Now we check for account loading state after confirming there is a user
+    // --- Super Admin Bootstrap for UI Visibility ---
+    const isSuperAdmin = user.email === 'preston@vndrmusic.com';
+    
     const rolesAreLoading = isAccountLoading;
     const userRoles = account?.roles || [];
-    const isAdmin = userRoles.includes('admin');
+    // Grant admin role visually if super admin or if in roles
+    const isAdmin = isSuperAdmin || userRoles.includes('admin');
     const isAdvertiser = userRoles.includes('advertiser');
 
     return (
@@ -134,12 +137,12 @@ const UserNav = () => {
                         </DropdownMenuItem>
                     ))}
                     {(isAdmin || isAdvertiser || rolesAreLoading) && <DropdownMenuSeparator />}
-                    {rolesAreLoading && (
+                    {rolesAreLoading && !isSuperAdmin && (
                         <DropdownMenuItem disabled>
                             <Skeleton className="h-4 w-32" />
                         </DropdownMenuItem>
                     )}
-                    {!rolesAreLoading && isAdmin && (
+                    {isAdmin && (
                         <DropdownMenuItem asChild>
                            <Link href="/admin">
                                <Shield className="mr-2 h-4 w-4" />
