@@ -43,6 +43,19 @@ async function logApiRequest(logData: Omit<any, 'id' | 'timestamp'>) {
     }
 }
 
+// Helper function to handle OPTIONS requests for CORS preflight
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*', // Allow all origins
+      'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
+}
+
+
 export async function POST(request: Request) {
   const authHeader = request.headers.get('authorization');
   const apiKey = authHeader?.split(' ')[1];
@@ -51,13 +64,20 @@ export async function POST(request: Request) {
   let tenantDoc;
   let tenant;
 
+  // --- CORS Headers for the actual POST response ---
+  const responseHeaders = {
+    'Access-Control-Allow-Origin': '*', // Allow all origins
+    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  };
+
   if (!apiKey) {
     await logApiRequest({
         status: 'Failure',
         endpoint,
         message: 'Authentication error: Missing API key.',
     });
-    return NextResponse.json({ error: 'Unauthorized: API key is required.' }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized: API key is required.' }, { status: 401, headers: responseHeaders });
   }
 
   try {
@@ -70,7 +90,7 @@ export async function POST(request: Request) {
             endpoint,
             message: 'Authentication error: Invalid API key provided.',
         });
-        return NextResponse.json({ error: 'Unauthorized: Invalid API key.' }, { status: 401 });
+        return NextResponse.json({ error: 'Unauthorized: Invalid API key.' }, { status: 401, headers: responseHeaders });
     }
 
     tenantDoc = tenantsSnapshot.docs[0];
@@ -81,7 +101,7 @@ export async function POST(request: Request) {
           errorMessage: dbError.message,
           endpoint,
       });
-      return NextResponse.json({ error: 'Internal Server Error: Could not verify credentials.' }, { status: 500 });
+      return NextResponse.json({ error: 'Internal Server Error: Could not verify credentials.' }, { status: 500, headers: responseHeaders });
   }
 
   await logApiRequest({
@@ -97,7 +117,7 @@ export async function POST(request: Request) {
     const { fromAddress, toAddress, amount, description } = body;
 
     if (!fromAddress || !toAddress || !amount || typeof amount !== 'number' || amount <= 0) {
-      return NextResponse.json({ error: 'Invalid transaction details provided.' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid transaction details provided.' }, { status: 400, headers: responseHeaders });
     }
 
     const transaction = {
@@ -113,12 +133,12 @@ export async function POST(request: Request) {
 
     console.log('API_TRANSACTION_SUCCESS: A transaction was processed.', { transaction: transaction, tenant: tenant.name });
 
-    return NextResponse.json(transaction, { status: 201 });
+    return NextResponse.json(transaction, { status: 201, headers: responseHeaders });
 
   } catch (error: any) {
     if (error instanceof SyntaxError) {
         console.warn('API_INVALID_JSON: Failed to parse request body.', { path: endpoint, tenant: tenant.name });
-        return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 });
+        return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400, headers: responseHeaders });
     }
 
     console.error('API_TRANSACTION_UNHANDLED_EXCEPTION: Unhandled error in endpoint.', {
@@ -128,6 +148,6 @@ export async function POST(request: Request) {
       errorStack: error.stack,
     });
     
-    return NextResponse.json({ error: 'An internal server error occurred.' }, { status: 500 });
+    return NextResponse.json({ error: 'An internal server error occurred.' }, { status: 500, headers: responseHeaders });
   }
 }
