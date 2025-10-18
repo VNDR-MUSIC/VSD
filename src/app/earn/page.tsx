@@ -15,7 +15,9 @@ import { useCollection, useDoc, useFirestore, useMemoFirebase, updateDocumentNon
 import { collection, doc, increment, runTransaction } from 'firebase/firestore';
 import type { Account } from '@/types/account';
 
-const { CONVERSION_RATE } = siteConfig.tokenValues;
+const { CONVERSION_RATE, VSD_PRICE_USD } = siteConfig.tokenValues;
+const VSD_LITE_PRICE_USD = VSD_PRICE_USD / CONVERSION_RATE;
+
 
 interface Advertisement {
     id: string;
@@ -139,7 +141,7 @@ export default function EarnPage() {
 
   const handleLiteToVsdConversion = async () => {
     const amount = parseFloat(liteToVsdAmount);
-    if (!firestore || !accountRef) return;
+    if (!firestore || !accountRef || !account) return;
 
     if (isNaN(amount) || amount <= 0) {
       toast({ variant: 'destructive', title: 'Invalid Amount', description: 'Please enter a positive number.' });
@@ -164,18 +166,18 @@ export default function EarnPage() {
       // Log both sides of the conversion
       const userTransactionsRef = collection(firestore, 'accounts', account.uid, 'transactions');
       addDocumentNonBlocking(userTransactionsRef, {
-          type: 'out VSD Lite',
+          type: 'VSD Lite Exchange',
           status: 'Completed',
-          amount: amount,
+          amount: -amount,
           date: new Date().toISOString(),
-          description: 'Converted to VSD'
+          description: `Converted to ${vsdReceived.toLocaleString()} VSD`
       });
       addDocumentNonBlocking(userTransactionsRef, {
           type: 'in VSD',
           status: 'Completed',
           amount: vsdReceived,
           date: new Date().toISOString(),
-          description: 'Converted from VSD Lite'
+          description: `Converted from ${amount.toLocaleString()} VSD Lite`
       });
 
       setLiteToVsdAmount('');
@@ -192,7 +194,7 @@ export default function EarnPage() {
   
   const handleVsdToLiteConversion = async () => {
     const amount = parseFloat(vsdToLiteAmount);
-    if (!firestore || !accountRef) return;
+    if (!firestore || !accountRef || !account) return;
     
     if (isNaN(amount) || amount <= 0) {
         toast({ variant: 'destructive', title: 'Invalid Amount', description: 'Please enter a positive number.' });
@@ -220,14 +222,14 @@ export default function EarnPage() {
             status: 'Completed',
             amount: amount,
             date: new Date().toISOString(),
-            description: 'Exchanged for VSD Lite'
+            description: `Exchanged for ${liteReceived.toLocaleString()} VSD Lite`
         });
         addDocumentNonBlocking(userTransactionsRef, {
-            type: 'in VSD Lite',
+            type: 'VSD Lite Exchange',
             status: 'Completed',
             amount: liteReceived,
             date: new Date().toISOString(),
-            description: 'Exchanged from VSD'
+            description: `Exchanged from ${amount.toLocaleString()} VSD`
         });
 
 
@@ -297,7 +299,7 @@ export default function EarnPage() {
         <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><ArrowRightLeft /> Convert VSD Lite to VSD</CardTitle>
-            <CardDescription>{CONVERSION_RATE} VSD Lite = 1 VSD</CardDescription>
+            <CardDescription>{CONVERSION_RATE} VSD Lite = 1 VSD (VSD Lite Value: ~${VSD_LITE_PRICE_USD.toExponential(2)})</CardDescription>
           </CardHeader>
           <CardContent>
              <div>
@@ -323,7 +325,7 @@ export default function EarnPage() {
         <Card className="shadow-lg bg-card/80 backdrop-blur-sm md:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><ArrowRightLeft /> Exchange VSD for VSD Lite</CardTitle>
-            <CardDescription>1 VSD = {CONVERSION_RATE} VSD Lite. Use VSD Lite to acquire ad credits.</CardDescription>
+            <CardDescription>1 VSD = {CONVERSION_RATE} VSD Lite. Use VSD Lite for ad credits or tips.</CardDescription>
           </CardHeader>
           <CardContent>
              <div>
