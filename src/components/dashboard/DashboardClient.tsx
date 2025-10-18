@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank, Loader2, Search, Gift, Coins, ChevronsUpDown, Check } from "lucide-react";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip } from "recharts";
 import { useToast } from "@/hooks/use-toast";
-import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase, addDocumentNonBlocking } from '@/firebase';
+import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase';
 import { doc, collection, runTransaction, increment, query, where, getDocs, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
@@ -62,6 +62,19 @@ export function DashboardClient() {
   const { data: transactions, isLoading: areTransactionsLoading } = useCollection<Transaction>(transactionsRef);
 
   const isLoading = isAuthLoading || isAccountLoading;
+
+  React.useEffect(() => {
+    // Special check to grant VSD Lite to a specific user if their balance is 0
+    if (account && account.uid === 'eiMBgcJ3KhWGesl8J78oYFHiquy2' && account.vsdLiteBalance === 0 && accountRef) {
+        console.log("Specific user detected with zero balance. Granting 1,000,000 VSD Lite.");
+        updateDocumentNonBlocking(accountRef, { vsdLiteBalance: 1000000 });
+        toast({
+            title: "Balance Corrected",
+            description: "Your VSD Lite balance has been set to 1,000,000.",
+        });
+    }
+  }, [account, accountRef, toast]);
+
 
   const handleCopyToClipboard = () => {
     if (account?.walletAddress) {

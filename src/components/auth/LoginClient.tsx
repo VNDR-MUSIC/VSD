@@ -34,8 +34,7 @@ export function LoginClient() {
 
     if (isNewUser && firestore) {
         console.log("New user detected, creating account document...");
-        const vsdLiteBalance = user.uid === 'eiMBgcJ3KhWGesl8J78oYFHiquy2' ? 1000000 : 0;
-
+        
         const accountDoc: Omit<Account, 'id'> = {
             uid: user.uid,
             email: user.email!,
@@ -43,7 +42,7 @@ export function LoginClient() {
             photoURL: user.photoURL || '',
             walletAddress: `0x${user.uid.slice(0,10)}...`, // Placeholder
             vsdBalance: 0,
-            vsdLiteBalance: vsdLiteBalance,
+            vsdLiteBalance: 0, // All new users start with 0
             status: 'Active',
             joined: new Date().toISOString(),
             roles: ['user'], // Default role
