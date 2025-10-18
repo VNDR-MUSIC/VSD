@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -101,13 +102,13 @@ export function ActivityLogsClient() {
                             ) : filteredLogs && filteredLogs.length > 0 ? (
                                 filteredLogs.map((log) => (
                                     <TableRow key={log.id}>
-                                        <TableCell className="font-medium">{log.tenantName || 'N/A'}</TableCell>
-                                        <TableCell className="font-mono text-xs">{log.endpoint}</TableCell>
-                                        <TableCell className="hidden md:table-cell text-muted-foreground">{log.message}</TableCell>
+                                        <TableCell className="font-medium whitespace-nowrap">{log.tenantName || 'N/A'}</TableCell>
+                                        <TableCell className="font-mono text-xs max-w-[150px] truncate">{log.endpoint}</TableCell>
+                                        <TableCell className="hidden md:table-cell text-muted-foreground max-w-[300px] truncate">{log.message}</TableCell>
                                         <TableCell>
                                             <Badge variant={log.status === 'Success' ? 'default' : 'destructive'}>{log.status}</Badge>
                                         </TableCell>
-                                        <TableCell className="text-right hidden sm:table-cell text-muted-foreground text-xs">
+                                        <TableCell className="text-right hidden sm:table-cell text-muted-foreground text-xs whitespace-nowrap">
                                             {formatDistanceToNow(formatTimestamp(log.timestamp), { addSuffix: true })}
                                         </TableCell>
                                     </TableRow>
