@@ -13,9 +13,6 @@ let db: Firestore | undefined;
 function getDb(): Firestore {
   if (!db) {
     if (getApps().length === 0) {
-      // In a deployed Firebase App Hosting environment, initializeApp() with no arguments
-      // automatically uses the project's service account credentials. In local dev, it may
-      // use application default credentials if available.
       adminApp = initializeApp();
     } else {
       adminApp = getApp();
@@ -25,7 +22,6 @@ function getDb(): Firestore {
   return db;
 }
 // --- End Firebase Admin SDK Initialization ---
-
 
 async function logApiRequest(logData: Omit<any, 'id' | 'timestamp'>) {
     try {
@@ -55,14 +51,12 @@ export async function OPTIONS() {
   });
 }
 
-
 export async function POST(request: Request) {
   const authHeader = request.headers.get('authorization');
   const apiKey = authHeader?.split(' ')[1];
   const requestUrl = new URL(request.url);
   const endpoint = requestUrl.pathname;
-  let tenantDoc;
-  let tenant;
+  let tenantName = 'Internal Request'; // Default for internal bridge calls
 
   // --- CORS Headers for the actual POST response ---
   const responseHeaders = {
@@ -71,46 +65,36 @@ export async function POST(request: Request) {
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   };
 
-  if (!apiKey) {
-    await logApiRequest({
-        status: 'Failure',
-        endpoint,
-        message: 'Authentication error: Missing API key.',
-    });
-    return NextResponse.json({ error: 'Unauthorized: API key is required.' }, { status: 401, headers: responseHeaders });
-  }
+  // If an API key exists, it's an external request that needs validation.
+  if (apiKey) {
+    try {
+        const firestore = getDb();
+        const tenantsSnapshot = await firestore.collection('tenants').where('apiKey', '==', apiKey).limit(1).get();
+        
+        if (tenantsSnapshot.empty) {
+            await logApiRequest({ status: 'Failure', endpoint, message: 'Authentication error: Invalid API key provided.' });
+            return NextResponse.json({ error: 'Unauthorized: Invalid API key.' }, { status: 401, headers: responseHeaders });
+        }
 
-  try {
-    const firestore = getDb();
-    const tenantsSnapshot = await firestore.collection('tenants').where('apiKey', '==', apiKey).limit(1).get();
-    
-    if (tenantsSnapshot.empty) {
+        const tenantDoc = tenantsSnapshot.docs[0];
+        const tenant = tenantDoc?.data();
+        tenantName = tenant?.name || 'Unknown Tenant';
+        
         await logApiRequest({
-            status: 'Failure',
+            status: 'Success',
+            tenantId: tenantDoc.id,
+            tenantName: tenantName,
             endpoint,
-            message: 'Authentication error: Invalid API key provided.',
+            message: `Request from ${tenantName} to ${endpoint}`,
         });
-        return NextResponse.json({ error: 'Unauthorized: Invalid API key.' }, { status: 401, headers: responseHeaders });
+
+    } catch (dbError: any) {
+        console.error('FIRESTORE_CONNECTION_ERROR: Failed to validate API key.', { errorMessage: dbError.message, endpoint });
+        return NextResponse.json({ error: 'Internal Server Error: Could not verify credentials.' }, { status: 500, headers: responseHeaders });
     }
-
-    tenantDoc = tenantsSnapshot.docs[0];
-    tenant = tenantDoc?.data();
-
-  } catch (dbError: any) {
-      console.error('FIRESTORE_CONNECTION_ERROR: Failed to connect to Firestore to validate API key.', {
-          errorMessage: dbError.message,
-          endpoint,
-      });
-      return NextResponse.json({ error: 'Internal Server Error: Could not verify credentials.' }, { status: 500, headers: responseHeaders });
   }
-
-  await logApiRequest({
-      status: 'Success',
-      tenantId: tenantDoc.id,
-      tenantName: tenant.name,
-      endpoint,
-      message: `Request from ${tenant.name} to ${endpoint}`,
-  });
+  
+  // If no API key, it's assumed to be an internal call from the bridge. Proceed without validation.
   
   try {
     const body = await request.json();
@@ -131,19 +115,19 @@ export async function POST(request: Request) {
       description: description || 'VSD Transfer',
     };
 
-    console.log('API_TRANSACTION_SUCCESS: A transaction was processed.', { transaction: transaction, tenant: tenant.name });
+    console.log(`API_TRANSACTION_SUCCESS: A transaction was processed for ${tenantName}.`, { transaction });
 
     return NextResponse.json(transaction, { status: 201, headers: responseHeaders });
 
   } catch (error: any) {
     if (error instanceof SyntaxError) {
-        console.warn('API_INVALID_JSON: Failed to parse request body.', { path: endpoint, tenant: tenant.name });
+        console.warn('API_INVALID_JSON: Failed to parse request body.', { path: endpoint, tenant: tenantName });
         return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400, headers: responseHeaders });
     }
 
     console.error('API_TRANSACTION_UNHANDLED_EXCEPTION: Unhandled error in endpoint.', {
       path: endpoint,
-      tenant: tenant.name,
+      tenant: tenantName,
       errorMessage: error.message,
       errorStack: error.stack,
     });

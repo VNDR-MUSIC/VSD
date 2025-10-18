@@ -5,8 +5,8 @@ import { NextResponse } from 'next/server';
 import axios from 'axios';
 
 // This is the secure backend bridge. It receives a request from our own app's
-// frontend (like the Audio Exchange demo), attaches the SECRET API key, 
-// and forwards it to the main VSD Transaction API.
+// frontend (like the Audio Exchange demo) and forwards it to the main VSD Transaction API.
+// It does NOT need to add the internal API key because it's an internal call within the same application.
 
 export async function POST(request: Request) {
   // Determine the target URL. Use the environment variable if available, otherwise default to localhost.
@@ -15,21 +15,14 @@ export async function POST(request: Request) {
     ? `${process.env.NEXT_PUBLIC_APP_URL}/api/transactions`
     : 'http://localhost:9002/api/transactions';
 
-  const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY;
-
-  if (!INTERNAL_API_KEY) {
-    console.error('VSD_BRIDGE_ERROR: INTERNAL_API_KEY is not set in environment variables.');
-    return NextResponse.json({ error: 'Server configuration error.' }, { status: 500 });
-  }
-
   try {
     const body = await request.json();
 
-    // Forward the request to the actual VSD Transaction API, including the secret key.
+    // Forward the request to the actual VSD Transaction API.
+    // No Authorization header is needed for this internal call.
     const vsdApiResponse = await axios.post(VSD_API_URL, body, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${INTERNAL_API_KEY}`,
       },
     });
 
