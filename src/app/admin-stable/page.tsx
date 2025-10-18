@@ -7,7 +7,7 @@ import { useFirebaseApp } from "@/firebase";
 import { Loader2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-const SUPER_ADMIN_UIDS = ['lzNhwweRAndUfVzCzrAEcXLSrcs1', 'eiMBgcJ3KhWGesl8J78oYFHiquy2'];
+const SUPER_ADMIN_UIDS = ['lzNhwweRAndUfVzCzrAEcXLSrcs1', 'eiMBgcJ3KhWGesl8J78oYFHiquy2', 'd2rM2R6Z4gYy3v9kY8sF5hE7gQy1'];
 
 export default function StableAdminPage() {
   const router = useRouter();
