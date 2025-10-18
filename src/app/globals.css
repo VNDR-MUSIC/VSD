@@ -162,15 +162,15 @@ h1, h2, h3, h4, h5, h6, .font-headline {
   }
 
   .footer-menu-background {
-    background: linear-gradient(-45deg, hsl(var(--primary) / 0.05), hsl(var(--background) / 0.1), hsl(var(--secondary) / 0.1), hsl(var(--background) / 0.1));
+    background: linear-gradient(-60deg, hsl(var(--primary) / 0.05), hsl(var(--background) / 0.1), hsl(var(--secondary) / 0.1), hsl(var(--background) / 0.1));
     background-size: 400% 400%;
-    animation: footer-gradient 22.5s ease infinite;
+    animation: footer-gradient 30s ease infinite;
   }
 
   .footer-animated-gradient {
-    background: linear-gradient(-45deg, hsl(var(--background)), hsl(var(--primary) / 0.4), hsl(var(--background)), hsl(var(--primary) / 0.2));
+    background: linear-gradient(-60deg, hsl(var(--background)), hsl(var(--primary) / 0.4), hsl(var(--background)), hsl(var(--primary) / 0.2));
     background-size: 400% 400%;
-    animation: footer-gradient 22.5s ease infinite;
+    animation: footer-gradient 30s ease infinite;
   }
 }
 
