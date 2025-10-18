@@ -86,7 +86,7 @@ const UserNav = () => {
         router.push('/');
     };
 
-    if (isUserLoading || (user && isAccountLoading)) {
+    if (isUserLoading) {
         return <Skeleton className="h-10 w-10 rounded-full" />;
     }
     
@@ -98,6 +98,8 @@ const UserNav = () => {
         );
     }
 
+    // Now we check for account loading state after confirming there is a user
+    const rolesAreLoading = isAccountLoading;
     const userRoles = account?.roles || [];
     const isAdmin = userRoles.includes('admin');
     const isAdvertiser = userRoles.includes('advertiser');
@@ -131,8 +133,13 @@ const UserNav = () => {
                             </Link>
                         </DropdownMenuItem>
                     ))}
-                    {(isAdmin || isAdvertiser) && <DropdownMenuSeparator />}
-                    {isAdmin && (
+                    {(isAdmin || isAdvertiser || rolesAreLoading) && <DropdownMenuSeparator />}
+                    {rolesAreLoading && (
+                        <DropdownMenuItem disabled>
+                            <Skeleton className="h-4 w-32" />
+                        </DropdownMenuItem>
+                    )}
+                    {!rolesAreLoading && isAdmin && (
                         <DropdownMenuItem asChild>
                            <Link href="/admin">
                                <Shield className="mr-2 h-4 w-4" />
@@ -140,7 +147,7 @@ const UserNav = () => {
                             </Link>
                         </DropdownMenuItem>
                     )}
-                    {isAdvertiser && (
+                    {!rolesAreLoading && isAdvertiser && (
                         <DropdownMenuItem asChild>
                            <Link href="/advertiser">
                                <Briefcase className="mr-2 h-4 w-4" />
