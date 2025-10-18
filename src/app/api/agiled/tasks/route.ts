@@ -1,3 +1,4 @@
+
 // ⚠️ Auto-fixed placeholder for build. This file is not used by the application.
 import { NextResponse } from 'next/server';
 
