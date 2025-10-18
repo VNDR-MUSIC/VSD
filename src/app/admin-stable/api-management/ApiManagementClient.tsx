@@ -1,114 +1,210 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useProtectedRoute } from '@/hooks/use-protected-route';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  Bell,
+  Home,
+  Users,
+  KeyRound,
+  BarChart2,
+  List,
+  Coins,
+  Shield,
+  LayoutDashboard,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { MoreHorizontal, PlusCircle, Copy, Check } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Skeleton } from '@/components/ui/skeleton';
-import { formatDistanceToNow } from 'date-fns';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useProtectedRoute } from '@/hooks/use-protected-route';
+import { useUser, useAuth } from '@/firebase';
+import { useRouter } from 'next/navigation';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-import { CreateTenantDialog } from './CreateTenantDialog';
-import { useAdminProxy } from '@/firebase';
-import type { Tenant } from '@/types/tenant';
+import { Logo } from '@/components/icons/Logo';
+import { cn } from '@/lib/utils';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { NavItem } from '@/types/nav';
 
-const TenantRowSkeleton = () => (
-    <TableRow>
-        <TableCell><Skeleton className="h-5 w-3/4" /></TableCell>
-        <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-full" /></TableCell>
-        <TableCell><Skeleton className="h-6 w-16 rounded-full" /></TableCell>
-        <TableCell className="hidden sm:table-cell"><Skeleton className="h-5 w-24" /></TableCell>
-        <TableCell className="text-right"><Skeleton className="h-8 w-8 ml-auto" /></TableCell>
-    </TableRow>
-)
+const AdminNavLink = ({ href, children, isActive }: { href: string; children: React.ReactNode; isActive: boolean }) => (
+    <Link
+      href={href}
+      className={cn(
+        "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
+        isActive && "bg-muted text-primary"
+      )}
+    >
+      {children}
+    </Link>
+);
+  
+const adminNavItems: NavItem[] = [
+    { href: "/admin", title: "Dashboard", icon: LayoutDashboard },
+    { href: "/admin/users", title: "User Management", icon: Users },
+    { href: "/admin/api-management", title: "API Management", icon: KeyRound },
+    { href: "/admin/token-distribution", title: "Token Distribution", icon: Coins },
+    { href: "/admin/activity", title: "Activity Logs", icon: List },
+    { href: "/admin/analytics", title: "Analytics", icon: BarChart2 },
+    { href: "/admin/notifications", title: "Notifications", icon: Bell },
+];
 
-export function ApiManagementClient() {
-    useProtectedRoute({ adminOnly: true });
-    const { toast } = useToast();
-    const [copiedKey, setCopiedKey] = React.useState<string | null>(null);
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { isLoading, isAdmin } = useProtectedRoute({ adminOnly: true });
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+  const pathname = usePathname();
 
-    const { data: tenants, isLoading, error } = useAdminProxy<Tenant>('tenants');
+  const handleSignOut = async () => {
+    if (!auth) return;
+    await signOut(auth);
+    toast({ title: "Signed Out", description: "You have been successfully signed out." });
+    router.push('/login');
+  };
 
-    const handleCopy = (apiKey: string) => {
-        navigator.clipboard.writeText(apiKey);
-        setCopiedKey(apiKey);
-        toast({ title: "API Key Copied!" });
-        setTimeout(() => setCopiedKey(null), 2000);
-    };
-
+  if (isLoading || isUserLoading) {
     return (
-        <>
-            <div className="flex items-center justify-between">
-                <h1 className="text-lg font-semibold md:text-2xl">API Management</h1>
-                <CreateTenantDialog />
-            </div>
-            <Card>
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+            <Logo size={60} className="animate-pulse" />
+            <p className="text-muted-foreground">Verifying admin credentials...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+         <div className="flex h-screen w-full items-center justify-center bg-background">
+            <Card className="w-full max-w-md">
                 <CardHeader>
-                    <CardTitle>Connected Tenants</CardTitle>
-                    <CardDescription>Manage API keys and access for integrated partner applications.</CardDescription>
+                    <CardTitle className="flex items-center gap-2"><Shield className="text-destructive"/> Access Denied</CardTitle>
+                    <CardDescription>You do not have the required permissions to view this page.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {error && <p className="text-destructive">Error: {error}</p>}
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead className="hidden md:table-cell">API Key</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="hidden sm:table-cell">Created</TableHead>
-                                <TableHead><span className="sr-only">Actions</span></TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {isLoading ? (
-                                Array.from({length: 3}).map((_, i) => <TenantRowSkeleton key={i} />)
-                            ) : tenants && tenants.length > 0 ? (
-                                tenants.map((tenant) => (
-                                <TableRow key={tenant.id}>
-                                    <TableCell className="font-medium">{tenant.name}</TableCell>
-                                    <TableCell className="hidden md:table-cell">
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-mono text-xs text-muted-foreground">{tenant.apiKey.substring(0, 12)}...</span>
-                                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleCopy(tenant.apiKey)}>
-                                                {copiedKey === tenant.apiKey ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge variant={tenant.status === 'Active' ? 'default' : 'secondary'}>{tenant.status}</Badge>
-                                    </TableCell>
-                                    <TableCell className="hidden sm:table-cell text-muted-foreground text-xs">{formatDistanceToNow(new Date(tenant.createdAt), { addSuffix: true })}</TableCell>
-                                    <TableCell className="text-right">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon">
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem onClick={() => handleCopy(tenant.apiKey)}>Copy API Key</DropdownMenuItem>
-                                                <DropdownMenuItem disabled>{tenant.status === 'Active' ? 'Deactivate' : 'Activate'}</DropdownMenuItem>
-                                                <DropdownMenuItem disabled className="text-destructive">Delete</DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell colSpan={5} className="h-24 text-center">
-                                        No tenants found. Create one to get started.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                    <p>You are being redirected.</p>
                 </CardContent>
             </Card>
-        </>
+      </div>
     );
+  }
+
+  return (
+    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+      <div className="hidden border-r bg-muted/40 md:block">
+        <div className="flex h-full max-h-screen flex-col gap-2">
+          <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+            <Link href="/admin" className="flex items-center gap-2 font-semibold">
+              <Logo size={32} />
+              <span className="">VSD Admin</span>
+            </Link>
+          </div>
+          <div className="flex-1">
+            <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+              {adminNavItems.map((item) => (
+                <AdminNavLink key={item.href} href={item.href} isActive={pathname === item.href}>
+                  {item.icon && <item.icon className="h-4 w-4" />}
+                  {item.title}
+                </AdminNavLink>
+              ))}
+            </nav>
+          </div>
+          <div className="mt-auto p-4">
+             <Card>
+              <CardHeader className="p-2 pt-0 md:p-4">
+                <CardTitle>VSD Network</CardTitle>
+                <CardDescription>
+                  Return to the main user-facing site.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
+                <Button size="sm" className="w-full" asChild>
+                  <Link href="/">
+                    Go to Main Site
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col">
+        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+            <Sheet>
+                <SheetTrigger asChild>
+                    <Button
+                    variant="outline"
+                    size="icon"
+                    className="shrink-0 md:hidden"
+                    >
+                    <Home className="h-5 w-5" />
+                    <span className="sr-only">Toggle navigation menu</span>
+                    </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="flex flex-col">
+                    <nav className="grid gap-2 text-lg font-medium">
+                    <Link
+                        href="#"
+                        className="flex items-center gap-2 text-lg font-semibold mb-4"
+                    >
+                        <Logo size={32} />
+                        <span className="sr-only">VSD Admin</span>
+                    </Link>
+                     {adminNavItems.map((item) => (
+                        <AdminNavLink key={item.href} href={item.href} isActive={pathname === item.href}>
+                        {item.icon && <item.icon className="h-5 w-5" />}
+                        {item.title}
+                        </AdminNavLink>
+                    ))}
+                    </nav>
+                </SheetContent>
+            </Sheet>
+
+          <div className="w-full flex-1" />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="icon" className="rounded-full">
+                <Avatar>
+                    <AvatarImage src={user?.photoURL ?? undefined} />
+                    <AvatarFallback>{user?.displayName?.charAt(0) ?? 'A'}</AvatarFallback>
+                </Avatar>
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>{user?.displayName ?? user?.email}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => router.push('/settings')}>Settings</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/')}>Main Site</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleSignOut}>Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </header>
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
 }

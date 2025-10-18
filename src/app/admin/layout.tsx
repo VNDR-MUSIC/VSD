@@ -14,7 +14,6 @@ import {
   Coins,
   Shield,
   LayoutDashboard,
-  Wrench,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -38,12 +37,10 @@ import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Logo } from '@/components/icons/Logo';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { NavItem } from '@/types/nav';
-
 
 const AdminNavLink = ({ href, children, isActive }: { href: string; children: React.ReactNode; isActive: boolean }) => (
     <Link
@@ -55,20 +52,17 @@ const AdminNavLink = ({ href, children, isActive }: { href: string; children: Re
     >
       {children}
     </Link>
-  );
+);
   
-
 const adminNavItems: NavItem[] = [
     { href: "/admin", title: "Dashboard", icon: LayoutDashboard },
+    { href: "/admin/users", title: "User Management", icon: Users },
     { href: "/admin/api-management", title: "API Management", icon: KeyRound },
     { href: "/admin/token-distribution", title: "Token Distribution", icon: Coins },
     { href: "/admin/activity", title: "Activity Logs", icon: List },
     { href: "/admin/analytics", title: "Analytics", icon: BarChart2 },
     { href: "/admin/notifications", title: "Notifications", icon: Bell },
-    { href: "/admin/users", title: "User Management", icon: Users },
-    { href: "/admin-stable", title: "Stable Admin (Debug)", icon: Wrench },
 ];
-
 
 export default function AdminLayout({
   children,
@@ -101,8 +95,6 @@ export default function AdminLayout({
   }
 
   if (!isAdmin) {
-    // This part should ideally not be reached due to the hook's redirection,
-    // but it serves as a fallback.
     return (
          <div className="flex h-screen w-full items-center justify-center bg-background">
             <Card className="w-full max-w-md">
@@ -111,11 +103,11 @@ export default function AdminLayout({
                     <CardDescription>You do not have the required permissions to view this page.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <p>Redirecting to your dashboard...</p>
+                    <p>You are being redirected.</p>
                 </CardContent>
             </Card>
       </div>
-    )
+    );
   }
 
   return (

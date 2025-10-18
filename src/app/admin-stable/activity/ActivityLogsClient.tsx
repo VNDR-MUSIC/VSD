@@ -1,128 +1,210 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  Bell,
+  Home,
+  Users,
+  KeyRound,
+  BarChart2,
+  List,
+  Coins,
+  Shield,
+  LayoutDashboard,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { formatDistanceToNow } from 'date-fns';
-import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
-import { useAdminProxy } from '@/firebase';
+import { useUser, useAuth } from '@/firebase';
+import { useRouter } from 'next/navigation';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { signOut } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
+import { Logo } from '@/components/icons/Logo';
+import { cn } from '@/lib/utils';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { NavItem } from '@/types/nav';
 
-interface ApiLog {
-    id: string;
-    timestamp: { _seconds: number; _nanoseconds: number } | string;
-    status: 'Success' | 'Failure';
-    tenantId?: string;
-    tenantName?: string;
-    endpoint: string;
-    message: string;
-}
-
-const LogRowSkeleton = () => (
-    <TableRow>
-        <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-        <TableCell><Skeleton className="h-5 w-32" /></TableCell>
-        <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-full" /></TableCell>
-        <TableCell><Skeleton className="h-6 w-16 rounded-full" /></TableCell>
-        <TableCell className="text-right hidden sm:table-cell"><Skeleton className="h-5 w-20 ml-auto" /></TableCell>
-    </TableRow>
+const AdminNavLink = ({ href, children, isActive }: { href: string; children: React.ReactNode; isActive: boolean }) => (
+    <Link
+      href={href}
+      className={cn(
+        "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
+        isActive && "bg-muted text-primary"
+      )}
+    >
+      {children}
+    </Link>
 );
+  
+const adminNavItems: NavItem[] = [
+    { href: "/admin", title: "Dashboard", icon: LayoutDashboard },
+    { href: "/admin/users", title: "User Management", icon: Users },
+    { href: "/admin/api-management", title: "API Management", icon: KeyRound },
+    { href: "/admin/token-distribution", title: "Token Distribution", icon: Coins },
+    { href: "/admin/activity", title: "Activity Logs", icon: List },
+    { href: "/admin/analytics", title: "Analytics", icon: BarChart2 },
+    { href: "/admin/notifications", title: "Notifications", icon: Bell },
+];
 
-const formatTimestamp = (timestamp: ApiLog['timestamp']): Date => {
-    if (typeof timestamp === 'string') {
-        return new Date(timestamp);
-    }
-    // Handle Firestore ServerTimestamp (proxied as object)
-    if (timestamp && typeof timestamp === 'object' && '_seconds' in timestamp) {
-        return new Date(timestamp._seconds * 1000);
-    }
-    return new Date();
-};
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { isLoading, isAdmin } = useProtectedRoute({ adminOnly: true });
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+  const pathname = usePathname();
 
+  const handleSignOut = async () => {
+    if (!auth) return;
+    await signOut(auth);
+    toast({ title: "Signed Out", description: "You have been successfully signed out." });
+    router.push('/login');
+  };
 
-export function ActivityLogsClient() {
-    useProtectedRoute({ adminOnly: true });
-    const [searchQuery, setSearchQuery] = React.useState('');
-    
-    const { data: logs, isLoading, error } = useAdminProxy<ApiLog>('vsd_api_logs');
-
-    const filteredLogs = React.useMemo(() => {
-        if (!logs) return [];
-        const sortedLogs = logs.sort((a,b) => formatTimestamp(b.timestamp).getTime() - formatTimestamp(a.timestamp).getTime())
-        if (!searchQuery) return sortedLogs;
-        
-        const lowercasedQuery = searchQuery.toLowerCase();
-        return sortedLogs.filter(log =>
-            log.tenantName?.toLowerCase().includes(lowercasedQuery) ||
-            log.endpoint?.toLowerCase().includes(lowercasedQuery) ||
-            log.message?.toLowerCase().includes(lowercasedQuery) ||
-            log.status?.toLowerCase().includes(lowercasedQuery)
-        );
-    }, [logs, searchQuery]);
-
+  if (isLoading || isUserLoading) {
     return (
-        <>
-            <div className="flex items-center justify-between">
-                <h1 className="text-lg font-semibold md:text-2xl">Activity Logs</h1>
-                <div className="relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        type="search"
-                        placeholder="Search logs..."
-                        className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
-            </div>
-            <Card>
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+            <Logo size={60} className="animate-pulse" />
+            <p className="text-muted-foreground">Verifying admin credentials...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+         <div className="flex h-screen w-full items-center justify-center bg-background">
+            <Card className="w-full max-w-md">
                 <CardHeader>
-                    <CardTitle>System & API Activity</CardTitle>
-                    <CardDescription>A real-time log of all incoming requests to protected VSD Network API endpoints.</CardDescription>
+                    <CardTitle className="flex items-center gap-2"><Shield className="text-destructive"/> Access Denied</CardTitle>
+                    <CardDescription>You do not have the required permissions to view this page.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {error && <p className="text-destructive">Error: {error}</p>}
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Tenant</TableHead>
-                                <TableHead>Endpoint</TableHead>
-                                <TableHead className="hidden md:table-cell">Message</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right hidden sm:table-cell">Timestamp</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {isLoading ? (
-                                Array.from({ length: 5 }).map((_, i) => <LogRowSkeleton key={i} />)
-                            ) : filteredLogs && filteredLogs.length > 0 ? (
-                                filteredLogs.map((log) => (
-                                    <TableRow key={log.id}>
-                                        <TableCell className="font-medium">{log.tenantName || 'N/A'}</TableCell>
-                                        <TableCell className="font-mono text-xs">{log.endpoint}</TableCell>
-                                        <TableCell className="hidden md:table-cell text-muted-foreground">{log.message}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={log.status === 'Success' ? 'default' : 'destructive'}>{log.status}</Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right hidden sm:table-cell text-muted-foreground text-xs">
-                                            {formatDistanceToNow(formatTimestamp(log.timestamp), { addSuffix: true })}
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell colSpan={5} className="h-24 text-center">
-                                        No logs found.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                    <p>You are being redirected.</p>
                 </CardContent>
             </Card>
-        </>
+      </div>
     );
+  }
+
+  return (
+    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+      <div className="hidden border-r bg-muted/40 md:block">
+        <div className="flex h-full max-h-screen flex-col gap-2">
+          <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+            <Link href="/admin" className="flex items-center gap-2 font-semibold">
+              <Logo size={32} />
+              <span className="">VSD Admin</span>
+            </Link>
+          </div>
+          <div className="flex-1">
+            <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+              {adminNavItems.map((item) => (
+                <AdminNavLink key={item.href} href={item.href} isActive={pathname === item.href}>
+                  {item.icon && <item.icon className="h-4 w-4" />}
+                  {item.title}
+                </AdminNavLink>
+              ))}
+            </nav>
+          </div>
+          <div className="mt-auto p-4">
+             <Card>
+              <CardHeader className="p-2 pt-0 md:p-4">
+                <CardTitle>VSD Network</CardTitle>
+                <CardDescription>
+                  Return to the main user-facing site.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
+                <Button size="sm" className="w-full" asChild>
+                  <Link href="/">
+                    Go to Main Site
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col">
+        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+            <Sheet>
+                <SheetTrigger asChild>
+                    <Button
+                    variant="outline"
+                    size="icon"
+                    className="shrink-0 md:hidden"
+                    >
+                    <Home className="h-5 w-5" />
+                    <span className="sr-only">Toggle navigation menu</span>
+                    </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="flex flex-col">
+                    <nav className="grid gap-2 text-lg font-medium">
+                    <Link
+                        href="#"
+                        className="flex items-center gap-2 text-lg font-semibold mb-4"
+                    >
+                        <Logo size={32} />
+                        <span className="sr-only">VSD Admin</span>
+                    </Link>
+                     {adminNavItems.map((item) => (
+                        <AdminNavLink key={item.href} href={item.href} isActive={pathname === item.href}>
+                        {item.icon && <item.icon className="h-5 w-5" />}
+                        {item.title}
+                        </AdminNavLink>
+                    ))}
+                    </nav>
+                </SheetContent>
+            </Sheet>
+
+          <div className="w-full flex-1" />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="icon" className="rounded-full">
+                <Avatar>
+                    <AvatarImage src={user?.photoURL ?? undefined} />
+                    <AvatarFallback>{user?.displayName?.charAt(0) ?? 'A'}</AvatarFallback>
+                </Avatar>
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>{user?.displayName ?? user?.email}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => router.push('/settings')}>Settings</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/')}>Main Site</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleSignOut}>Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </header>
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
 }
