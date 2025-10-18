@@ -30,11 +30,16 @@ export function useAdminProxy<T>(collectionName: string) {
     const [data, setData] = useState<T[] | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
 
     useEffect(() => {
+        if (isUserLoading) {
+            return; // Wait until user auth state is resolved
+        }
         if (!user) {
             setIsLoading(false);
+            // Don't set an error here, as it might be an expected state (e.g., logged out user)
+            // The component using the hook should decide what to do if there's no user.
             return;
         }
 
@@ -53,7 +58,7 @@ export function useAdminProxy<T>(collectionName: string) {
         };
 
         fetchData();
-    }, [collectionName, user]);
+    }, [collectionName, user, isUserLoading]); // Depend on user and loading state
 
     return { data, isLoading, error };
 }

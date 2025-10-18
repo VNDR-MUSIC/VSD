@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank, Loader2, Search, Gift, Coins, ChevronsUpDown, Check } from "lucide-react";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip } from "recharts";
 import { useToast } from "@/hooks/use-toast";
-import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase, addDocumentNonBlocking, useAdminProxy } from '@/firebase';
+import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase, addDocumentNonBlocking } from '@/firebase';
 import { doc, collection, runTransaction, increment, query, where, getDocs, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
@@ -306,10 +306,39 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
     const [tokenType, setTokenType] = React.useState('');
     const [recipientId, setRecipientId] = React.useState('');
     const [popoverOpen, setPopoverOpen] = React.useState(false);
-
+    const [search, setSearch] = React.useState('');
+    const [searchResults, setSearchResults] = React.useState<Account[]>([]);
+    
     const firestore = useFirestore();
     const { user } = useUser();
-    const { data: accounts, isLoading: accountsLoading } = useAdminProxy<Account>('accounts');
+
+    // Debounce search input
+    React.useEffect(() => {
+        const handler = setTimeout(async () => {
+            if (search.length > 2 && firestore) {
+                const searchLower = search.toLowerCase();
+                const accountsRef = collection(firestore, 'accounts');
+                // Create two separate queries
+                const nameQuery = query(accountsRef, where('displayName', '>=', searchLower), where('displayName', '<=', searchLower + '\uf8ff'), limit(5));
+                const emailQuery = query(accountsRef, where('email', '==', searchLower), limit(5));
+
+                const [nameSnapshot, emailSnapshot] = await Promise.all([getDocs(nameQuery), getDocs(emailQuery)]);
+                
+                const resultsMap = new Map<string, Account>();
+                nameSnapshot.forEach(doc => resultsMap.set(doc.id, { uid: doc.id, ...doc.data() } as Account));
+                emailSnapshot.forEach(doc => resultsMap.set(doc.id, { uid: doc.id, ...doc.data() } as Account));
+                
+                const combinedResults = Array.from(resultsMap.values()).filter(acc => acc.uid !== user?.uid);
+                setSearchResults(combinedResults);
+            } else {
+                setSearchResults([]);
+            }
+        }, 300); // 300ms delay
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [search, firestore, user]);
 
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -324,9 +353,9 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
         const amount = Number(formData.get('amount'));
         const description = formData.get('description') as string;
         
-        const recipientAccount = accounts?.find(acc => acc.uid === recipientId);
+        const recipientAccount = searchResults.find(acc => acc.uid === recipientId);
         if (!recipientAccount) {
-            toast({ variant: 'destructive', title: 'Recipient Not Found', description: 'Please select a valid recipient from the list.' });
+            toast({ variant: 'destructive', title: 'Recipient Not Found', description: 'Please select a valid recipient from the search results.' });
             setIsLoading(false);
             return;
         }
@@ -344,7 +373,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
         const tokenName = tokenType === 'vsd' ? 'VSD' : 'VSD Lite';
         
         if (amount > balanceToCheck) {
-            toast({ variant: 'destructive', title: `Insufficient Balance`, description: `You have an insufficient ${tokenName} balance to complete this transaction. You are overdrawn.` });
+            toast({ variant: 'destructive', title: `Insufficient Balance`, description: `You have an insufficient ${tokenName} balance to complete this transaction.` });
             setIsLoading(false);
             return;
         }
@@ -384,13 +413,14 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
             });
             setIsOpen(false);
             setRecipientId('');
+            setSearch('');
 
         } catch (error: any) {
             console.error("Transaction failed:", error);
             toast({
                 variant: 'destructive',
                 title: 'Transaction Failed',
-                description: 'An unexpected error occurred while processing the transaction. Please try again.',
+                description: error.message || 'An unexpected error occurred while processing the transaction.',
             });
         } finally {
             setIsLoading(false);
@@ -428,51 +458,53 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="toAddress">Recipient</Label>
-                            {accountsLoading ? <Skeleton className="h-10 w-full" /> : (
-                                <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                        variant="outline"
-                                        role="combobox"
-                                        aria-expanded={popoverOpen}
-                                        className="w-full justify-between"
-                                        >
-                                        {recipientId
-                                            ? accounts?.find((acc) => acc.uid === recipientId)?.displayName
-                                            : "Select user..."}
-                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                                        <Command>
-                                            <CommandInput placeholder="Search user by name or email..." />
-                                            <CommandList>
-                                                <CommandEmpty>No user found.</CommandEmpty>
-                                                <CommandGroup>
-                                                    {accounts?.map((acc) => (
-                                                    <CommandItem
-                                                        key={acc.uid}
-                                                        value={`${acc.displayName} ${acc.email}`}
-                                                        onSelect={() => {
-                                                            setRecipientId(acc.uid)
-                                                            setPopoverOpen(false)
-                                                        }}
-                                                    >
-                                                        <Check
-                                                        className={cn(
-                                                            "mr-2 h-4 w-4",
-                                                            recipientId === acc.uid ? "opacity-100" : "opacity-0"
-                                                        )}
-                                                        />
-                                                        {acc.displayName} ({acc.email})
-                                                    </CommandItem>
-                                                    ))}
-                                                </CommandGroup>
-                                            </CommandList>
-                                        </Command>
-                                    </PopoverContent>
-                                </Popover>
-                            )}
+                            <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    aria-expanded={popoverOpen}
+                                    className="w-full justify-between"
+                                    >
+                                    {recipientId
+                                        ? searchResults.find((acc) => acc.uid === recipientId)?.displayName ?? "Select user..."
+                                        : "Select user..."}
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                                    <Command>
+                                        <CommandInput 
+                                            placeholder="Search by name or email..." 
+                                            value={search}
+                                            onValueChange={setSearch}
+                                        />
+                                        <CommandList>
+                                            {searchResults.length === 0 && search.length > 2 && <CommandEmpty>No user found.</CommandEmpty>}
+                                            <CommandGroup>
+                                                {searchResults.map((acc) => (
+                                                <CommandItem
+                                                    key={acc.uid}
+                                                    value={`${acc.displayName} ${acc.email}`}
+                                                    onSelect={() => {
+                                                        setRecipientId(acc.uid)
+                                                        setPopoverOpen(false)
+                                                    }}
+                                                >
+                                                    <Check
+                                                    className={cn(
+                                                        "mr-2 h-4 w-4",
+                                                        recipientId === acc.uid ? "opacity-100" : "opacity-0"
+                                                    )}
+                                                    />
+                                                    {acc.displayName} ({acc.email})
+                                                </CommandItem>
+                                                ))}
+                                            </CommandGroup>
+                                        </CommandList>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
                         </div>
                          <div className="grid gap-2">
                             <Label htmlFor="amount">Amount</Label>
