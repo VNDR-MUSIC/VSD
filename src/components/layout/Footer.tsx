@@ -10,58 +10,62 @@ export function Footer() {
   return (
     <footer className={cn("border-t border-border/40 bg-background/80 backdrop-blur-sm", "footer-animated-gradient")}>
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 text-sm">
-          {/* Logo and Copyright */}
-          <div className="col-span-2 lg:col-span-1 flex flex-col items-start">
-            <div className="flex items-center gap-2 mb-4">
-              <Logo size={40} />
-              <span className="font-headline text-xl font-bold">{siteConfig.name}</span>
-            </div>
-            <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} VSD Network. All rights reserved.</p>
-            <p className="text-xs text-muted-foreground mt-1">The official banking hub for IMG.</p>
-          </div>
-
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
           {/* Main Links */}
-          <div className="flex flex-col gap-2 p-4 rounded-lg footer-menu-background">
+          <div className="flex flex-col gap-2 p-4 rounded-lg footer-menu-background col-span-2 sm:col-span-1">
             <h4 className="font-bold mb-2">Platform</h4>
-            <Link href="/dashboard" className="text-muted-foreground hover:text-primary transition-colors">Dashboard</Link>
             <Link href="/token" className="text-muted-foreground hover:text-primary transition-colors">VSD Token</Link>
             <Link href="/ecosystem" className="text-muted-foreground hover:text-primary transition-colors">Ecosystem</Link>
             <Link href="/buy" className="text-muted-foreground hover:text-primary transition-colors">Buy VSD</Link>
+            <Link href="/earn" className="text-muted-foreground hover:text-primary transition-colors">Earn VSD</Link>
           </div>
 
           {/* Developer Links */}
           <div className="flex flex-col gap-2 p-4 rounded-lg footer-menu-background">
             <h4 className="font-bold mb-2">Developers</h4>
-            {siteConfig.footerNav.slice(0, 4).map((item) => (
-               <Link key={item.href} href={item.href} className="text-muted-foreground hover:text-primary transition-colors">{item.title}</Link>
-            ))}
+            <Link href="/developers/documentation" className="text-muted-foreground hover:text-primary transition-colors">Whitepaper</Link>
+            <Link href="/developers/api-reference" className="text-muted-foreground hover:text-primary transition-colors">API Reference</Link>
+            <Link href="/developers/integration" className="text-muted-foreground hover:text-primary transition-colors">Integration Guide</Link>
+            <Link href="/developers" className="text-muted-foreground hover:text-primary transition-colors">Developer Portal</Link>
           </div>
 
           {/* Company Links */}
           <div className="flex flex-col gap-2 p-4 rounded-lg footer-menu-background">
             <h4 className="font-bold mb-2">Company</h4>
-            {siteConfig.footerNav.slice(4).map((item) => (
-              <Link key={item.href} href={item.href} className="text-muted-foreground hover:text-primary transition-colors">{item.title}</Link>
-            ))}
+            <Link href="/network-status" className="text-muted-foreground hover:text-primary transition-colors">Network Status</Link>
+            <Link href="/for-businesses" className="text-muted-foreground hover:text-primary transition-colors">For Businesses</Link>
+            <Link href="/compliance" className="text-muted-foreground hover:text-primary transition-colors">Compliance</Link>
+            <Link href="/faq" className="text-muted-foreground hover:text-primary transition-colors">FAQ</Link>
           </div>
 
-          {/* Partner Link */}
-          <div className="flex flex-col items-start gap-2 col-span-2 md:col-span-1 p-4 rounded-lg footer-menu-background">
-             <h4 className="font-bold mb-2">An IMG Company</h4>
-             <Link href="https://indiemedia.llc" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition-opacity w-32">
-                <Image
-                    src="https://i.ibb.co/3wpP3F4/logo-full-256x.png"
-                    alt="Independent Media Group Logo"
-                    width={128}
-                    height={128}
-                    className="object-contain"
-                />
-             </Link>
+          {/* VSD Network Info */}
+          <div className="flex flex-col gap-2 p-4 rounded-lg footer-menu-background">
+             <div className="flex items-center gap-2 mb-2">
+              <Logo size={24} />
+              <span className="font-headline font-bold">{siteConfig.name}</span>
+            </div>
+             <p className="text-xs text-muted-foreground">The official financial infrastructure for the Independent Media Group (IMG).</p>
           </div>
         </div>
         <Separator className="my-6" />
         <p className="text-center text-xs text-muted-foreground">The VSD Token is a utility token and is not intended to constitute a security. Please read our legal disclaimer before participating.</p>
+        <Separator className="my-6" />
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} VSD Network. All rights reserved.</p>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <span>An</span>
+                <Link href="https://indiemedia.llc" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition-opacity">
+                    <Image
+                        src="https://i.ibb.co/3wpP3F4/logo-full-256x.png"
+                        alt="Independent Media Group Logo"
+                        width={100}
+                        height={25}
+                        className="object-contain"
+                    />
+                </Link>
+                <span>Company</span>
+            </div>
+        </div>
       </div>
     </footer>
   );
