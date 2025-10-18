@@ -31,7 +31,7 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
   const shouldReduceMotion = useReducedMotion();
-  const isSpecialLayout = pathname.startsWith('/admin') || pathname.startsWith('/advertiser');
+  const isSpecialLayout = pathname.startsWith('/admin') || pathname.startsWith('/advertiser') || pathname.startsWith('/admin-stable');
   
   const pageVariants = {
     initial: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
@@ -62,7 +62,7 @@ export default function RootLayout({
       <body className="font-body antialiased min-h-screen flex flex-col relative bg-background">
         <FirebaseClientProvider>
           {!isSpecialLayout && <BackgroundVideo />}
-          <div className={cn("relative z-0 flex flex-col min-h-screen", !isSpecialLayout && "bg-black/85")}>
+          <div className={cn("relative z-0 flex flex-col min-h-screen w-full", !isSpecialLayout && "bg-black/85")}>
             <Header />
             <AnimatePresence mode="wait">
               <motion.main
@@ -72,9 +72,9 @@ export default function RootLayout({
                 exit="exit"
                 variants={pageVariants}
                 transition={pageTransition}
-                className="flex-grow"
+                className="flex-grow w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"
               >
-                <div className="container px-4 sm:px-6 lg:px-8 h-full">
+                <div className="h-full">
                   {children}
                 </div>
               </motion.main>
