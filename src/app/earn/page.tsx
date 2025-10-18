@@ -120,7 +120,7 @@ export default function EarnPage() {
     // Non-blocking transaction log creation
     const userTransactionsRef = collection(firestore, 'accounts', user.uid, 'transactions');
     addDocumentNonBlocking(userTransactionsRef, {
-        type: 'in VSD Lite',
+        type: 'Task Reward',
         status: 'Completed',
         amount: task.reward,
         date: new Date().toISOString(),
@@ -225,7 +225,7 @@ export default function EarnPage() {
             description: `Exchanged for ${liteReceived.toLocaleString()} VSD Lite`
         });
         addDocumentNonBlocking(userTransactionsRef, {
-            type: 'VSD Lite Exchange',
+            type: 'in VSD Lite',
             status: 'Completed',
             amount: liteReceived,
             date: new Date().toISOString(),
