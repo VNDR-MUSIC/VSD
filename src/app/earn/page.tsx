@@ -238,7 +238,7 @@ export default function EarnPage() {
           <CardContent className="space-y-4">
              <div className="flex justify-between items-center p-4 rounded-md bg-muted/50">
                 <span className="text-muted-foreground">VSD Lite Balance</span>
-                <span className="font-bold text-2xl text-yellow-400">{(account?.vsdLiteBalance ?? 0).toFixed(2)}</span>
+                <span className="font-bold text-2xl text-yellow-400">{(account?.vsdLiteBalance ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
             <div className="flex justify-between items-center p-4 rounded-md bg-muted/50">
                 <span className="text-muted-foreground">Main VSD Balance</span>
@@ -258,7 +258,7 @@ export default function EarnPage() {
                 <Input
                     id="lite-convert-amount"
                     type="number"
-                    placeholder={`Max: ${(account?.vsdLiteBalance ?? 0).toFixed(2)}`}
+                    placeholder={`Max: ${(account?.vsdLiteBalance ?? 0).toLocaleString()}`}
                     value={liteToVsdAmount}
                     onChange={(e) => setLiteToVsdAmount(e.target.value)}
                     className="mt-1"
@@ -276,7 +276,7 @@ export default function EarnPage() {
         <Card className="shadow-lg bg-card/80 backdrop-blur-sm md:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><ArrowRightLeft /> Exchange VSD for VSD Lite</CardTitle>
-            <CardDescription>1 VSD = {CONVERSION_RATE} VSD Lite</CardDescription>
+            <CardDescription>1 VSD = {CONVERSION_RATE} VSD Lite. Use VSD Lite to acquire ad credits.</CardDescription>
           </CardHeader>
           <CardContent>
              <div>
