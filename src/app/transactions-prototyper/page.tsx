@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from "react";
@@ -5,6 +6,8 @@ import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getFirestore, collection, onSnapshot, addDoc, getDocs, Timestamp, type Firestore } from "firebase/firestore";
 import { getAuth, signInAnonymously, onAuthStateChanged, type Auth } from "firebase/auth";
 import { firebaseConfig } from "@/firebase/config"; // Use the project's actual config
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 // --- Type Definition ---
 interface Transaction {
@@ -63,15 +66,38 @@ export default function TransactionsPrototyper() {
     const setupTransactions = async () => {
       try {
         const colRef = collection(firestore, "transactions");
-        const snapshot = await getDocs(colRef);
+        const snapshot = await getDocs(colRef).catch(err => {
+            // This handles permission error on the initial getDocs
+            const contextualError = new FirestorePermissionError({
+                path: colRef.path,
+                operation: 'list'
+            });
+            errorEmitter.emit('permission-error', contextualError);
+            throw contextualError; // Stop execution
+        });
 
         // Auto-add sample data if empty
         if (snapshot.empty) {
           console.log("Transactions collection is empty. Adding sample data...");
-          await addDoc(colRef, { amount: 100, status: "pending", createdAt: new Date() });
-          await addDoc(colRef, { amount: 50, status: "completed", createdAt: new Date() });
-          await addDoc(colRef, { amount: 75, status: "failed", createdAt: new Date() });
-          console.log("Sample data added.");
+          const sampleData1 = { amount: 100, status: "pending" as const, createdAt: new Date() };
+          const sampleData2 = { amount: 50, status: "completed" as const, createdAt: new Date() };
+          
+          addDoc(colRef, sampleData1).catch(err => {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({
+                path: colRef.path,
+                operation: 'create',
+                requestResourceData: sampleData1
+            }));
+          });
+          
+          addDoc(colRef, sampleData2).catch(err => {
+             errorEmitter.emit('permission-error', new FirestorePermissionError({
+                path: colRef.path,
+                operation: 'create',
+                requestResourceData: sampleData2
+            }));
+          });
+          console.log("Sample data write initiated.");
         }
 
         // Real-time subscription
@@ -83,9 +109,14 @@ export default function TransactionsPrototyper() {
             setLoading(false);
           },
           (err) => {
-            console.error("onSnapshot error:", err);
-            setError(err.message);
+            // Use the contextual error system for snapshot listener errors
+            const contextualError = new FirestorePermissionError({
+              path: colRef.path,
+              operation: 'list',
+            });
+            setError(contextualError.message); // Show a user-facing message
             setLoading(false);
+            errorEmitter.emit('permission-error', contextualError); // Throw for developer overlay
           }
         );
       } catch (err: any) {
