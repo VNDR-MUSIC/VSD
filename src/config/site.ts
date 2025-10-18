@@ -6,7 +6,9 @@ export const siteConfig = {
   name: "VSD Network",
   description: "The official utility token and AI service hub for the Independent Media Group (IMG). Access exclusive AI tools (IMG Services), stake VSD for rewards, and participate in governance.",
   tokenValues: {
-    CONVERSION_RATE: 100, // 100 VSD Lite = 1 VSD. Centralizing this value.
+    CONVERSION_RATE: 100, // 100 VSD Lite = 1 VSD.
+    VSD_PRICE_USD: 0.01,
+    TOTAL_SUPPLY: 700000000,
   },
   mainNav: [
     { title: "Home", href: "/", icon: LayoutDashboard },

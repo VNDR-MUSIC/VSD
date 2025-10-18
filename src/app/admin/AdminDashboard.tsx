@@ -7,7 +7,10 @@ import {
   DollarSign,
   Users,
   KeyRound,
-  Coins
+  Coins,
+  Library,
+  Banknote,
+  Globe
 } from 'lucide-react';
 import {
   Card,
@@ -32,6 +35,7 @@ import { Button } from '@/components/ui/button';
 import { useAdminProxy } from '@/firebase';
 import type { Account } from '@/types/account';
 import type { Tenant } from '@/types/tenant';
+import { siteConfig } from '@/config/site';
 
 interface AdvertiserApplication {
     id: string;
@@ -61,8 +65,11 @@ export function AdminDashboard() {
   const { data: accounts, isLoading: accountsLoading } = useAdminProxy<Account>('accounts');
   const { data: applications, isLoading: applicationsLoading } = useAdminProxy<AdvertiserApplication>('advertiserApplications');
 
-  const totalVSD = accounts?.reduce((sum, acc) => sum + (acc.vsdBalance || 0), 0) ?? 0;
-  const totalVSDLite = accounts?.reduce((sum, acc) => sum + (acc.vsdLiteBalance || 0), 0) ?? 0;
+  const circulatingVSD = accounts?.reduce((sum, acc) => sum + (acc.vsdBalance || 0), 0) ?? 0;
+  const circulatingVSDLite = accounts?.reduce((sum, acc) => sum + (acc.vsdLiteBalance || 0), 0) ?? 0;
+  const totalSupply = siteConfig.tokenValues.TOTAL_SUPPLY;
+  const marketCap = totalSupply * siteConfig.tokenValues.VSD_PRICE_USD;
+  const treasuryBalance = totalSupply - circulatingVSD;
 
   const recentApplications = applications
     ?.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
@@ -96,14 +103,35 @@ export function AdminDashboard() {
         />
          <StatCard 
             title="Total VSD Supply" 
-            value={totalVSD.toLocaleString()}
+            value={totalSupply.toLocaleString()}
+            icon={Library}
+            description="The maximum and total supply of VSD."
+            isLoading={isLoading}
+        />
+        <StatCard 
+            title="Market Cap (USD)" 
+            value={`$${marketCap.toLocaleString()}`}
             icon={DollarSign}
-            description="Total circulating VSD across all users."
+            description={`Based on a $${siteConfig.tokenValues.VSD_PRICE_USD} token price.`}
+            isLoading={isLoading}
+        />
+        <StatCard 
+            title="Circulating VSD" 
+            value={circulatingVSD.toLocaleString()}
+            icon={Globe}
+            description="Total VSD held by all users."
             isLoading={isLoading}
         />
          <StatCard 
-            title="Total VSD Lite Supply" 
-            value={totalVSDLite.toLocaleString()}
+            title="VSD in Treasury" 
+            value={treasuryBalance.toLocaleString()}
+            icon={Banknote}
+            description="Total Supply - Circulating Supply."
+            isLoading={isLoading}
+        />
+         <StatCard 
+            title="Circulating VSD Lite" 
+            value={circulatingVSDLite.toLocaleString()}
             icon={Coins}
             description="Total rewards points across all users."
             isLoading={isLoading}

@@ -61,8 +61,8 @@ export function TokenDistributionClient() {
             await adminProxyWrite('accounts', selectedUser, { [balanceField]: newBalance });
             
             const transactionData = {
-                type: `in ${tokenType === 'vsd' ? 'VSD' : 'VSD Lite'}`,
-                status: 'Completed',
+                type: 'Airdrop' as const,
+                status: 'Completed' as const,
                 amount: numericAmount,
                 date: new Date().toISOString(),
                 accountId: selectedUser,
