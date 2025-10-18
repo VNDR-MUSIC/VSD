@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -20,6 +19,7 @@ const Separator = React.forwardRef<
       orientation={orientation}
       className={cn(
         "shrink-0 bg-border",
+        "animated-border", // Apply the animated border style
         orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]",
         className
       )}
@@ -30,5 +30,3 @@ const Separator = React.forwardRef<
 Separator.displayName = SeparatorPrimitive.Root.displayName
 
 export { Separator }
-
-    
