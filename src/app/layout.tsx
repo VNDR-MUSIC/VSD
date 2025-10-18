@@ -76,7 +76,7 @@ export default function RootLayout({
                 transition={pageTransition}
                 className="flex-grow w-full max-w-screen-2xl mx-auto"
               >
-                <div className="h-full animated-border bg-transparent backdrop-blur-sm rounded-lg my-4 p-4 sm:p-6 lg:p-8">
+                <div className="h-full my-4 p-4 sm:p-6 lg:p-8">
                   {children}
                 </div>
               </motion.main>
