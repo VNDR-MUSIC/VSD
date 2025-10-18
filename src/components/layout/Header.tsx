@@ -99,7 +99,7 @@ const UserNav = () => {
     }
 
     // --- Super Admin Bootstrap for UI Visibility ---
-    const isSuperAdmin = user.email === 'preston@vndrmusic.com';
+    const isSuperAdmin = user.email === 'support@vndrmusic.com';
     
     const rolesAreLoading = isAccountLoading;
     const userRoles = account?.roles || [];
