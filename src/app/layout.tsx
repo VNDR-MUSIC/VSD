@@ -1,3 +1,4 @@
+
 'use client';
 
 import './globals.css';
@@ -71,7 +72,7 @@ export default function RootLayout({
                 exit="exit"
                 variants={pageVariants}
                 transition={pageTransition}
-                className="flex-grow"
+                className="flex-grow container px-4 sm:px-6 lg:px-8"
               >
                 {children}
               </motion.main>
