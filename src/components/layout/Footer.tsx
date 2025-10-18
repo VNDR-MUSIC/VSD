@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 export function Footer() {
   return (
-    <footer className={cn("border-t border-border/40 bg-background/80 backdrop-blur-sm")}>
+    <footer className={cn("border-t border-border/40 animated-gradient-background")}>
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
           {/* Main Links */}
