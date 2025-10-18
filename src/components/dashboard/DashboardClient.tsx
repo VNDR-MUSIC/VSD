@@ -6,10 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank, Loader2, Search, Gift, Coins, LimitExceededError } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank, Loader2, Search, Gift, Coins } from "lucide-react";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip } from "recharts";
 import { useToast } from "@/hooks/use-toast";
-import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase, setDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase';
+import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase, addDocumentNonBlocking } from '@/firebase';
 import { doc, collection, runTransaction, increment, query, where, getDocs, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
@@ -49,7 +49,7 @@ export function DashboardClient() {
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
-  const [searchQuery, React.useState('');
+  const [searchQuery, setSearchQuery] = React.useState('');
   
   const accountRef = useMemoFirebase(() => user && firestore ? doc(firestore, 'accounts', user.uid) : null, [firestore, user]);
   const transactionsRef = useMemoFirebase(() => user && firestore ? collection(firestore, 'accounts', user.uid, 'transactions') : null, [firestore, user]);
@@ -148,19 +148,18 @@ export function DashboardClient() {
               </div>
             </CardContent>
             <CardFooter className="gap-2">
-              
-                
-                    
-                         SendVsdDialog userAccount={account} isAllowed={canSendTokens} />
-                        
-                    
-                    {!canSendTokens && (
-                        
-                            You need at least 20 VSD to send tokens.
-                        
-                    )}
-                
-              
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                             <SendVsdDialog userAccount={account} isAllowed={canSendTokens} />
+                        </TooltipTrigger>
+                         {!canSendTokens && (
+                            <TooltipContent>
+                                <p>You need at least 20 VSD to send tokens.</p>
+                            </TooltipContent>
+                        )}
+                    </Tooltip>
+                </TooltipProvider>
               <Button variant="outline" className="btn-hover-effect w-full" onClick={() => toast({ title: "Feature Coming Soon", description: "Receiving VSD is active at your wallet address."})}>Receive</Button>
             </CardFooter>
           </Card>
@@ -171,133 +170,128 @@ export function DashboardClient() {
               <CardDescription>A live look at your VSD token usage over the last months.</CardDescription>
             </CardHeader>
             <CardContent>
-                {areTransactionsLoading ?  activityData.length > 0 ? (
-                  
-                    
-                      
-                      
-                      <RechartsTooltip content={} cursor={{fill: 'hsl(var(--accent))', radius: 'var(--radius)'}} />
-                      
-                    
-                  
+                {areTransactionsLoading ? <Skeleton className="h-[250px] w-full" /> : activityData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={250}>
+                    <RechartsBarChart data={activityData}>
+                      <XAxis dataKey="month" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                      <RechartsTooltip content={<CustomTooltip />} cursor={{fill: 'hsl(var(--accent))', radius: 'var(--radius)'}} />
+                      <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                    </RechartsBarChart>
+                  </ResponsiveContainer>
                 ) : (
-                    
-                        No transaction data available to display chart.
-                    
+                    <div className="flex items-center justify-center h-[250px]">
+                        <p className="text-muted-foreground">No transaction data available to display chart.</p>
+                    </div>
                 )}
             </CardContent>
           </Card>
         </div>
 
-        
-            
-                
-                
-                Feature on the VSD Network Roadmap.
-            
-            
-                
-                    Staked Amount
-                    Coming Soon
-                
-                
-                    Estimated APY
-                    TBD
-                
-            
-            
-                Stake Now (Coming Soon)
-            
-          
-          
-                
-                
-                Feature on the VSD Network Roadmap.
-            
-            
-                Smart contract management is coming soon.
-            
-            
-                Create New Contract (Coming Soon)
-            
-          
-        
-      
+        <div className="lg:col-span-1 space-y-6">
+          <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
+             <CardHeader>
+                <CardTitle className="flex items-center gap-2"><PiggyBank className="h-6 w-6" />Staking</CardTitle>
+                <CardDescription>Feature on the VSD Network Roadmap.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                 <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground">Staked Amount</span>
+                    <span className="font-bold">Coming Soon</span>
+                </div>
+                 <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground">Estimated APY</span>
+                    <span className="font-bold">TBD</span>
+                </div>
+            </CardContent>
+            <CardFooter>
+                 <Button className="w-full" disabled>Stake Now (Coming Soon)</Button>
+            </CardFooter>
+          </Card>
+          <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
+             <CardHeader>
+                <CardTitle className="flex items-center gap-2"><FileJson className="h-6 w-6" />My Contracts</CardTitle>
+                 <CardDescription>Feature on the VSD Network Roadmap.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                 <p className="text-center text-muted-foreground text-sm py-4">Smart contract management is coming soon.</p>
+            </CardContent>
+            <CardFooter>
+                <Button className="w-full" variant="outline" disabled>Create New Contract (Coming Soon)</Button>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
 
-      
-        
-          
-            
-            
-                Recent Transactions
-                Your latest account activity.
-            
-          
-           
-                
-                    
-                    
-                        Search transactions...
-                        
-                    
-                
-            
-        
-        
-          
-            
-              
-                
-                  Type
-                  From/To
-                  Description
-                  Amount
-                  Status
-                
-              
-            
-            
+      <Separator />
+
+      <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
+          <CardHeader className="sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <CardTitle className="flex items-center gap-2"><Coins className="h-6 w-6" />Recent Transactions</CardTitle>
+                <CardDescription>Your latest account activity.</CardDescription>
+            </div>
+            <div className="relative mt-4 sm:mt-0">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                    type="search"
+                    placeholder="Search transactions..."
+                    className="w-full sm:w-[200px] lg:w-[300px] pl-8"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+            </div>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Type</TableHead>
+                <TableHead>From/To</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+                <TableHead className="text-center">Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {areTransactionsLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
-                    
-                        
-                            
-                        
-                    
+                    <TableRow key={i}>
+                        <TableCell colSpan={5}><Skeleton className="h-8 w-full" /></TableCell>
+                    </TableRow>
                 ))
               ) : filteredTransactions && filteredTransactions.length > 0 ? (
                 filteredTransactions?.map((tx) => (
-                
-                  
-                    
-                      
-                      
-                      
-                    
-                  
-                  {tx.type.includes('in') ? tx.from : tx.to}
-                  {tx.description}
-                  
+                <TableRow key={tx.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      {tx.type.includes('in') ? <ArrowDownLeft className="h-4 w-4 text-green-500"/> : <ArrowUpRight className="h-4 w-4 text-red-500" />}
+                      <span className="font-medium">{tx.type}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground font-mono text-xs">{tx.type.includes('in') ? tx.from : tx.to}</TableCell>
+                  <TableCell className="text-muted-foreground">{tx.description}</TableCell>
+                  <TableCell className={`text-right font-bold ${tx.type.includes('in') ? 'text-green-400' : ''} ${tx.type.includes('Lite') ? 'text-yellow-400' : ''}`}>
                     {tx.type.includes('in') ? '+' : '-'}{tx.amount.toLocaleString()} {tx.type.includes('Lite') ? 'VSD Lite' : 'VSD'}
-                  
-                  
-                     
+                  </TableCell>
+                  <TableCell className="text-center">
+                     <Badge variant={tx.status === 'Completed' ? 'default' : 'destructive'} className="capitalize">
                       {tx.status}
-                    
-                  
-                
+                    </Badge>
+                  </TableCell>
+                </TableRow>
               ))) : (
-                 
-                    
+                 <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
                         {searchQuery ? 'No transactions match your search.' : 'No transactions yet.'}
-                    
-                
+                    </TableCell>
+                </TableRow>
               )}
-            
-          
-        
-      
-    
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -309,7 +303,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
     const firestore = useFirestore();
     const { user } = useUser();
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (!userAccount || !firestore || !user) {
             toast({ variant: 'destructive', title: 'Error', description: 'User account not found.' });
@@ -318,12 +312,18 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
 
         setIsLoading(true);
         const formData = new FormData(event.currentTarget);
-        const toAddress = formData.get('toAddress');
+        const toAddress = formData.get('toAddress') as string;
         const amount = Number(formData.get('amount'));
-        const description = formData.get('description');
+        const description = formData.get('description') as string;
         const finalDescription = description || `Transfer to ${toAddress.slice(0, 10)}...`;
 
-        if (!toAddress || !amount || amount  userAccount.vsdBalance : userAccount.vsdLiteBalance;
+        if (!toAddress || !amount || amount <= 0 || !tokenType) {
+            toast({ variant: 'destructive', title: 'Invalid Input', description: 'Please fill out all fields correctly.' });
+            setIsLoading(false);
+            return;
+        }
+        
+        const balanceToCheck = tokenType === 'vsd' ? userAccount.vsdBalance : userAccount.vsdLiteBalance;
         const balanceField = tokenType === 'vsd' ? 'vsdBalance' : 'vsdLiteBalance';
         
         if (amount > balanceToCheck) {
@@ -344,7 +344,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
             }
 
             const recipientDoc = recipientSnapshot.docs[0];
-            const recipientAccount = recipientDoc.data();
+            const recipientAccount = recipientDoc.data() as Account;
 
             await runTransaction(firestore, async (transaction) => {
                 const fromRef = doc(firestore, 'accounts', user.uid);
@@ -384,7 +384,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
             });
             setIsOpen(false);
 
-        } catch (error) {
+        } catch (error: any) {
             toast({
                 variant: 'destructive',
                 title: 'Transaction Failed',
@@ -396,73 +396,62 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
     };
 
     return (
-        
-            
-                
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Button className="btn-hover-effect w-full" disabled={!isAllowed}>
                     Send
-                
-            
-            
-                
-                    
-                        
-                            Send Tokens
-                            Transfer VSD or VSD Lite to another user's wallet address.
-                        
-                    
-                    
-                        
-                            
-                                
-                                    
-                                        
-                                            
-                                                
-                                                    
-                                                
-                                                VSD
-                                            
-                                        
-                                    
-                                    
-                                        
-                                            
-                                                
-                                                    
-                                                
-                                                VSD Lite
-                                            
-                                        
-                                    
-                                
-                            
-                            
-                                Recipient Wallet Address
-                                
-                            
-                            
-                                Amount ({tokenType.toUpperCase()})
-                                
-                                 Your balance: {tokenType === 'vsd' 
-                                    ? `${(userAccount?.vsdBalance ?? 0).toLocaleString()} VSD` 
-                                    : `${(userAccount?.vsdLiteBalance ?? 0).toLocaleString()} VSD Lite`}
-                            
-                            
-                                Description (Optional)
-                                
-                            
-                        
-                    
-                    
-                        
-                            {isLoading && }
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <form onSubmit={handleSubmit}>
+                    <DialogHeader>
+                        <DialogTitle>Send Tokens</DialogTitle>
+                        <DialogDescription>Transfer VSD or VSD Lite to another user's wallet address.</DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                             <Label>Token Type</Label>
+                             <RadioGroup onValueChange={setTokenType} required>
+                                <div className="flex items-center gap-4">
+                                     <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="vsd" id="vsd" />
+                                        <Label htmlFor="vsd">VSD</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="vsd_lite" id="vsd_lite" />
+                                        <Label htmlFor="vsd_lite">VSD Lite</Label>
+                                    </div>
+                                </div>
+                             </RadioGroup>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="toAddress">Recipient Wallet Address</Label>
+                            <Input id="toAddress" name="toAddress" required />
+                        </div>
+                         <div className="grid gap-2">
+                            <Label htmlFor="amount">Amount ({tokenType.toUpperCase()})</Label>
+                            <Input id="amount" name="amount" type="number" step="any" required />
+                             <p className="text-xs text-muted-foreground"> Your balance: {tokenType === 'vsd' 
+                                ? `${(userAccount?.vsdBalance ?? 0).toLocaleString()} VSD` 
+                                : `${(userAccount?.vsdLiteBalance ?? 0).toLocaleString()} VSD Lite`}</p>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="description">Description (Optional)</Label>
+                            <Input id="description" name="description" />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button type="submit" disabled={isLoading}>
+                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {isLoading ? 'Processing...' : `Send ${tokenType.toUpperCase()}`}
-                        
-                    
-                
-            
-        
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
     );
 }
+
+    
 
     
