@@ -17,15 +17,9 @@ import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
-import { vetAdvertiser, type VetAdvertiserOutput, type VetAdvertiserInput } from '@/ai/flows/vet-advertiser-flow';
+import { vetAdvertiser } from '@/ai/flows/vet-advertiser-flow';
+import { VetAdvertiserOutput, VetAdvertiserInput, AdvertiserApplicationSchema,type AdvertiserApplicationFormValues } from '@/types/advertiser-vetting';
 
-const advertiserApplicationSchema = z.object({
-  companyName: z.string().min(2, "Company name must be at least 2 characters."),
-  website: z.string().url("Please enter a valid website URL."),
-  businessDescription: z.string().min(50, "Description must be at least 50 characters.").max(1500, "Description cannot exceed 1500 characters."),
-});
-
-type AdvertiserApplicationFormValues = z.infer<typeof advertiserApplicationSchema>;
 
 export function AdvertiserRegistrationClient() {
   const { isLoading: isAuthLoading } = useProtectedRoute();
@@ -37,7 +31,7 @@ export function AdvertiserRegistrationClient() {
   const router = useRouter();
 
   const form = useForm<AdvertiserApplicationFormValues>({
-    resolver: zodResolver(advertiserApplicationSchema),
+    resolver: zodResolver(AdvertiserApplicationSchema),
     defaultValues: {
       companyName: '',
       website: '',

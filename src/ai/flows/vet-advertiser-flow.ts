@@ -8,21 +8,8 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { VetAdvertiserInput, VetAdvertiserInputSchema, VetAdvertiserOutput, VetAdvertiserOutputSchema } from '@/types/advertiser-vetting';
 
-export const VetAdvertiserInputSchema = z.object({
-  companyName: z.string().describe('The name of the applicant company.'),
-  website: z.string().url().describe('The official website of the company.'),
-  businessDescription: z.string().describe('A detailed description of the business, its products/services, and its advertising goals.'),
-});
-export type VetAdvertiserInput = z.infer<typeof VetAdvertiserInputSchema>;
-
-export const VetAdvertiserOutputSchema = z.object({
-  status: z.enum(['approved', 'rejected']).describe('The verdict of the vetting process. "approved" if the business is a good fit, "rejected" if it violates policies or is not a good fit.'),
-  reason: z.string().describe('A concise, professional, and clear justification for the decision. This will be shown to the applicant.'),
-  nextSteps: z.string().describe('Clear, actionable next steps for the applicant if they are approved. This should guide them on how to get their first campaign running. If rejected, this can be a generic closing statement.'),
-});
-export type VetAdvertiserOutput = z.infer<typeof VetAdvertiserOutputSchema>;
 
 export async function vetAdvertiser(input: VetAdvertiserInput): Promise<VetAdvertiserOutput> {
   return vetAdvertiserFlow(input);
