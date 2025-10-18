@@ -11,11 +11,15 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useAdminProxy, adminProxyWrite, adminProxyCreate } from '@/firebase';
 import type { Account } from '@/types/account';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Send, ChevronsUpDown, Check } from 'lucide-react';
+import { Loader2, Send, ChevronsUpDown, Check, Search } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
+const ITEMS_PER_PAGE = 10;
 
 export function TokenDistributionClient() {
     useProtectedRoute({ adminOnly: true });
@@ -25,7 +29,10 @@ export function TokenDistributionClient() {
     const [amount, setAmount] = React.useState('');
     const [tokenType, setTokenType] = React.useState<'vsd' | 'vsdLite'>('vsdLite');
     const [description, setDescription] = React.useState('');
-    const [open, setOpen] = React.useState(false)
+    const [open, setOpen] = React.useState(false);
+
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const [currentPage, setCurrentPage] = React.useState(1);
     
     const { data: accounts, isLoading: accountsLoading } = useAdminProxy<Account>('accounts');
     
@@ -86,6 +93,22 @@ export function TokenDistributionClient() {
             setIsLoading(false);
         }
     };
+    
+    const filteredAccounts = React.useMemo(() => {
+        if (!accounts) return [];
+        const lowercasedQuery = searchQuery.toLowerCase();
+        return accounts.filter(account =>
+            account.displayName.toLowerCase().includes(lowercasedQuery) ||
+            account.email.toLowerCase().includes(lowercasedQuery)
+        );
+    }, [accounts, searchQuery]);
+
+    const paginatedAccounts = React.useMemo(() => {
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        return filteredAccounts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    }, [filteredAccounts, currentPage]);
+
+    const totalPages = Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE);
 
 
     return (
@@ -93,111 +116,202 @@ export function TokenDistributionClient() {
             <div className="flex items-center">
                 <h1 className="text-lg font-semibold md:text-2xl">Token Distribution</h1>
             </div>
-            <Card>
-                <form onSubmit={handleSubmit}>
-                    <CardHeader>
-                        <CardTitle>Manual Airdrop</CardTitle>
-                        <CardDescription>Directly distribute VSD or VSD Lite tokens to a user account. This action is logged.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        {accountsLoading ? <Skeleton className="h-40 w-full" /> : (
-                            <>
-                                <div className="space-y-2">
-                                    <Label htmlFor="user-select">Select User</Label>
-                                    <Popover open={open} onOpenChange={setOpen}>
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                            variant="outline"
-                                            role="combobox"
-                                            aria-expanded={open}
-                                            className="w-full justify-between"
-                                            >
-                                            {selectedUser
-                                                ? accounts?.find((acc) => acc.uid === selectedUser)?.displayName
-                                                : "Select a user to receive tokens..."}
-                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                                            <Command>
-                                                <CommandInput placeholder="Search user..." />
-                                                <CommandList>
-                                                    <CommandEmpty>No user found.</CommandEmpty>
-                                                    <CommandGroup>
-                                                        {accounts?.map((acc) => (
-                                                        <CommandItem
-                                                            key={acc.uid}
-                                                            value={`${acc.displayName} ${acc.email}`}
-                                                            onSelect={() => {
-                                                                setSelectedUser(acc.uid)
-                                                                setOpen(false)
-                                                            }}
-                                                        >
-                                                            <Check
-                                                            className={cn(
-                                                                "mr-2 h-4 w-4",
-                                                                selectedUser === acc.uid ? "opacity-100" : "opacity-0"
-                                                            )}
-                                                            />
-                                                            {acc.displayName} ({acc.email})
-                                                        </CommandItem>
-                                                        ))}
-                                                    </CommandGroup>
-                                                </CommandList>
-                                            </Command>
-                                        </PopoverContent>
-                                    </Popover>
-                                </div>
+            <div className="grid gap-6 md:grid-cols-2">
+                <Card className="md:col-span-2">
+                    <form onSubmit={handleSubmit}>
+                        <CardHeader>
+                            <CardTitle>Manual Airdrop</CardTitle>
+                            <CardDescription>Directly distribute VSD or VSD Lite tokens to a user account. This action is logged.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {accountsLoading ? <Skeleton className="h-40 w-full" /> : (
+                                <>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="user-select">Select User</Label>
+                                        <Popover open={open} onOpenChange={setOpen}>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={open}
+                                                className="w-full justify-between"
+                                                >
+                                                {selectedUser
+                                                    ? accounts?.find((acc) => acc.uid === selectedUser)?.displayName
+                                                    : "Select a user to receive tokens..."}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                                                <Command>
+                                                    <CommandInput placeholder="Search user..." />
+                                                    <CommandList>
+                                                        <CommandEmpty>No user found.</CommandEmpty>
+                                                        <CommandGroup>
+                                                            {accounts?.map((acc) => (
+                                                            <CommandItem
+                                                                key={acc.uid}
+                                                                value={`${acc.displayName} ${acc.email}`}
+                                                                onSelect={() => {
+                                                                    setSelectedUser(acc.uid)
+                                                                    setOpen(false)
+                                                                }}
+                                                            >
+                                                                <Check
+                                                                className={cn(
+                                                                    "mr-2 h-4 w-4",
+                                                                    selectedUser === acc.uid ? "opacity-100" : "opacity-0"
+                                                                )}
+                                                                />
+                                                                {acc.displayName} ({acc.email})
+                                                            </CommandItem>
+                                                            ))}
+                                                        </CommandGroup>
+                                                    </CommandList>
+                                                </Command>
+                                            </PopoverContent>
+                                        </Popover>
+                                    </div>
 
-                                <div className="grid md:grid-cols-2 gap-4">
-                                     <div className="space-y-2">
-                                        <Label htmlFor="amount">Amount</Label>
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="amount">Amount</Label>
+                                            <Input
+                                                id="amount"
+                                                type="number"
+                                                placeholder="e.g., 1000"
+                                                value={amount}
+                                                onChange={(e) => setAmount(e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Token Type</Label>
+                                            <RadioGroup onValueChange={(v: 'vsd' | 'vsdLite') => setTokenType(v)} defaultValue={tokenType} className="flex items-center space-x-4 pt-2">
+                                                <div className="flex items-center space-x-2">
+                                                    <RadioGroupItem value="vsdLite" id="vsdLite" />
+                                                    <Label htmlFor="vsdLite">VSD Lite</Label>
+                                                </div>
+                                                <div className="flex items-center space-x-2">
+                                                    <RadioGroupItem value="vsd" id="vsd" />
+                                                    <Label htmlFor="vsd">VSD</Label>
+                                                </div>
+                                            </RadioGroup>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="description">Reason / Description</Label>
                                         <Input
-                                            id="amount"
-                                            type="number"
-                                            placeholder="e.g., 1000"
-                                            value={amount}
-                                            onChange={(e) => setAmount(e.target.value)}
+                                            id="description"
+                                            placeholder="e.g., Community reward for bug report"
+                                            value={description}
+                                            onChange={(e) => setDescription(e.target.value)}
                                             required
                                         />
                                     </div>
-                                     <div className="space-y-2">
-                                        <Label>Token Type</Label>
-                                        <RadioGroup onValueChange={(v: 'vsd' | 'vsdLite') => setTokenType(v)} defaultValue={tokenType} className="flex items-center space-x-4 pt-2">
-                                            <div className="flex items-center space-x-2">
-                                                <RadioGroupItem value="vsdLite" id="vsdLite" />
-                                                <Label htmlFor="vsdLite">VSD Lite</Label>
-                                            </div>
-                                             <div className="flex items-center space-x-2">
-                                                <RadioGroupItem value="vsd" id="vsd" />
-                                                <Label htmlFor="vsd">VSD</Label>
-                                            </div>
-                                        </RadioGroup>
-                                    </div>
-                                </div>
-                                 <div className="space-y-2">
-                                    <Label htmlFor="description">Reason / Description</Label>
-                                    <Input
-                                        id="description"
-                                        placeholder="e.g., Community reward for bug report"
-                                        value={description}
-                                        onChange={(e) => setDescription(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                            </>
-                        )}
+                                </>
+                            )}
 
+                        </CardContent>
+                        <CardFooter>
+                            <Button type="submit" disabled={isLoading || accountsLoading}>
+                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                <Send className="mr-2 h-4 w-4" />
+                                Send Airdrop
+                            </Button>
+                        </CardFooter>
+                    </form>
+                </Card>
+                <Card className="md:col-span-2">
+                    <CardHeader>
+                        <CardTitle>All Users</CardTitle>
+                        <CardDescription>A list of all users on the network.</CardDescription>
+                         <div className="relative pt-2">
+                            <Search className="absolute left-2.5 top-4.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                type="search"
+                                placeholder="Search users by name or email..."
+                                className="w-full rounded-lg bg-background pl-8"
+                                value={searchQuery}
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                    setCurrentPage(1); // Reset to first page on search
+                                }}
+                            />
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>User</TableHead>
+                                    <TableHead className="text-right">VSD Balance</TableHead>
+                                    <TableHead className="text-right">VSD Lite Balance</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {accountsLoading ? (
+                                    Array.from({ length: 5 }).map((_, i) => (
+                                        <TableRow key={i}>
+                                            <TableCell><Skeleton className="h-8 w-full" /></TableCell>
+                                            <TableCell><Skeleton className="h-8 w-full" /></TableCell>
+                                            <TableCell><Skeleton className="h-8 w-full" /></TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : paginatedAccounts.length > 0 ? (
+                                    paginatedAccounts.map(account => (
+                                        <TableRow key={account.uid}>
+                                            <TableCell>
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar>
+                                                        <AvatarImage src={account.photoURL} />
+                                                        <AvatarFallback>{account.displayName?.charAt(0) ?? 'U'}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div>
+                                                        <div className="font-medium">{account.displayName}</div>
+                                                        <div className="text-xs text-muted-foreground">{account.email}</div>
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-right font-mono">{account.vsdBalance.toLocaleString()}</TableCell>
+                                            <TableCell className="text-right font-mono text-yellow-400">{account.vsdLiteBalance.toLocaleString()}</TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={3} className="h-24 text-center">
+                                            No users found.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
                     </CardContent>
-                    <CardFooter>
-                        <Button type="submit" disabled={isLoading || accountsLoading}>
-                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                             <Send className="mr-2 h-4 w-4" />
-                            Send Airdrop
-                        </Button>
+                    <CardFooter className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <div className="flex gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                disabled={currentPage === 1}
+                            >
+                                Previous
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                disabled={currentPage === totalPages}
+                            >
+                                Next
+                            </Button>
+                        </div>
                     </CardFooter>
-                </form>
-            </Card>
+                </Card>
+            </div>
         </>
     );
 }
