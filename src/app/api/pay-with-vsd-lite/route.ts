@@ -1,0 +1,132 @@
+
+'use server';
+
+import { NextResponse } from 'next/server';
+import { getApps, getApp, initializeApp, type App } from 'firebase-admin/app';
+import { getFirestore, Firestore, FieldValue } from 'firebase-admin/firestore';
+
+// --- Memoized Firebase Admin SDK Initialization ---
+let adminApp: App | undefined;
+let db: Firestore | undefined;
+
+function getDb(): Firestore {
+  if (!db) {
+    if (getApps().length === 0) {
+      // In a deployed Firebase App Hosting environment, initializeApp() with no arguments
+      // automatically uses the project's service account credentials.
+      adminApp = initializeApp();
+    } else {
+      adminApp = getApp();
+    }
+    db = getFirestore(adminApp);
+  }
+  return db;
+}
+// --- End Firebase Admin SDK Initialization ---
+
+async function logApiRequest(logData: Omit<any, 'id' | 'timestamp'>) {
+    try {
+        const firestore = getDb();
+        const logEntry = {
+            ...logData,
+            timestamp: new Date().toISOString(),
+        };
+        await firestore.collection('api_logs').add(logEntry);
+    } catch (error) {
+        console.error('API_LOGGING_FAILED: Could not write to api_logs collection.', {
+            error,
+            logData,
+        });
+    }
+}
+
+
+export async function POST(request: Request) {
+  const authHeader = request.headers.get('authorization');
+  const apiKey = authHeader?.split(' ')[1];
+  const requestUrl = new URL(request.url);
+  const endpoint = requestUrl.pathname;
+  let tenantDoc;
+  let tenant;
+
+  // 1. Authenticate the Tenant (your Deepsound site)
+  if (!apiKey) {
+    await logApiRequest({ status: 'Failure', endpoint, message: 'Authentication error: Missing API key.' });
+    return NextResponse.json({ error: 'Unauthorized: API key is required.' }, { status: 401 });
+  }
+
+  try {
+    const firestore = getDb();
+    const tenantsSnapshot = await firestore.collection('tenants').where('apiKey', '==', apiKey).limit(1).get();
+    
+    if (tenantsSnapshot.empty) {
+        await logApiRequest({ status: 'Failure', endpoint, message: 'Authentication error: Invalid API key provided.' });
+        return NextResponse.json({ error: 'Unauthorized: Invalid API key.' }, { status: 401 });
+    }
+
+    tenantDoc = tenantsSnapshot.docs[0];
+    tenant = tenantDoc?.data();
+
+  } catch (dbError: any) {
+      console.error('FIRESTORE_CONNECTION_ERROR: Failed to validate API key.', { errorMessage: dbError.message, endpoint });
+      return NextResponse.json({ error: 'Internal Server Error: Could not verify credentials.' }, { status: 500 });
+  }
+
+  await logApiRequest({
+      status: 'Success',
+      tenantId: tenantDoc.id,
+      tenantName: tenant.name,
+      endpoint,
+      message: `VSD Lite payment request from ${tenant.name}`,
+  });
+  
+  // 2. Process the Payment
+  try {
+    const body = await request.json();
+    const { userId, amount, description } = body;
+
+    if (!userId || typeof amount !== 'number' || amount <= 0) {
+      return NextResponse.json({ error: 'Invalid request: userId and a positive amount are required.' }, { status: 400 });
+    }
+
+    const firestore = getDb();
+    const userAccountRef = firestore.collection('accounts').doc(userId);
+    
+    const result = await firestore.runTransaction(async (transaction) => {
+        const userDoc = await transaction.get(userAccountRef);
+        if (!userDoc.exists) {
+            throw new Error('User account not found.');
+        }
+
+        const currentBalance = userDoc.data()?.vsdLiteBalance || 0;
+        if (currentBalance < amount) {
+            throw new Error('Insufficient VSD Lite balance.');
+        }
+
+        // Debit the user's VSD Lite balance
+        transaction.update(userAccountRef, {
+            vsdLiteBalance: FieldValue.increment(-amount)
+        });
+
+        // Log the transaction in the user's subcollection
+        const userTransactionsRef = userAccountRef.collection('transactions').doc();
+        transaction.set(userTransactionsRef, {
+            type: 'out',
+            amount: amount,
+            date: new Date().toISOString(),
+            status: 'Completed',
+            description: description || `Payment on ${tenant.name}`,
+            to: tenant.name,
+        });
+
+        return { success: true, newBalance: currentBalance - amount };
+    });
+
+    // Return a success response
+    return NextResponse.json(result, { status: 200 });
+
+  } catch (error: any) {
+    console.error('VSD_LITE_PAYMENT_ERROR:', { errorMessage: error.message });
+    return NextResponse.json({ error: error.message || 'An internal server error occurred.' }, { status: 500 });
+  }
+}
