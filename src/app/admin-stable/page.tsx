@@ -7,6 +7,8 @@ import { useFirebaseApp } from "@/firebase";
 import { Loader2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
+const SUPER_ADMIN_UIDS = ['lzNhwweRAndUfVzCzrAEcXLSrcs1', 'eiMBgcJ3KhWGesl8J78oYFHiquy2'];
+
 export default function StableAdminPage() {
   const router = useRouter();
   const firebaseApp = useFirebaseApp(); // Use hook to get the initialized app
@@ -16,7 +18,7 @@ export default function StableAdminPage() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         router.replace("/login"); // redirect non-auth users
-      } else if (user.email !== "preston@vndrmusic.com") { // Hard-coding the super admin for stability
+      } else if (!SUPER_ADMIN_UIDS.includes(user.uid)) { // Check if user UID is in the super admin list
         router.replace("/dashboard"); // block unauthorized users
       } else {
         // Successful authentication, redirect to the admin dashboard

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -10,6 +11,9 @@ interface ProtectionOptions {
   adminOnly?: boolean;
   advertiserOnly?: boolean;
 }
+
+const SUPER_ADMIN_UIDS = ['lzNhwweRAndUfVzCzrAEcXLSrcs1', 'eiMBgcJ3KhWGesl8J78oYFHiquy2'];
+
 
 export function useProtectedRoute({ adminOnly = false, advertiserOnly = false }: ProtectionOptions = {}) {
   const { user, isUserLoading: isAuthLoading } = useUser();
@@ -34,7 +38,7 @@ export function useProtectedRoute({ adminOnly = false, advertiserOnly = false }:
     
     // --- Super Admin Bootstrap ---
     // This grants initial access to the first admin.
-    const isSuperAdmin = user.email === 'preston@vndrmusic.com';
+    const isSuperAdmin = SUPER_ADMIN_UIDS.includes(user.uid);
     if (adminOnly && isSuperAdmin) {
         setIsAdmin(true);
         setIsCheckingRoles(false);
