@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -60,7 +61,7 @@ const adminNavItems: NavItem[] = [
     { href: "/admin", title: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/api-management", title: "API Management", icon: KeyRound },
     { href: "/admin/token-distribution", title: "Token Distribution", icon: Coins },
-    { href F": "/admin/activity", title: "Activity Logs", icon: List },
+    { href: "/admin/activity", title: "Activity Logs", icon: List },
     { href: "/admin/analytics", title: "Analytics", icon: BarChart2 },
     { href: "/admin/notifications", title: "Notifications", icon: Bell },
     { href: "/admin/users", title: "User Management", icon: Users },
