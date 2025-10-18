@@ -125,7 +125,7 @@ export function DashboardClient() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
+          <Card className="bg-card/40 backdrop-blur-sm border border-white/10 shadow-lg">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardDescription>Total VSD Balance</CardDescription>
@@ -168,7 +168,7 @@ export function DashboardClient() {
             </CardFooter>
           </Card>
 
-          <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
+          <Card className="bg-card/40 backdrop-blur-sm border border-white/10 shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><BarChart className="h-6 w-6" />Activity Overview</CardTitle>
               <CardDescription>A live look at your VSD token usage over the last months.</CardDescription>
@@ -193,7 +193,7 @@ export function DashboardClient() {
         </div>
 
         <div className="lg:col-span-1 space-y-6">
-          <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
+          <Card className="bg-card/40 backdrop-blur-sm border border-white/10 shadow-lg">
              <CardHeader>
                 <CardTitle className="flex items-center gap-2"><PiggyBank className="h-6 w-6" />Staking</CardTitle>
                 <CardDescription>Feature on the VSD Network Roadmap.</CardDescription>
@@ -212,7 +212,7 @@ export function DashboardClient() {
                  <Button className="w-full" disabled>Stake Now (Coming Soon)</Button>
             </CardFooter>
           </Card>
-          <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
+          <Card className="bg-card/40 backdrop-blur-sm border border-white/10 shadow-lg">
              <CardHeader>
                 <CardTitle className="flex items-center gap-2"><FileJson className="h-6 w-6" />My Contracts</CardTitle>
                  <CardDescription>Feature on the VSD Network Roadmap.</CardDescription>
@@ -229,7 +229,7 @@ export function DashboardClient() {
 
       <Separator />
 
-      <Card className="bg-card/70 backdrop-blur-sm border border-white/10 shadow-lg">
+      <Card className="bg-card/40 backdrop-blur-sm border border-white/10 shadow-lg">
           <CardHeader className="sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <CardTitle className="flex items-center gap-2"><Coins className="h-6 w-6" />Recent Transactions</CardTitle>
@@ -449,7 +449,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
                                             <CommandList>
                                                 <CommandEmpty>No user found.</CommandEmpty>
                                                 <CommandGroup>
-                                                    {accounts?.filter(acc => acc.uid !== user?.uid).map((acc) => (
+                                                    {accounts?.map((acc) => (
                                                     <CommandItem
                                                         key={acc.uid}
                                                         value={`${acc.displayName} ${acc.email}`}
