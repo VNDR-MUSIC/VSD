@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import type { IdTokenResult } from 'firebase/auth';
 
 interface ProtectionOptions {
@@ -10,62 +11,71 @@ interface ProtectionOptions {
   advertiserOnly?: boolean;
 }
 
-// Hardcoded Super Admin UID
-const SUPER_ADMIN_UID = 'eiMBgcJ3KhWGesl8J78oYFHiquy2'; // support@vndrmusic.com
+// Hardcoded Super Admin UID for client-side checks
+const SUPER_ADMIN_UID = 'eiMBgcJ3KhWGesl8J78oYFHiquy2'; 
 
 export function useProtectedRoute({ adminOnly = false, advertiserOnly = false }: ProtectionOptions = {}) {
   const { user, isUserLoading: isAuthLoading } = useUser();
+  const firestore = useFirestore();
   const router = useRouter();
-  const [roles, setRoles] = useState<string[]>([]);
-  const [claims, setClaims] = useState<IdTokenResult['claims'] | null>(null);
-  const [isClaimsLoading, setClaimsLoading] = useState(true);
+  
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdvertiser, setIsAdvertiser] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      user.getIdTokenResult(true).then(idTokenResult => { // Force refresh
-        setClaims(idTokenResult.claims);
-        setRoles(idTokenResult.claims.roles || []);
-        setClaimsLoading(false);
-      }).catch(() => {
-        setClaimsLoading(false);
-      });
-    } else if (!isAuthLoading) {
-      setClaimsLoading(false);
-    }
-  }, [user, isAuthLoading]);
+    const checkPermissions = async () => {
+      if (isAuthLoading) {
+        return;
+      }
+      
+      if (!user) {
+        router.push('/login');
+        return;
+      }
 
-  const isLoading = isAuthLoading || isClaimsLoading;
-  
-  const isSuperAdmin = user?.uid === SUPER_ADMIN_UID || claims?.superAdmin === true;
-  const hasAdminRole = roles.includes('admin');
-  const hasAdvertiserRole = roles.includes('advertiser');
-  
-  const isAdmin = isSuperAdmin || hasAdminRole;
-  const isAdvertiser = isSuperAdmin || hasAdvertiserRole;
+      // 1. Check for Super Admin claim or UID
+      const idTokenResult = await user.getIdTokenResult(true); // Force refresh claims
+      const isSuperAdmin = idTokenResult.claims.superAdmin === true || user.uid === SUPER_ADMIN_UID;
+      
+      // 2. Check for regular admin role from Firestore as a fallback
+      let isRegularAdmin = false;
+      if (firestore) {
+          const adminDocRef = doc(firestore, 'admins', user.uid);
+          const adminDoc = await getDoc(adminDocRef);
+          isRegularAdmin = adminDoc.exists();
+      }
+      
+      const finalIsAdmin = isSuperAdmin || isRegularAdmin;
+      setIsAdmin(finalIsAdmin);
 
-  useEffect(() => {
-    if (isLoading) {
-      return;
-    }
+      // 3. Check for advertiser role from account document
+      let finalIsAdvertiser = false;
+      if (firestore) {
+          const accountDocRef = doc(firestore, 'accounts', user.uid);
+          const accountDoc = await getDoc(accountDocRef);
+          if (accountDoc.exists()) {
+              const accountData = accountDoc.data();
+              finalIsAdvertiser = accountData.roles?.includes('advertiser') || false;
+          }
+      }
+      setIsAdvertiser(finalIsAdvertiser);
+      
+      // 4. Enforce route protection
+      if (adminOnly && !finalIsAdmin) {
+        console.warn(`Protected Route: Access denied for user ${user.uid}. Required: Admin.`);
+        router.push('/dashboard');
+      } else if (advertiserOnly && !finalIsAdvertiser) {
+        console.warn(`Protected Route: Access denied for user ${user.uid}. Required: Advertiser.`);
+        router.push('/dashboard');
+      } else {
+        setIsLoading(false);
+      }
+    };
 
-    if (!user) {
-      router.push('/login');
-      return;
-    }
-    
-    if (adminOnly && !isAdmin) {
-      console.warn(`Protected Route: Access denied for user ${user.uid}. Required: Admin.`);
-      router.push('/dashboard');
-      return;
-    }
-    
-    if (advertiserOnly && !isAdvertiser) {
-      console.warn(`Protected Route: Access denied for user ${user.uid}. Required: Advertiser.`);
-      router.push('/dashboard');
-      return;
-    }
+    checkPermissions();
 
-  }, [user, isLoading, isAdmin, isAdvertiser, adminOnly, advertiserOnly, router]);
+  }, [user, isAuthLoading, firestore, adminOnly, advertiserOnly, router]);
 
   return { isLoading, isAdmin, isAdvertiser };
 }

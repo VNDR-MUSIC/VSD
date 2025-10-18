@@ -24,7 +24,7 @@ const ALLOWED_ADMINS = ["eiMBgcJ3KhWGesl8J78oYFHiquy2", "lzNhwweRAndUfVzCzrAEcXL
  */
 async function authAdminMiddleware(req, res, next) {
   try {
-    const idToken = req.headers.authorization?.split('Bearer ')[1] || req.body?.idToken;
+    const idToken = req.headers.authorization?.split('Bearer ')[1];
     if (!idToken) {
       return res.status(401).json({ error: 'Missing ID token' });
     }
