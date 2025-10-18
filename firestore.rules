@@ -1,130 +1,62 @@
-/**
- * @fileoverview Firestore Security Rules for VSD Network.
- *
- * Core Philosophy:
- * This ruleset enforces a user-ownership model for user accounts and related data,
- * and role-based access control for administrative functions.  It prioritizes
- * security by default, restricting access unless explicitly granted.  Data
- * validation is relaxed in this prototype phase, focusing on authorization.
- *
- * Data Structure:
- * - /accounts/{accountId}: User account information, keyed by Firebase Auth UID.
- * - /accounts/{accountId}/transactions/{transactionId}: Subcollection of transactions for each account.
- * - /admins/{adminId}: List of admin UIDs.
- * - /tenants/{tenantId}: Information about integrated tenants.
- * - /transactions/{transactionId}: Global transaction log (admin-only).
- * - /advertisements/{advertisementId}: Advertisement campaigns.
- * - /advertiserApplications/{applicationId}: Applications to become an advertiser.
- * - /api_logs/{logId}: API access logs.
- * - /leaderboards/topHolders:  A single document of top token holders (public read).
- *
- * Key Security Decisions:
- * - User accounts are secured with owner-only access.
- * - Global transaction logs are secured for admin-only access.
- * - Listing of all accounts is denied.
- * - Leaderboard data is publicly readable.
- *
- * Denormalization for Authorization:
- *  - Rules will check `request.auth.uid` against the document ID of the account,
- *    avoiding the need for a separate `get()` call to verify ownership.
- */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description: Secure user accounts with owner-only access.
-     * @path: /accounts/{accountId}
-     * @allow: (get, create, update, delete) if the user's UID matches the accountId.
-     *          (create) if the accountId matches the requesting user's UID.
-     * @deny: (get, create, update, delete) if the user is not the owner.
-     * @principle: Enforces document ownership for writes.
-     */
-    match /accounts/{accountId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-      function isOwner(accountId) {
-        return request.auth.uid == accountId;
-      }
-      function isExistingOwner(accountId) {
-          return isOwner(accountId) && exists(resource);
-      }
-
-      allow get: if isOwner(accountId);
-      // Prevents listing all accounts
-      allow list: if false;
-      allow create: if isSignedIn() && request.auth.uid == accountId;
-      allow update: if isOwner(accountId);
-      allow delete: if isOwner(accountId);
-    }
-
-    /**
-     * @description: Secure user transactions with owner-only access, nested under the account.
-     * @path: /accounts/{accountId}/transactions/{transactionId}
-     * @allow: (get, create, update, delete) if the user's UID matches the accountId (owner).
-     * @deny: (get, create, update, delete) if the user is not the owner.
-     * @principle: Restricts access to a user's own data tree.
-     */
-    match /accounts/{accountId}/transactions/{transactionId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-      function isOwner(accountId) {
-        return request.auth.uid == accountId;
-      }
-      function isExistingOwner(accountId) {
-        return isOwner(accountId);
-      }
-
-      allow get: if isOwner(accountId);
-      allow list: if isOwner(accountId);
-      allow create: if isOwner(accountId);
-      allow update: if isOwner(accountId);
-      allow delete: if isOwner(accountId);
-    }
-
-    /**
-     * @description: Secure admin list with role-based access control.
-     * @path: /admins/{adminId}
-     * @allow: (get, create, update, delete) if the user is an admin.
-     * @deny: (get, create, update, delete) if the user is not an admin.
+     * @description Grants admin read/write access to admin documents.
+     * @path /admins/{adminId}
+     * @allow (read, write) if request.auth.uid is an admin.
+     * @deny (read, write) if request.auth.uid is not an admin.
+     * @principle Enforces role-based access control for admin data.
      */
     match /admins/{adminId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-      function isAdmin() {
-        return get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.uid == request.auth.uid;
-      }
-      function isExistingAdmin() {
-        return isAdmin();
-      }
-
       allow get: if isAdmin();
-      allow list: if isAdmin();
+      allow list: if false;
       allow create: if isAdmin();
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
 
     /**
-     * @description: Secure tenant data with admin-only access.
-     * @path: /tenants/{tenantId}
-     * @allow: (get, create, update, delete) if the user is an admin.
-     * @deny: (get, create, update, delete) if the user is not an admin.
+     * @description Grants user read/write access to their own account data.
+     * @path /accounts/{accountId}
+     * @allow (get, list) if request.auth.uid == accountId.
+     * @allow (create, update, delete) if request.auth.uid == accountId.
+     * @deny (read, write) if request.auth.uid != accountId.
+     * @principle Enforces document ownership for user accounts.
+     */
+    match /accounts/{accountId} {
+      allow get: if isOwner(accountId);
+      allow list: if false;
+      allow create: if isOwner(accountId) && request.auth.uid == accountId;
+      allow update: if isOwner(accountId) && request.auth.uid == accountId;
+      allow delete: if isOwner(accountId) && request.auth.uid == accountId;
+
+      /**
+       * @description Grants user read/write access to their own transaction history.
+       * @path /accounts/{accountId}/transactions/{transactionId}
+       *  @allow (get, list) if request.auth.uid == accountId.
+       *  @allow (create, update, delete) if request.auth.uid == accountId.
+       *  @deny (read, write) if request.auth.uid != accountId.
+       * @principle Enforces document ownership for transactions.
+       */
+      match /accounts/{accountId}/transactions/{transactionId} {
+        allow get: if isOwner(accountId);
+        allow list: if isOwner(accountId);
+        allow create: if isOwner(accountId);
+        allow update: if isOwner(accountId);
+        allow delete: if isOwner(accountId);
+      }
+    }
+
+    /**
+     * @description Grants admin read/write access to tenant data.
+     * @path /tenants/{tenantId}
+     * @allow (read, write) if request.auth.uid is an admin.
+     * @deny (read, write) if request.auth.uid is not an admin.
+     * @principle Enforces role-based access control for tenant management.
      */
     match /tenants/{tenantId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-      function isAdmin() {
-        return get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.uid == request.auth.uid;
-      }
-      function isExistingAdmin() {
-        return isAdmin();
-      }
-
       allow get: if isAdmin();
       allow list: if isAdmin();
       allow create: if isAdmin();
@@ -133,22 +65,13 @@ service cloud.firestore {
     }
 
     /**
-     * @description: Secure global transaction log with admin-only access.
-     * @path: /transactions/{transactionId}
-     * @allow: (get, create, update, delete) if the user is an admin.
-     * @deny: (get, create, update, delete) if the user is not an admin.
+     * @description Grants admin read/write access to global transaction logs.
+     * @path /transactions/{transactionId}
+     * @allow (read, write) if request.auth.uid is an admin.
+     * @deny (read, write) if request.auth.uid is not an admin.
+     * @principle Enforces role-based access control for auditing.
      */
     match /transactions/{transactionId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-      function isAdmin() {
-        return get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.uid == request.auth.uid;
-      }
-      function isExistingAdmin() {
-        return isAdmin();
-      }
-
       allow get: if isAdmin();
       allow list: if isAdmin();
       allow create: if isAdmin();
@@ -157,77 +80,46 @@ service cloud.firestore {
     }
 
     /**
-     * @description: Advertisements can be read by anyone, but only the advertiser can modify them.
-     * @path: /advertisements/{advertisementId}
-     * @allow: (get, list) if true (public read).
-     * @allow: (create, update, delete) if the user is the owner (advertiser).
-     * @deny: (create, update, delete) if the user is not the owner.
-     * @principle: Public Read with Owner-Only Writes
+     * @description Allows public read access to advertisements, but restricts writes to the advertiser.
+     * @path /advertisements/{advertisementId}
+     * @allow (get, list) public access.
+     * @allow (create) if request.auth.uid == request.resource.data.advertiserId.
+     * @allow (update, delete) if request.auth.uid == resource.data.advertiserId.
+     * @deny (create, update, delete) if request.auth.uid != resource.data.advertiserId.
+     * @principle Public read with owner-only writes, enforced by the 'advertiserId' field.
      */
     match /advertisements/{advertisementId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-      function isOwner(advertiserId) {
-        return request.auth.uid == advertiserId;
-      }
-      function isExistingOwner() {
-        return isSignedIn() && exists(resource) && resource.data.advertiserId == request.auth.uid;
-      }
-
       allow get: if true;
       allow list: if true;
       allow create: if isSignedIn() && request.resource.data.advertiserId == request.auth.uid;
-      allow update: if isExistingOwner();
-      allow delete: if isExistingOwner();
+      allow update: if isSignedIn() && request.resource.data.advertiserId == getSelf().data.advertiserId;
+      allow delete: if isSignedIn() && request.resource.data.advertiserId == getSelf().data.advertiserId;
     }
 
     /**
-     * @description: Secure advertiser applications. Only admins can read/write.  Users can create their own application.
-     * @path: /advertiserApplications/{applicationId}
-     * @allow: (create) if the user is signed in and the userId matches.
+     * @description Allows anyone to create an advertiser application, but restricts read/write access to admins.
+     * @path /advertiserApplications/{applicationId}
+     * @allow (create) any authenticated user.
+     * @allow (read, write) if request.auth.uid is an admin.
+     * @deny (read, write) if request.auth.uid is not an admin.
+     * @principle Open application submission, but admin-only management.
      */
     match /advertiserApplications/{applicationId} {
-        function isSignedIn() {
-            return request.auth != null;
-        }
-        function isAdmin() {
-          return get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.uid == request.auth.uid;
-        }
-        function isExistingAdmin() {
-          return isAdmin();
-        }
-        function isOwner(userId) {
-          return request.auth.uid == userId;
-        }
-        function isExistingOwner() {
-          return isSignedIn() && exists(resource) && resource.data.userId == request.auth.uid;
-        }
-
-        allow get: if isAdmin();
-        allow list: if isAdmin();
-        allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-        allow update: if isExistingAdmin() || isExistingOwner();
-        allow delete: if isExistingAdmin() || isExistingOwner();
+      allow get: if isAdmin();
+      allow list: if isAdmin();
+      allow create: if isSignedIn();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
 
-    /**
-     * @description: Secure API logs with admin-only access.
-     * @path: /api_logs/{logId}
-     * @allow: (get, create, update, delete) if the user is an admin.
-     * @deny: (get, create, update, delete) if the user is not an admin.
-     */
+   /**
+    * @description Grants admin read/write access to API logs.
+    * @path /api_logs/{logId}
+    * @allow (read, write) if request.auth.uid is an admin.
+    * @deny (read, write) if request.auth.uid is not an admin.
+    * @principle Enforces role-based access control for tenant management.
+    */
     match /api_logs/{logId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-      function isAdmin() {
-        return get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.uid == request.auth.uid;
-      }
-      function isExistingAdmin() {
-        return isAdmin();
-      }
-
       allow get: if isAdmin();
       allow list: if isAdmin();
       allow create: if isAdmin();
@@ -236,17 +128,53 @@ service cloud.firestore {
     }
 
     /**
-     * @description: Allow public read access to the leaderboard.
-     * @path: /leaderboards/topHolders
-     * @allow: (get, list) if true (public read).
-     * @deny: (create, update, delete) always.
+     * @description Allows public read access to the top holders leaderboard.
+     * @path /leaderboards/topHolders
+     * @allow (get, list) public access.
+     * @deny (create, update, delete) all access.
+     * @principle Allows public read access, but no write access.
      */
     match /leaderboards/{leaderboardId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
+        allow get: if true;
+        allow list: if true;
+        allow create: if false;
+        allow update: if false;
+        allow delete: if false;
     }
+  }
+
+  // --- Helper Functions ---
+
+  /**
+   * @description Checks if the user is signed in.
+   * @return True if the user is signed in, false otherwise.
+   */
+  function isSignedIn() {
+    return request.auth != null;
+  }
+
+  /**
+   * @description Checks if the request is made by the owner of the document.
+   * @param {string} userId - The ID of the user who should own the document.
+   * @return True if the request is made by the owner, false otherwise.
+   */
+  function isOwner(userId) {
+    return request.auth.uid == userId;
+  }
+
+    /**
+   * @description Gets the current document being accessed
+   * @return The document
+   */
+  function getSelf() {
+    return get(/databases/$(database)/documents/advertisements/$(advertisementId));
+  }
+
+  /**
+   * @description Checks if the user is an administrator.
+   * @return True if the user is an administrator, false otherwise.
+   */
+  function isAdmin() {
+    return exists(/databases/$(database)/documents/admins/$(request.auth.uid));
   }
 }
