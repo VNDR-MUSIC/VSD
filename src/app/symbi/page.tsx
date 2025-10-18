@@ -1,7 +1,7 @@
 
 import type { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BrainCircuit, DollarSign, Gift, Users, Cpu, Briefcase, Code, Link as LinkIcon, PiggyBank, Disc, GraduationCap, Group, BookOpen, Route } from 'lucide-react';
+import { BrainCircuit, DollarSign, Gift, Users, Cpu, Briefcase, Code, Link as LinkIcon, PiggyBank, Disc, GraduationCap, Group, BookOpen, Route, CheckSquare } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'VSD Network Symbiote Document',
@@ -62,7 +62,7 @@ export default function SymbiPage() {
                 <p>VSD Lite is a rewards point system. It is **not** a cryptocurrency and exists only within our website. It is designed to be earned and spent within the VSD ecosystem.</p>
                 <ul>
                     <li><strong>What is its purpose?</strong> To reward our community for their engagement and help them get started in our ecosystem without needing to spend money.</li>
-                    <li><strong>How do you get VSD Lite?</strong> You earn it by completing simple tasks on the "Earn" page, such as watching videos or visiting the websites of our advertising partners.</li>
+                    <li><strong>How do you get VSD Lite?</strong> You earn it by completing simple tasks on the "Earn" page, such as watching videos, clicking links from our partners, and soon, by participating in paid polls.</li>
                     <li><strong>What can you do with it?</strong> 
                         <ul>
                             <li>Its primary function is to be **converted into the main VSD Token**. The current conversion rate is 100 VSD Lite = 1 VSD Token. This allows users to turn their time and engagement into real value within our ecosystem.</li>
@@ -84,7 +84,8 @@ export default function SymbiPage() {
                 </ol>
                 <h3 className="text-lg font-bold mt-4">For Advertisers:</h3>
                 <ol>
-                    <li><strong>Become an Advertiser:</strong> After creating a standard user account, you can request the "advertiser" role from a VSD Network admin.</li>
+                    <li><strong>Submit an Application:</strong> Visit the "For Businesses" page and follow the link to "Register as an Advertiser". You'll fill out a form that is vetted in real-time by our AI.</li>
+                    <li><strong>Get Approved:</strong> If our AI determines your business is a good fit, you are approved instantly. In some cases, an application may be flagged for manual review.</li>
                     <li><strong>Access the Advertiser Dashboard:</strong> Once approved, you gain access to a special "Advertiser Dashboard" where you can see real-time performance of your campaigns, including total clicks.</li>
                     <li><strong>Fund Your Account:</strong> To run campaigns, you must have "Ad Credits". This is a prepaid balance that is funded by purchasing credits with VSD tokens.</li>
                     <li><strong>Launch Campaigns:</strong> A VSD admin will create your campaigns (e.g., a video to watch or a link to click) on your behalf. The total reward payout for the campaign is debited from your Ad Credit balance. When users engage with your ad, they are paid VSD Lite tokens from this budget.</li>
@@ -148,7 +149,7 @@ export default function SymbiPage() {
                 <li><strong>Buy Tokens:</strong> A page that simulates the process of buying VSD tokens with a credit or debit card.</li>
                 <li><strong>Ecosystem:</strong> A full-screen, interactive slider showcasing all the subsidiary and partner companies in the IMG.</li>
                 <li><strong>Developers:</strong> A portal for developers containing the official Whitepaper, API documentation, and guides for integrating with the VSD Network.</li>
-                <li><strong>For Businesses:</strong> An informational page explaining how businesses can benefit from integrating VSD utility, including advertising.</li>
+                <li><strong>For Businesses:</strong> An informational page explaining how businesses can benefit from integrating VSD utility, including advertising. The "Register as an Advertiser" link leads to an AI-powered onboarding page.</li>
                 <li><strong>FAQ:</strong> A list of frequently asked questions about the VSD Network.</li>
                 <li><strong>Login / Dashboard / Advertiser Dashboard:</strong> The login page allows users to access their personal Dashboard, where they can view their token balance and transaction history. Users with the 'advertiser' role can also access a special Advertiser Dashboard to see their campaign reports.</li>
              </ul>

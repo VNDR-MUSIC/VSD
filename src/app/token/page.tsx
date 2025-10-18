@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Zap, Users, ShieldCheck, Cpu, PackagePlus, DollarSign, BrainCircuit, ArrowRight, Milestone, HandCoins, PiggyBank } from "lucide-react";
+import { Zap, Users, ShieldCheck, Cpu, PackagePlus, DollarSign, BrainCircuit, ArrowRight, Milestone, HandCoins, PiggyBank, CheckSquare } from "lucide-react";
 import type { Metadata } from 'next';
 import Link from "next/link";
 import { AIImage } from "@/components/ai/AIImage";
@@ -149,7 +149,7 @@ export default function TokenPage() {
             { title: "Phase 1: Foundation & Presale", icon: Milestone, items: ["Whitepaper Release", "Private & Public Presale Rounds", "Core Smart Contract Audits", "Community Building"] },
             { title: "Phase 2: Platform Launch", icon: Cpu, items: ["VSD Banking Suite (MVP)", "Staking dApp Launch", "Initial Governance Portal", "Token Generation Event (TGE)"] },
             { title: "Phase 3: Ecosystem Expansion", icon: Users, items: ["Partner Integrations", "Developer SDKs Release", "AI Image Generation API (V1)", "IMG Services Suite Launch"] },
-            { title: "Phase 4: Decentralization & Growth", icon: Zap, items: ["Full DAO Governance", "Token-to-Fiat Oracle", "Ecosystem Grant Program", "AI Contract Studio (V2)"] },
+            { title: "Phase 4: Decentralization & Growth", icon: Zap, items: ["Full DAO Governance", "Paid User Polls for VSD Lite", "Token-to-Fiat Oracle", "AI Contract Studio (V2)"] },
           ].map(phase => (
             <Card key={phase.title} className="shadow-md bg-card/70 backdrop-blur-sm h-full flex flex-col transition-all duration-300 hover:shadow-primary/20 hover:border-primary/50 border">
               <CardHeader className="pb-4">

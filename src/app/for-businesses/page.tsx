@@ -66,7 +66,7 @@ export default function ForBusinessesPage() {
       <section className="text-center bg-card/70 p-6 sm:p-8 md:p-12 rounded-lg shadow-xl">
         <h2 className="font-headline text-2xl sm:text-3xl font-bold mb-4">Ready to Advertise with Us?</h2>
         <p className="text-muted-foreground mb-6 max-w-xl mx-auto text-sm sm:text-base">
-          Join our network of advertisers to reach an engaged community of creators and tech enthusiasts. Register today to get started.
+          Join our network of advertisers to reach an engaged community of creators and tech enthusiasts. Our AI-powered onboarding process will guide you through the next steps.
         </p>
         <Button asChild size="lg" className="font-bold btn-hover-effect">
             <Link href="/for-businesses/register">
@@ -94,7 +94,7 @@ export default function ForBusinessesPage() {
             </Card>
             <Card className="shadow-md">
                 <CardHeader><CardTitle className="text-lg sm:text-xl">Data Analysis & Reporting</CardTitle></CardHeader>
-                <CardContent><p className="text-muted-foreground text-sm sm:text-base">Employ AI tools for advanced data analysis, trend identification, and automated report generation to make more informed business decisions.</p></CardContent>
+                <CardContent><p className="text-muted-foreground text-sm sm.text-base">Employ AI tools for advanced data analysis, trend identification, and automated report generation to make more informed business decisions.</p></CardContent>
             </Card>
             <Card className="shadow-md">
                 <CardHeader><CardTitle className="text-lg sm:text-xl">Building AI-Powered Applications</CardTitle></CardHeader>
@@ -110,5 +110,3 @@ export default function ForBusinessesPage() {
     </div>
   );
 }
-
-    
