@@ -48,7 +48,7 @@ export default function CompliancePage() {
             width={700}
             height={350}
             className="rounded-md my-6 shadow-md mx-auto"
-            hint="regulatory soundboard music"
+            hint="abstract scales of justice"
         />
       </SectionCard>
 

@@ -56,7 +56,7 @@ export default function TokenPage() {
                 width={700}
                 height={350}
                 className="rounded-md shadow-md w-full h-auto max-w-lg mx-auto"
-                hint="AI token utility music"
+                hint="AI token interface"
             />
           </CardContent>
         </Card>
@@ -128,7 +128,7 @@ export default function TokenPage() {
                     width={700}
                     height={400}
                     className="rounded-md shadow-md w-full h-auto max-w-md mx-auto"
-                    hint="token allocation music"
+                    hint="financial pie chart"
                  />
             </div>
             <div className="text-center pt-4">

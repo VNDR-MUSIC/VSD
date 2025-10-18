@@ -59,7 +59,7 @@ export default function WhitepaperDocumentationPage() {
           width={800}
           height={400}
           className="rounded-md my-6 shadow-md mx-auto max-w-full h-auto" 
-          hint="AI music future"
+          hint="abstract creative economy"
         />
       </SectionCard>
 
@@ -88,7 +88,7 @@ export default function WhitepaperDocumentationPage() {
             width={700}
             height={450}
             className="rounded-md my-4 shadow-md mx-auto"
-            hint="token allocation music"
+            hint="tokenomics chart dark"
         />
         <ul className="list-disc pl-5 space-y-1">
             <li><strong>Public Presale:</strong> 20% (200,000,000 VSD)</li>
@@ -112,7 +112,7 @@ export default function WhitepaperDocumentationPage() {
           width={800}
           height={450}
           className="rounded-md my-6 shadow-md mx-auto max-w-full h-auto" 
-          hint="music banking architecture"
+          hint="abstract network architecture"
         />
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="arch-core">
