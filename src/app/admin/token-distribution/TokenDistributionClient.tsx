@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -7,12 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAdminProxy, adminProxyWrite, adminProxyCreate } from '@/firebase';
 import type { Account } from '@/types/account';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Send } from 'lucide-react';
+import { Loader2, Send, ChevronsUpDown, Check } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { cn } from '@/lib/utils';
 
 export function TokenDistributionClient() {
     useProtectedRoute({ adminOnly: true });
@@ -22,6 +25,7 @@ export function TokenDistributionClient() {
     const [amount, setAmount] = React.useState('');
     const [tokenType, setTokenType] = React.useState<'vsd' | 'vsdLite'>('vsdLite');
     const [description, setDescription] = React.useState('');
+    const [open, setOpen] = React.useState(false)
     
     const { data: accounts, isLoading: accountsLoading } = useAdminProxy<Account>('accounts');
     
@@ -58,6 +62,7 @@ export function TokenDistributionClient() {
                 description: `Admin Airdrop: ${description}`,
                 from: 'VSD Network Treasury',
                 to: targetAccount.walletAddress,
+                user: targetAccount.displayName,
             };
             await adminProxyCreate(`accounts/${selectedUser}/transactions`, transactionData);
             
@@ -99,18 +104,49 @@ export function TokenDistributionClient() {
                             <>
                                 <div className="space-y-2">
                                     <Label htmlFor="user-select">Select User</Label>
-                                    <Select value={selectedUser} onValueChange={setSelectedUser} required>
-                                        <SelectTrigger id="user-select">
-                                            <SelectValue placeholder="Select a user to receive tokens" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {accounts?.map(acc => (
-                                                <SelectItem key={acc.uid} value={acc.uid}>
-                                                    {acc.displayName} ({acc.email})
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    <Popover open={open} onOpenChange={setOpen}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                            variant="outline"
+                                            role="combobox"
+                                            aria-expanded={open}
+                                            className="w-full justify-between"
+                                            >
+                                            {selectedUser
+                                                ? accounts?.find((acc) => acc.uid === selectedUser)?.displayName
+                                                : "Select a user to receive tokens..."}
+                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                                            <Command>
+                                                <CommandInput placeholder="Search user..." />
+                                                <CommandList>
+                                                    <CommandEmpty>No user found.</CommandEmpty>
+                                                    <CommandGroup>
+                                                        {accounts?.map((acc) => (
+                                                        <CommandItem
+                                                            key={acc.uid}
+                                                            value={`${acc.displayName} ${acc.email}`}
+                                                            onSelect={() => {
+                                                                setSelectedUser(acc.uid)
+                                                                setOpen(false)
+                                                            }}
+                                                        >
+                                                            <Check
+                                                            className={cn(
+                                                                "mr-2 h-4 w-4",
+                                                                selectedUser === acc.uid ? "opacity-100" : "opacity-0"
+                                                            )}
+                                                            />
+                                                            {acc.displayName} ({acc.email})
+                                                        </CommandItem>
+                                                        ))}
+                                                    </CommandGroup>
+                                                </CommandList>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
                                 </div>
 
                                 <div className="grid md:grid-cols-2 gap-4">

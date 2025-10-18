@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -5,10 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank, Loader2, Search, Gift, Coins } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank, Loader2, Search, Gift, Coins, ChevronsUpDown, Check } from "lucide-react";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip } from "recharts";
 import { useToast } from "@/hooks/use-toast";
-import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase, addDocumentNonBlocking } from '@/firebase';
+import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase, addDocumentNonBlocking, useAdminProxy } from '@/firebase';
 import { doc, collection, runTransaction, increment, query, where, getDocs, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
@@ -19,6 +20,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { cn } from '@/lib/utils';
+
 
 interface Transaction {
   id: string;
@@ -299,8 +304,13 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
     const [isOpen, setIsOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [tokenType, setTokenType] = React.useState('');
+    const [recipientId, setRecipientId] = React.useState('');
+    const [popoverOpen, setPopoverOpen] = React.useState(false);
+
     const firestore = useFirestore();
     const { user } = useUser();
+    const { data: accounts, isLoading: accountsLoading } = useAdminProxy<Account>('accounts');
+
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -311,12 +321,19 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
 
         setIsLoading(true);
         const formData = new FormData(event.currentTarget);
-        const toAddress = formData.get('toAddress') as string;
         const amount = Number(formData.get('amount'));
         const description = formData.get('description') as string;
-        const finalDescription = description || `Transfer to ${toAddress.slice(0, 10)}...`;
+        
+        const recipientAccount = accounts?.find(acc => acc.uid === recipientId);
+        if (!recipientAccount) {
+            toast({ variant: 'destructive', title: 'Recipient Not Found', description: 'Please select a valid recipient from the list.' });
+            setIsLoading(false);
+            return;
+        }
+        
+        const finalDescription = description || `Transfer to ${recipientAccount.displayName}`;
 
-        if (!toAddress || !amount || amount <= 0 || !tokenType) {
+        if (!recipientId || !amount || amount <= 0 || !tokenType) {
             toast({ variant: 'destructive', title: 'Invalid Input', description: 'Please fill out all fields correctly.' });
             setIsLoading(false);
             return;
@@ -333,22 +350,9 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
         }
 
         try {
-            const accountsRef = collection(firestore, 'accounts');
-            const q = query(accountsRef, where('walletAddress', '==', toAddress), limit(1));
-            const recipientSnapshot = await getDocs(q);
-
-            if (recipientSnapshot.empty) {
-                toast({ variant: 'destructive', title: 'Recipient Not Found', description: 'The recipient wallet address is incorrect or does not exist on the VSD Network.' });
-                setIsLoading(false);
-                return;
-            }
-
-            const recipientDoc = recipientSnapshot.docs[0];
-            const recipientAccount = recipientDoc.data() as Account;
-
             await runTransaction(firestore, async (transaction) => {
                 const fromRef = doc(firestore, 'accounts', user.uid);
-                const toRef = doc(firestore, 'accounts', recipientDoc.id);
+                const toRef = doc(firestore, 'accounts', recipientAccount.uid);
 
                 transaction.update(fromRef, { [balanceField]: increment(-amount) });
                 transaction.update(toRef, { [balanceField]: increment(amount) });
@@ -360,11 +364,11 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
                 status: 'Completed',
                 amount,
                 date: new Date().toISOString(),
-                to: toAddress,
+                to: recipientAccount.walletAddress,
                 description: finalDescription
             });
             
-            const toTxCollection = collection(firestore, 'accounts', recipientDoc.id, 'transactions');
+            const toTxCollection = collection(firestore, 'accounts', recipientAccount.uid, 'transactions');
             await addDocumentNonBlocking(toTxCollection, {
                 type: `in ${tokenName}`,
                 status: 'Completed',
@@ -379,6 +383,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
                 description: `Sent ${amount} ${tokenName} to ${recipientAccount.displayName}.`,
             });
             setIsOpen(false);
+            setRecipientId('');
 
         } catch (error: any) {
             console.error("Transaction failed:", error);
@@ -403,30 +408,74 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
                         <DialogTitle>Send Tokens</DialogTitle>
-                        <DialogDescription>Transfer VSD or VSD Lite to another user's wallet address.</DialogDescription>
+                        <DialogDescription>Transfer VSD or VSD Lite to another user on the network.</DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
                              <Label>Token Type</Label>
-                             <RadioGroup onValueChange={setTokenType} required>
+                             <RadioGroup onValueChange={(value) => setTokenType(value)} required>
                                 <div className="flex items-center gap-4">
                                      <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="vsd" id="vsd" />
                                         <Label htmlFor="vsd">VSD</Label>
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="vsd_lite" id="vsd_lite" />
-                                        <Label htmlFor="vsd_lite">VSD Lite</Label>
+                                        <RadioGroupItem value="vsdLite" id="vsdLite" />
+                                        <Label htmlFor="vsdLite">VSD Lite</Label>
                                     </div>
                                 </div>
                              </RadioGroup>
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="toAddress">Recipient Wallet Address</Label>
-                            <Input id="toAddress" name="toAddress" required />
+                            <Label htmlFor="toAddress">Recipient</Label>
+                            {accountsLoading ? <Skeleton className="h-10 w-full" /> : (
+                                <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                        variant="outline"
+                                        role="combobox"
+                                        aria-expanded={popoverOpen}
+                                        className="w-full justify-between"
+                                        >
+                                        {recipientId
+                                            ? accounts?.find((acc) => acc.uid === recipientId)?.displayName
+                                            : "Select user..."}
+                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                                        <Command>
+                                            <CommandInput placeholder="Search user by name or email..." />
+                                            <CommandList>
+                                                <CommandEmpty>No user found.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {accounts?.filter(acc => acc.uid !== user?.uid).map((acc) => (
+                                                    <CommandItem
+                                                        key={acc.uid}
+                                                        value={`${acc.displayName} ${acc.email}`}
+                                                        onSelect={() => {
+                                                            setRecipientId(acc.uid)
+                                                            setPopoverOpen(false)
+                                                        }}
+                                                    >
+                                                        <Check
+                                                        className={cn(
+                                                            "mr-2 h-4 w-4",
+                                                            recipientId === acc.uid ? "opacity-100" : "opacity-0"
+                                                        )}
+                                                        />
+                                                        {acc.displayName} ({acc.email})
+                                                    </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </CommandList>
+                                        </Command>
+                                    </PopoverContent>
+                                </Popover>
+                            )}
                         </div>
                          <div className="grid gap-2">
-                            <Label htmlFor="amount">Amount ({tokenType ? (tokenType === 'vsd' ? 'VSD' : 'VSD Lite') : '...'})</Label>
+                            <Label htmlFor="amount">Amount</Label>
                             <Input id="amount" name="amount" type="number" step="any" required />
                              <p className="text-xs text-muted-foreground"> Your balance: {tokenType === 'vsd' 
                                 ? `${(userAccount?.vsdBalance ?? 0).toLocaleString()} VSD` 
@@ -438,7 +487,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="submit" disabled={isLoading || !tokenType}>
+                        <Button type="submit" disabled={isLoading || !tokenType || !recipientId}>
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {isLoading ? 'Processing...' : `Send ${tokenType ? (tokenType === 'vsd' ? 'VSD' : 'VSD Lite') : ''}`}
                         </Button>
