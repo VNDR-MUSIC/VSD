@@ -6,14 +6,16 @@ import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { MoreHorizontal, Copy, Check } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { MoreHorizontal, Copy, Check, Trash2, Power, PowerOff } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { CreateTenantDialog } from './CreateTenantDialog';
-import { useAdminProxy } from '@/firebase';
+import { useAdminProxy, adminProxyWrite, adminProxyDelete } from '@/firebase';
 import type { Tenant } from '@/types/tenant';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+
 
 const TenantRowSkeleton = () => (
     <TableRow>
@@ -38,6 +40,42 @@ export function ApiManagementClient() {
         toast({ title: "API Key Copied!" });
         setTimeout(() => setCopiedKey(null), 2000);
     };
+
+    const handleToggleStatus = async (tenant: Tenant) => {
+        const newStatus = tenant.status === 'Active' ? 'Inactive' : 'Active';
+        try {
+            await adminProxyWrite('tenants', tenant.id, { status: newStatus });
+            toast({
+                title: 'Tenant Status Updated',
+                description: `${tenant.name} is now ${newStatus}.`,
+            });
+            // Note: Data will refresh automatically via useAdminProxy re-fetch.
+            // A more advanced implementation might use optimistic updates.
+        } catch (e: any) {
+            toast({
+                variant: 'destructive',
+                title: 'Update Failed',
+                description: e.message || 'Could not update tenant status.',
+            });
+        }
+    };
+
+    const handleDelete = async (tenant: Tenant) => {
+        try {
+            await adminProxyDelete('tenants', tenant.id);
+            toast({
+                title: 'Tenant Deleted',
+                description: `${tenant.name} has been permanently deleted.`,
+            });
+        } catch (e: any) {
+             toast({
+                variant: 'destructive',
+                title: 'Deletion Failed',
+                description: e.message || 'Could not delete tenant.',
+            });
+        }
+    };
+
 
     return (
         <>
@@ -90,9 +128,33 @@ export function ApiManagementClient() {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem onClick={() => handleCopy(tenant.apiKey)}>Copy API Key</DropdownMenuItem>
-                                                <DropdownMenuItem disabled>{tenant.status === 'Active' ? 'Deactivate' : 'Activate'}</DropdownMenuItem>
-                                                <DropdownMenuItem disabled className="text-destructive">Delete</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => handleCopy(tenant.apiKey)}>
+                                                    <Copy className="mr-2 h-4 w-4" /> Copy API Key
+                                                </DropdownMenuItem>
+                                                 <DropdownMenuItem onClick={() => handleToggleStatus(tenant)}>
+                                                    {tenant.status === 'Active' ? <PowerOff className="mr-2 h-4 w-4"/> : <Power className="mr-2 h-4 w-4" />}
+                                                    {tenant.status === 'Active' ? 'Deactivate' : 'Activate'}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:bg-destructive/10 focus:text-destructive">
+                                                            <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                                        </DropdownMenuItem>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                This action cannot be undone. This will permanently delete the tenant "{tenant.name}" and revoke its API key.
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction onClick={() => handleDelete(tenant)} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

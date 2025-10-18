@@ -9,11 +9,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Check, X, MoreHorizontal, UserCog } from 'lucide-react';
+import { Check, X, MoreHorizontal, UserCog, Ban } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAdminProxy, adminProxyWrite } from '@/firebase';
 import type { Account } from '@/types/account';
+import { EditUserRolesDialog } from './EditUserRolesDialog';
+
 
 interface AdvertiserApplication {
     id: string;
@@ -40,6 +42,8 @@ export function UserManagementClient() {
 
     const { data: accounts, isLoading: accountsLoading, error: accountsError } = useAdminProxy<Account>('accounts');
     const { data: applications, isLoading: applicationsLoading, error: applicationsError } = useAdminProxy<AdvertiserApplication>('advertiserApplications');
+    
+    const [editingUser, setEditingUser] = React.useState<Account | null>(null);
 
     const pendingApplications = React.useMemo(() => {
         return applications?.filter(app => app.status === 'pending') || [];
@@ -62,8 +66,6 @@ export function UserManagementClient() {
                 title: `Application ${newStatus}`,
                 description: `${application.userName}'s application has been ${newStatus}.`,
             });
-            // Note: A full state refresh would be ideal here, or optimistic UI updates.
-            // For now, the user will see the change on next refresh.
         } catch (error: any) {
             toast({
                 variant: 'destructive',
@@ -72,10 +74,33 @@ export function UserManagementClient() {
             });
         }
     };
+    
+    const handleToggleSuspend = async (account: Account) => {
+        const newStatus = account.status === 'Active' ? 'Suspended' : 'Active';
+        try {
+            await adminProxyWrite('accounts', account.uid, { status: newStatus });
+            toast({
+                title: `User ${newStatus}`,
+                description: `${account.displayName} has been ${newStatus.toLowerCase()}.`,
+            });
+        } catch (e: any) {
+            toast({
+                variant: 'destructive',
+                title: 'Update Failed',
+                description: e.message || 'Could not update user status.',
+            });
+        }
+    };
 
 
     return (
         <>
+            {editingUser && (
+                <EditUserRolesDialog
+                    user={editingUser}
+                    onClose={() => setEditingUser(null)}
+                />
+            )}
             <div className="flex items-center">
                 <h1 className="text-lg font-semibold md:text-2xl">User Management</h1>
             </div>
@@ -183,8 +208,12 @@ export function UserManagementClient() {
                                                 <DropdownMenuContent>
                                                     <DropdownMenuLabel>Manage User</DropdownMenuLabel>
                                                     <DropdownMenuSeparator />
-                                                    <DropdownMenuItem disabled><UserCog className="mr-2 h-4 w-4"/>Edit Roles</DropdownMenuItem>
-                                                    <DropdownMenuItem disabled className="text-destructive">Suspend User</DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => setEditingUser(account)}>
+                                                        <UserCog className="mr-2 h-4 w-4"/>Edit Roles
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleToggleSuspend(account)} className={account.status === 'Active' ? 'text-destructive focus:text-destructive' : ''}>
+                                                        <Ban className="mr-2 h-4 w-4"/>{account.status === 'Active' ? 'Suspend User' : 'Unsuspend User'}
+                                                    </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>

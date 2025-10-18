@@ -71,3 +71,10 @@ export async function adminProxyWrite(collection: string, docId: string, data: a
         body: JSON.stringify({ op: 'write', collection, docId, data }),
     });
 }
+
+export async function adminProxyDelete(collection: string, docId: string) {
+    return fetchWithAuth(PROXY_URL, {
+        method: 'POST',
+        body: JSON.stringify({ op: 'delete', collection, docId }),
+    });
+}
