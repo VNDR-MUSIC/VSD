@@ -12,6 +12,7 @@ import { BackgroundVideo } from '@/components/layout/BackgroundVideo';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { Ticker } from '@/components/ui/Ticker';
 
 const fontHeadline = Orbitron({
   subsets: ['latin'],
@@ -64,6 +65,7 @@ export default function RootLayout({
           {!isSpecialLayout && <BackgroundVideo />}
           <div className={cn("relative z-0 flex flex-col min-h-screen w-full", !isSpecialLayout && "bg-black/70")}>
             <Header />
+            {!isSpecialLayout && <Ticker />}
             <AnimatePresence mode="wait">
               <motion.main
                 key={pathname}
