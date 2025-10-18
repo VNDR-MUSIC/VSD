@@ -12,7 +12,7 @@ interface ProtectionOptions {
   advertiserOnly?: boolean;
 }
 
-const SUPER_ADMIN_UIDS = ['lzNhwweRAndUfVzCzrAEcXLSrcs1', 'eiMBgcJ3KhWGesl8J78oYFHiquy2', 'd2rM2R6Z4gYy3v9kY8sF5hE7gQy1'];
+const SUPER_ADMIN_UIDS = ['lzNhwweRAndUfVzCzrAEcXLSrcs1', 'eiMBgcJ3KhWGesl8J78oYFHiquy2', 'd2rM2R6Z4gYy3v9kY8sF5hE7gQy1', 'hk3CJgRLzbdexGjATLKzYxGN4N42'];
 
 
 export function useProtectedRoute({ adminOnly = false, advertiserOnly = false }: ProtectionOptions = {}) {
