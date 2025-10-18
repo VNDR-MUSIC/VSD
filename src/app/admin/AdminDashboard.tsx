@@ -10,7 +10,8 @@ import {
   Coins,
   Library,
   Banknote,
-  Globe
+  Globe,
+  Wallet
 } from 'lucide-react';
 import {
   Card,
@@ -32,10 +33,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { useAdminProxy } from '@/firebase';
+import { useAdminProxy, useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import type { Account } from '@/types/account';
 import type { Tenant } from '@/types/tenant';
 import { siteConfig } from '@/config/site';
+import { doc } from 'firebase/firestore';
 
 interface AdvertiserApplication {
     id: string;
@@ -45,14 +47,14 @@ interface AdvertiserApplication {
     submittedAt: string;
 }
 
-const StatCard = ({ title, value, icon: Icon, description, isLoading }: { title: string, value: string, icon: React.ElementType, description: string, isLoading: boolean }) => (
+const StatCard = ({ title, value, icon: Icon, description, isLoading, valueClassName }: { title: string, value: string, icon: React.ElementType, description: string, isLoading: boolean, valueClassName?: string }) => (
     <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{title}</CardTitle>
             <Icon className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-            {isLoading ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">{value}</div>}
+            {isLoading ? <Skeleton className="h-8 w-1/2" /> : <div className={`text-2xl font-bold ${valueClassName}`}>{value}</div>}
             <p className="text-xs text-muted-foreground">{description}</p>
         </CardContent>
     </Card>
@@ -60,6 +62,11 @@ const StatCard = ({ title, value, icon: Icon, description, isLoading }: { title:
 
 export function AdminDashboard() {
   useProtectedRoute({ adminOnly: true });
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const adminAccountRef = useMemoFirebase(() => user && firestore ? doc(firestore, 'accounts', user.uid) : null, [firestore, user]);
+  const { data: adminAccount, isLoading: adminAccountLoading } = useDoc<Account>(adminAccountRef);
 
   const { data: tenants, isLoading: tenantsLoading } = useAdminProxy<Tenant>('tenants');
   const { data: accounts, isLoading: accountsLoading } = useAdminProxy<Account>('accounts');
@@ -79,7 +86,7 @@ export function AdminDashboard() {
     ?.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 5);
 
-  const isLoading = tenantsLoading || accountsLoading || applicationsLoading;
+  const isLoading = tenantsLoading || accountsLoading || applicationsLoading || adminAccountLoading;
 
   return (
     <>
@@ -87,6 +94,21 @@ export function AdminDashboard() {
         <h1 className="text-lg font-semibold md:text-2xl">Dashboard</h1>
       </div>
       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+         <StatCard 
+            title="Personal VSD Balance" 
+            value={adminAccount?.vsdBalance.toLocaleString() ?? '0'}
+            icon={Wallet}
+            description="Your own VSD token balance."
+            isLoading={isLoading}
+        />
+        <StatCard 
+            title="Personal VSD Lite" 
+            value={adminAccount?.vsdLiteBalance.toLocaleString() ?? '0'}
+            icon={Coins}
+            description="Your own VSD Lite rewards balance."
+            isLoading={isLoading}
+            valueClassName="text-yellow-400"
+        />
         <StatCard 
             title="Total Users" 
             value={accounts?.length.toLocaleString() ?? '0'}
