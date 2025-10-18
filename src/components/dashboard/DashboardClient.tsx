@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -5,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank, Loader2, Search, Gift, Coins, ChevronsUpDown, Check } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank, Loader2, Search, Gift, Coins, ChevronsUpDown, Check, Wallet } from "lucide-react";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase';
@@ -22,7 +23,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
-
+import { useAnimatedCounter } from '@/hooks/use-animated-counter';
+import { motion } from 'framer-motion';
 
 interface Transaction {
   id: string;
@@ -46,6 +48,45 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     }
     return null;
 };
+
+const AnimatedBalanceCard = ({ title, description, value, icon: Icon, isVsdLite = false, isLoading, onCopy, walletAddress }: { title: string, description: string, value: number, icon: React.ElementType, isVsdLite?: boolean, isLoading: boolean, onCopy?: () => void, walletAddress?: string }) => {
+    const displayValue = useAnimatedCounter(value);
+
+    return (
+        <Card className="bg-card/40 backdrop-blur-sm border border-white/10 shadow-lg">
+            <CardHeader className="flex flex-row items-start justify-between">
+                <div>
+                    <CardDescription>{title}</CardDescription>
+                    {isLoading ? (
+                        <Skeleton className="h-14 w-64 mt-2" />
+                    ) : (
+                        <motion.div className={cn("text-4xl md:text-5xl font-bold", isVsdLite && "text-yellow-400")}>
+                            {displayValue}
+                        </motion.div>
+                    )}
+                </div>
+                <Icon className="h-12 w-12 text-muted-foreground" />
+            </CardHeader>
+            {walletAddress && (
+                <CardContent>
+                    <div className="text-xs text-muted-foreground flex items-center">
+                        {isLoading ? (
+                            <Skeleton className="h-5 w-full" />
+                        ) : (
+                            <>
+                                <span>{walletAddress}</span>
+                                <Button variant="ghost" size="icon" className="h-6 w-6 ml-2" onClick={onCopy}>
+                                    <Copy className="h-4 w-4" />
+                                </Button>
+                            </>
+                        )}
+                    </div>
+                </CardContent>
+            )}
+        </Card>
+    );
+};
+
 
 export function DashboardClient() {
   const { isLoading: isAuthLoading } = useProtectedRoute();
@@ -103,15 +144,16 @@ export function DashboardClient() {
   
   const filteredTransactions = React.useMemo(() => {
     if (!transactions) return [];
-    if (!searchQuery) return transactions.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    const sorted = transactions.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    if (!searchQuery) return sorted;
 
     const lowercasedQuery = searchQuery.toLowerCase();
-    return transactions.filter(tx => 
+    return sorted.filter(tx => 
         (tx.description && tx.description.toLowerCase().includes(lowercasedQuery)) ||
         (tx.from && tx.from.toLowerCase().includes(lowercasedQuery)) ||
         (tx.to && tx.to.toLowerCase().includes(lowercasedQuery)) ||
         tx.amount.toString().includes(lowercasedQuery)
-    ).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    );
   }, [transactions, searchQuery]);
 
   const canSendTokens = (account?.vsdBalance ?? 0) >= 20;
@@ -137,37 +179,32 @@ export function DashboardClient() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <Card className="bg-card/40 backdrop-blur-sm border border-white/10 shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardDescription>Total VSD Balance</CardDescription>
-                {isLoading ? (
-                  <Skeleton className="h-14 w-64 mt-2" />
-                ) : (
-                  <CardTitle className="text-4xl md:text-5xl font-bold">{(account?.vsdBalance ?? 0).toLocaleString()} <span className="text-xl text-primary">VSD</span></CardTitle>
-                )}
-              </div>
-              <HandCoins className="h-12 w-12 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-xs text-muted-foreground flex items-center">
-                 {isLoading ? (
-                    <Skeleton className="h-5 w-full" />
-                 ) : (
-                    <>
-                        <span>{account?.walletAddress}</span>
-                        <Button variant="ghost" size="icon" className="h-6 w-6 ml-2" onClick={handleCopyToClipboard}>
-                        <Copy className="h-4 w-4" />
-                        </Button>
-                    </>
-                 )}
-              </div>
-            </CardContent>
-            <CardFooter className="gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <AnimatedBalanceCard 
+                title="VSD Balance"
+                description="Main Network Utility Token"
+                value={account?.vsdBalance ?? 0}
+                icon={Wallet}
+                isLoading={isLoading}
+                walletAddress={account?.walletAddress}
+                onCopy={handleCopyToClipboard}
+              />
+               <AnimatedBalanceCard 
+                title="VSD Lite Balance"
+                description="Earned Reward Points"
+                value={account?.vsdLiteBalance ?? 0}
+                icon={Gift}
+                isVsdLite={true}
+                isLoading={isLoading}
+              />
+          </div>
+          <div className="flex flex-col sm:flex-row gap-4">
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                             <SendVsdDialog userAccount={account} isAllowed={canSendTokens} />
+                             <div className="w-full sm:w-1/2">
+                                <SendVsdDialog userAccount={account} isAllowed={canSendTokens} />
+                             </div>
                         </TooltipTrigger>
                          {!canSendTokens && (
                             <TooltipContent>
@@ -176,9 +213,8 @@ export function DashboardClient() {
                         )}
                     </Tooltip>
                 </TooltipProvider>
-              <Button variant="outline" className="btn-hover-effect w-full" onClick={() => toast({ title: "Feature Coming Soon", description: "Receiving VSD is active at your wallet address."})}>Receive</Button>
-            </CardFooter>
-          </Card>
+              <Button variant="outline" className="btn-hover-effect w-full sm:w-1/2" onClick={() => toast({ title: "Feature Coming Soon", description: "Receiving VSD is active at your wallet address."})}>Receive</Button>
+          </div>
 
           <Card className="bg-card/40 backdrop-blur-sm border border-white/10 shadow-lg">
             <CardHeader>
