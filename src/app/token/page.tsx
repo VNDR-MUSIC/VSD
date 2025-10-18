@@ -55,7 +55,7 @@ export default function TokenPage() {
                 alt="VSD Token powering AI services for IMG"
                 width={700}
                 height={350}
-                className="rounded-md shadow-md mx-auto"
+                className="rounded-md shadow-md w-full h-auto max-w-lg mx-auto"
                 hint="AI token utility music"
             />
           </CardContent>
@@ -127,7 +127,7 @@ export default function TokenPage() {
                     alt="VSD Token Allocation Chart with music elements"
                     width={700}
                     height={400}
-                    className="rounded-md shadow-md mx-auto"
+                    className="rounded-md shadow-md w-full h-auto max-w-md mx-auto"
                     hint="token allocation music"
                  />
             </div>
