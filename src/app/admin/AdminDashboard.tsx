@@ -96,14 +96,14 @@ export function AdminDashboard() {
       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
          <StatCard 
             title="Personal VSD Balance" 
-            value={adminAccount?.vsdBalance.toLocaleString() ?? '0'}
+            value={adminAccount?.vsdBalance?.toLocaleString() ?? '0'}
             icon={Wallet}
             description="Your own VSD token balance."
             isLoading={isLoading}
         />
         <StatCard 
             title="Personal VSD Lite" 
-            value={adminAccount?.vsdLiteBalance.toLocaleString() ?? '0'}
+            value={adminAccount?.vsdLiteBalance?.toLocaleString() ?? '0'}
             icon={Coins}
             description="Your own VSD Lite rewards balance."
             isLoading={isLoading}
