@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useMemoFirebase } from '@/firebase';
 import type { Account } from '@/types/account';
@@ -12,8 +12,8 @@ interface ProtectionOptions {
   advertiserOnly?: boolean;
 }
 
-const SUPER_ADMIN_UIDS = ['lzNhwweRAndUfVzCzrAEcXLSrcs1', 'eiMBgcJ3KhWGesl8J78oYFHiquy2', 'd2rM2R6Z4gYy3v9kY8sF5hE7gQy1', 'hk3CJgRLzbdexGjATLKzYxGN4N42'];
-
+// Permanent Super Admin UID
+const SUPER_ADMIN_UIDS = ['eiMBgcJ3KhWGesl8J78oYFHiquy2']; // support@vndrmusic.com
 
 export function useProtectedRoute({ adminOnly = false, advertiserOnly = false }: ProtectionOptions = {}) {
   const { user, isUserLoading: isAuthLoading } = useUser();
@@ -23,59 +23,48 @@ export function useProtectedRoute({ adminOnly = false, advertiserOnly = false }:
   const accountDocRef = useMemoFirebase(() => (user && firestore ? doc(firestore, 'accounts', user.uid) : null), [firestore, user]);
   const { data: account, isLoading: isAccountLoading } = useDoc<Account>(accountDocRef);
   
-  const [isCheckingRoles, setIsCheckingRoles] = useState(adminOnly || advertiserOnly);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const isLoading = isAuthLoading || isAccountLoading;
+  
+  // --- Permanent Super Admin Check ---
+  const isSuperAdmin = user ? SUPER_ADMIN_UIDS.includes(user.uid) : false;
+  
+  // --- Role-based Check ---
+  const userRoles = account?.roles || [];
+  const hasAdminRole = userRoles.includes('admin');
+  const hasAdvertiserRole = userRoles.includes('advertiser');
+
+  // Final permission status, granting access if super admin or has the required role
+  const isAdmin = isSuperAdmin || hasAdminRole;
+  const isAdvertiser = isSuperAdmin || hasAdvertiserRole;
 
   useEffect(() => {
-    if (isAuthLoading) {
+    // If still loading auth or account data, do nothing yet.
+    if (isLoading) {
       return;
     }
 
+    // If no user is logged in, redirect to login page.
     if (!user) {
       router.push('/login');
       return;
     }
     
-    // --- Super Admin Bootstrap ---
-    // This grants initial access to the first admin.
-    const isSuperAdmin = SUPER_ADMIN_UIDS.includes(user.uid);
-    if (adminOnly && isSuperAdmin) {
-        setIsAdmin(true);
-        setIsCheckingRoles(false);
-        return; // Bypass further checks for the super admin
-    }
-    // --- End Super Admin Bootstrap ---
-
-    if (adminOnly || advertiserOnly) {
-      if (isAccountLoading) {
+    // If this route is for admins only and the user is not an admin, redirect.
+    if (adminOnly && !isAdmin) {
+        console.warn(`Protected Route: Access denied for user ${user.uid}. Required: Admin.`);
+        router.push('/dashboard');
         return;
-      }
-      
-      const userRoles = account?.roles || [];
-      const userIsAdmin = userRoles.includes('admin');
-      setIsAdmin(userIsAdmin);
-      
-      if (adminOnly && !userIsAdmin) {
-          router.push('/dashboard');
-          return;
-      }
-      
-      if (advertiserOnly) {
-        const isAdvertiser = userRoles.includes('advertiser');
-        if (!isAdvertiser) {
-          router.push('/dashboard');
-          return;
-        }
-      }
-      
-      setIsCheckingRoles(false);
-
-    } else {
-      setIsCheckingRoles(false);
     }
-  }, [user, isAuthLoading, router, adminOnly, advertiserOnly, account, isAccountLoading]);
+    
+    // If this route is for advertisers only and the user is not an advertiser (or admin), redirect.
+    if (advertiserOnly && !isAdvertiser) {
+        console.warn(`Protected Route: Access denied for user ${user.uid}. Required: Advertiser.`);
+        router.push('/dashboard');
+        return;
+    }
 
-  const isLoading = isAuthLoading || ( (adminOnly || advertiserOnly) && (isAccountLoading || isCheckingRoles));
+  }, [user, isLoading, isAdmin, isAdvertiser, adminOnly, advertiserOnly, router]);
 
-  return { isLoading, isCheckingRoles, isAdmin };
+
+  return { isLoading, isAdmin, isAdvertiser };
 }
