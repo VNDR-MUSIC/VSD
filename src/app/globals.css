@@ -152,7 +152,7 @@ h1, h2, h3, h4, h5, h6, .font-headline {
     border-radius: inherit; /* Follow the parent's border-radius */
     background: linear-gradient(90deg, hsl(var(--border)), #a0a0a0, hsl(var(--border)));
     background-size: 200% 100%;
-    animation: animated-border-gradient 3s linear infinite;
+    animation: animated-border-gradient 4.5s linear infinite;
   }
   
   @keyframes footer-gradient {
@@ -164,13 +164,13 @@ h1, h2, h3, h4, h5, h6, .font-headline {
   .footer-menu-background {
     background: linear-gradient(-45deg, hsl(var(--primary) / 0.05), hsl(var(--background) / 0.1), hsl(var(--secondary) / 0.1), hsl(var(--background) / 0.1));
     background-size: 400% 400%;
-    animation: footer-gradient 15s ease infinite;
+    animation: footer-gradient 22.5s ease infinite;
   }
 
   .footer-animated-gradient {
     background: linear-gradient(-45deg, hsl(var(--background)), hsl(var(--primary) / 0.4), hsl(var(--background)), hsl(var(--primary) / 0.2));
     background-size: 400% 400%;
-    animation: footer-gradient 15s ease infinite;
+    animation: footer-gradient 22.5s ease infinite;
   }
 }
 
