@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -286,7 +285,7 @@ export function DashboardClient() {
                       <span className="font-medium">{tx.type}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-muted-foreground font-mono text-xs">{tx.type.includes('in') ? tx.from : tx.to}</TableCell>
+                  <TableCell className="text-muted-foreground font-mono text-xs">{tx.type.includes('in') ? tx.from || 'N/A' : tx.to || 'N/A'}</TableCell>
                   <TableCell className="text-muted-foreground">{tx.description}</TableCell>
                   <TableCell className={`text-right font-bold ${tx.type.includes('in') ? 'text-green-400' : ''} ${tx.type.includes('Lite') ? 'text-yellow-400' : ''}`}>
                     {tx.type.includes('in') ? '+' : '-'}{tx.amount.toLocaleString()} {tx.type.includes('Lite') ? 'VSD Lite' : 'VSD'}
