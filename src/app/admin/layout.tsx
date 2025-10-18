@@ -202,8 +202,10 @@ export default function AdminLayout({
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-          {children}
+        <main className="flex-grow w-full max-w-screen-2xl mx-auto p-4 sm:p-6 lg:p-8">
+            <div className="flex flex-1 flex-col gap-4 lg:gap-6">
+                {children}
+            </div>
         </main>
       </div>
     </div>
