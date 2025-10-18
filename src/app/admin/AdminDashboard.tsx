@@ -137,11 +137,16 @@ const TableRowSkeleton = ({ cells }: { cells: number }) => (
 )
 
 export function AdminDashboard() {
+  const [isClient, setIsClient] = React.useState(false);
   const { isLoading: isAuthLoading, isCheckingRoles, isAdmin } = useProtectedRoute({ adminOnly: true });
   const firestore = useFirestore();
   const { user } = useUser();
   const { toast } = useToast();
   const [isUpdatingLeaderboard, setIsUpdatingLeaderboard] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const tenantsQuery = useMemoFirebase(() => firestore && user ? collection(firestore, 'tenants') : null, [firestore, user]);
   const advertisementsQuery = useMemoFirebase(() => firestore && user ? collection(firestore, 'advertisements') : null, [firestore, user]);
@@ -213,8 +218,7 @@ export function AdminDashboard() {
     }
   };
 
-
-  if (isAuthLoading || !user || isCheckingRoles) {
+  if (!isClient || isAuthLoading || !user || isCheckingRoles) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-muted/40">
         <div className="flex flex-col items-center gap-4">
@@ -990,5 +994,3 @@ function AddTenantDialog() {
     </Dialog>
   );
 }
-
-    
