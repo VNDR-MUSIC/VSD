@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BrainCircuit, DollarSign, Gift, Users, Cpu, Briefcase, Code, Link as LinkIcon, PiggyBank, Disc, GraduationCap, Group, BookOpen, Route, CheckSquare } from 'lucide-react';
 import Link from 'next/link';
+import { siteConfig } from '@/config/site';
 
 export const metadata: Metadata = {
   title: 'VSD Network Symbiote Document',
@@ -25,6 +26,8 @@ const Section = ({ icon: Icon, title, children }: { icon: React.ElementType, tit
 );
 
 export default function SymbiPage() {
+  const CONVERSION_RATE = siteConfig.tokenValues.CONVERSION_RATE;
+
   return (
     <div className="container mx-auto py-8">
         <header className="text-center">
@@ -66,7 +69,7 @@ export default function SymbiPage() {
                     <li><strong>How do you get VSD Lite?</strong> You earn it by completing simple tasks on the <Link href="/earn">"Earn" page</Link>, such as watching videos, clicking links from our partners, and soon, by participating in paid polls.</li>
                     <li><strong>What can you do with it?</strong> 
                         <ul>
-                            <li>Its primary function is to be **converted into the main VSD Token**. The current conversion rate is 100 VSD Lite = 1 VSD Token. This allows users to turn their time and engagement into real value within our ecosystem.</li>
+                            <li>Its primary function is to be **converted into the main VSD Token**. The current conversion rate is {CONVERSION_RATE} VSD Lite = 1 VSD Token. This allows users to turn their time and engagement into real value within our ecosystem.</li>
                             <li>Users can also **transfer VSD Lite** to other users on the platform.</li>
                         </ul>
                     </li>

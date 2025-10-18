@@ -63,9 +63,9 @@ export default function RootLayout({
       <body className="font-body antialiased min-h-screen flex flex-col relative bg-background">
         <FirebaseClientProvider>
           {!isSpecialLayout && <BackgroundVideo />}
-          <div className={cn("relative z-0 flex flex-col min-h-screen w-full", !isSpecialLayout && "bg-black/70")}>
+          <div className={cn("relative z-0 flex flex-col min-h-screen w-full")}>
             <Header />
-            {!isSpecialLayout && <Ticker />}
+            {!isSpecialLayout && <div className="sticky top-16 z-40"><Ticker /></div>}
             <AnimatePresence mode="wait">
               <motion.main
                 key={pathname}
@@ -76,7 +76,7 @@ export default function RootLayout({
                 transition={pageTransition}
                 className="flex-grow w-full max-w-screen-2xl mx-auto"
               >
-                <div className="h-full animated-border bg-background backdrop-blur-sm rounded-lg my-4 p-4 sm:p-6 lg:p-8">
+                <div className="h-full animated-border bg-transparent backdrop-blur-sm rounded-lg my-4 p-4 sm:p-6 lg:p-8">
                   {children}
                 </div>
               </motion.main>

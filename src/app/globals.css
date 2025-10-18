@@ -17,7 +17,7 @@ h1, h2, h3, h4, h5, h6, .font-headline {
     --background: 0 0% 3%; /* Very dark, almost black */
     --foreground: 0 0% 98%; /* Near white for text on dark background */
 
-    --card: 240 4% 10%; /* Dark blue-gray card background */
+    --card: 240 4% 10% / 0.7; /* Dark blue-gray card background with 70% opacity */
     --card-foreground: 0 0% 98%;
 
     --popover: 240 4% 10%;
@@ -64,7 +64,7 @@ h1, h2, h3, h4, h5, h6, .font-headline {
     --background: 0 0% 3%;
     --foreground: 0 0% 98%;
 
-    --card: 240 4% 10%;
+    --card: 240 4% 10% / 0.7; /* Dark blue-gray card background with 70% opacity */
     --card-foreground: 0 0% 98%;
 
     --popover: 240 4% 10%;
@@ -157,11 +157,11 @@ h1, h2, h3, h4, h5, h6, .font-headline {
 
   @keyframes marquee {
     from { transform: translateX(0); }
-    to { transform: translateX(-100%); }
+    to { transform: translateX(-50%); }
   }
 
   .animate-marquee {
-    animation: marquee 60s linear infinite;
+    animation: marquee 80s linear infinite;
   }
 }
 
