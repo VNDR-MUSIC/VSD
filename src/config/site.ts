@@ -35,7 +35,7 @@ export const siteConfig = {
         { title: "Integration Guide", href: "/developers/integration", description: "Connect your project to the network." },
       ],
     },
-    { title: "FAQ", href: "/faq", icon: HelpCircle, description: "Frequently Asked Questions"},
+    { title: "Knowledge Base", href: "/faq", icon: HelpCircle, description: "The complete guide to the VSD Network."},
   ] satisfies NavItem[],
   footerNav: [
     { title: "Whitepaper", href: "/developers/documentation" },
@@ -46,7 +46,7 @@ export const siteConfig = {
     { title: "Compliance", href: "/compliance" },
     { title: "Terms of Service", href: "/terms-of-service" },
     { title: "Privacy Policy", href: "/privacy-policy" },
-    { title: "FAQ", href: "/faq" },
+    { title: "Knowledge Base", href: "/faq" },
   ] satisfies Omit<NavItem, 'icon' | 'description'>[],
    secondaryNav: [
     { title: "Audio Exchange Demo", href: "/audio-exchange", icon: Music },
@@ -57,3 +57,5 @@ export const siteConfig = {
     { title: "Settings", href: "/settings", icon: Settings },
   ] satisfies NavItem[],
 };
+
+    

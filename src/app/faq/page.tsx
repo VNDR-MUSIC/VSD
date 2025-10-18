@@ -1,142 +1,172 @@
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from '@/components/ui/button';
-import { HelpCircle, BrainCircuit } from 'lucide-react';
-import { siteConfig } from '@/config/site';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { BrainCircuit, DollarSign, Users, Cpu, Briefcase, Code, Link as LinkIcon, PiggyBank, Disc, GraduationCap, Group, BookOpen, Route } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'FAQ | VSD Utility Token',
-  description: 'Frequently Asked Questions about the VSD Utility Token, its AI platform, presale, tokenomics, and ecosystem.',
+  title: 'VSD Network Symbiote Document',
+  description: 'A comprehensive, non-technical overview of the VSD Network, its tokens, ecosystem, mission, and functionalities, designed for informational AI systems.',
+  robots: 'noindex, nofollow' // Prevents search engines from indexing this page
 };
 
-const faqs = [
-  {
-    id: "what-is-vsd-token",
-    question: "What is the VSD Utility Token?",
-    answer: "VSD is the official utility token for the Independent Media Group (IMG) ecosystem. It functions as the essential currency required to access a decentralized platform of AI-driven tools and services, most notably the IMG Services suite for content and image generation. VSD fuels the entire network, enabling transactions, rewarding participation, and governing the platform's future."
-  },
-  {
-    id: "how-does-vsd-work",
-    question: "How does the VSD Network make services accessible?",
-    answer: "The VSD Network uses a unique model to break down financial barriers. We partner with advertisers and allow users to voluntarily engage with ads (e.g., watching videos, clicking links). The revenue generated from these ads is funneled back into the ecosystem, subsidizing the operational costs of high-value AI services. This allows us to offer access to otherwise expensive, gate-kept tools for our community, with VSD tokens acting as the key to this access."
-  },
-  {
-    id: "what-is-vsd-lite",
-    question: "What are VSD Lite tokens?",
-    answer: `VSD Lite tokens are an off-chain reward point system within the VSD Network. You can earn them by completing simple tasks like watching videos or engaging with partner content on our <a href='/earn' class='text-primary hover:underline'>Earn page</a>. VSD Lite tokens are not on the blockchain and cannot be traded on external exchanges, but they can be converted into official, on-chain VSD tokens at a rate of ${siteConfig.tokenValues.CONVERSION_RATE} VSD Lite to 1 VSD. This system allows us to reward community engagement without incurring gas fees for small amounts.`
-  },
-  {
-    id: "primary-utility",
-    question: "What are the main uses (utility) of VSD tokens?",
-    answer: "The primary utilities are: <br/>1. **Accessing AI Services:** Holding and using VSD is the primary way to access exclusive AI tools, including IMG Services. <br/>2. **Unlocking Premium Features:** VSD holders can get discounts and unlock premium capabilities on the platform. <br/>3. **Staking for Rewards:** Earn platform rewards (yield) by staking VSD tokens as a reward for network participation. <br/>4. **Governance:** Participate in DAO voting to influence key decisions about the platform's development and treasury. <br/>5. **Fee Mechanism:** A portion of platform fees may be used for token burns or redistributed to stakers."
-  },
-  {
-    id: "how-to-get-vsd",
-    question: "How can I acquire VSD tokens?",
-    answer: "The initial opportunity to acquire VSD tokens is through our official <a href='/token#presale' class='text-primary hover:underline'>Public Presale</a>. You can also <a href='/earn' class='text-primary hover:underline'>earn VSD Lite tokens</a> and convert them into VSD. After the presale and distribution events, VSD is planned for listing on decentralized exchanges (DEXs). Always use official links provided on this website."
-  },
-   {
-    id: "ai-tools-access",
-    question: "What kind of AI tools can I access with VSD tokens?",
-    answer: "VSD tokens grant access to a growing suite of AI tools on the VSD Network. The flagship offering is **IMG Services**, an advanced suite for AI-powered image generation, content creation, and editing. Holding VSD unlocks access, and usage is metered in VSD. The range of tools will expand over time as per our <a href='/developers/documentation#roadmap' class='text-primary hover:underline'>Roadmap</a>."
-  },
-  {
-    id: "advertiser-info",
-    question: "I'm an advertiser. How do I get started?",
-    answer: "Advertisers can join the VSD Network to promote their content. After creating an account, you can request the 'advertiser' role. Once approved, you can access a dedicated <a href='/advertiser' class='text-primary hover:underline'>Advertiser Dashboard</a> to view your campaign performance in real-time, including total clicks and rewards paid out. Campaigns are created by VSD admins on your behalf, and the cost is deducted from your prepaid Ad Credit balance, which is funded with VSD tokens."
-  },
-  {
-    id: "presale-details",
-    question: "Why should I participate in the VSD Token Presale?",
-    answer: "Participating in the presale is the earliest opportunity to acquire the VSD utility tokens required to access the ecosystem's AI tools, like IMG Services. It allows you to support the VSD ecosystem from its inception and secure tokens at an early-stage valuation. All details, including price and KYC/AML requirements, are on our <a href='/token#presale' class='text-primary hover:underline'>Token Page</a>."
-  },
-  {
-    id: "total-supply-allocation",
-    question: "What is the total supply and token allocation for VSD?",
-    answer: "The total supply of VSD tokens is transparently fixed at **1,000,000,000 (1 Billion)** to ensure a sustainable economic model. The allocation is as follows: <br/>- Public Presale: 20% <br/>- Private Sale: 10% <br/>- Staking Rewards & Ecosystem Incentives: 30% <br/>- Team & Advisors: 15% (vested) <br/>- Ecosystem Development Fund: 15% <br/>- Marketing & Liquidity: 10% <br/>More details are in the <a href='/developers/documentation#tokenomics' class='text-primary hover:underline'>Whitepaper</a>."
-  },
-  {
-    id: "is-vsd-security",
-    question: "Is VSD token considered a security?",
-    answer: "VSD is designed as a utility token to access services and participate in governance on the VSD Network. It is not intended to be a security. However, regulations vary by jurisdiction. We strongly advise you to consult with your own legal and financial advisors. Please read our full <a href='/developers/documentation#legal' class='text-primary hover:underline'>Legal Disclaimer</a>."
-  },
-  {
-    id: "staking-rewards",
-    question: "How do staking rewards work for VSD?",
-    answer: "VSD token holders can stake their tokens in a dedicated dApp to earn a yield, distributed from the 'Staking Rewards' allocation, as a reward for helping to secure the network. This not only provides a way to participate more deeply in the platform but also contributes to the security and stability of the ecosystem. Tiered rewards for larger or longer-term stakes are planned."
-  },
-  {
-    id: "governance-explained",
-    question: "How does governance work?",
-    answer: "VSD token holders have a voice in the ecosystem's future. By participating in the VSD Governance DAO, you can vote on proposals related to platform upgrades, treasury management, new feature development, and more. This ensures the platform evolves in a way that benefits its actual users and stakeholders."
-  },
-  {
-    id: "use-of-funds",
-    question: "How will the funds raised from the presale be used?",
-    answer: "Funds raised will be primarily allocated to: <br/>- Platform development and AI model integration (IMG Services, etc.). <br/>- Marketing, community building, and global outreach. <br/>- Legal, compliance, and operational expenses. <br/>- Securing initial exchange listings and providing liquidity. <br/>A detailed breakdown will be available in our official documentation."
-  },
-  {
-    id: "whitepaper-location",
-    question: "Where can I find the VSD Token Whitepaper?",
-    answer: "The official VSD Token Whitepaper, detailing our vision, technology, tokenomics, roadmap, and legal information, is available on our <a href='/developers/documentation' class='text-primary hover:underline'>Documentation page</a>."
-  }
-];
+const Section = ({ icon: Icon, title, children }: { icon: React.ElementType, title: string, children: React.ReactNode }) => (
+    <Card className="shadow-lg bg-card/80 backdrop-blur-sm mt-8">
+        <CardHeader>
+            <div className="flex items-center space-x-3 mb-2">
+                <Icon className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
+                <CardTitle className="font-headline text-xl sm:text-2xl">{title}</CardTitle>
+            </div>
+        </CardHeader>
+        <CardContent className="prose prose-sm sm:prose-base prose-invert max-w-none prose-headings:font-headline prose-headings:text-primary prose-a:text-primary hover:prose-a:text-primary/80">
+            {children}
+        </CardContent>
+    </Card>
+);
 
-export default function FaqPage() {
+export default function SymbiotePage() {
   return (
-    <div className="container mx-auto px-4 py-8 sm:py-12">
-      <header className="text-center mb-10 sm:mb-12">
-        <HelpCircle className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
-        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold text-primary">Frequently Asked Questions</h1>
-        <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto mt-4">
-          Answers to common questions about the VSD Utility Token, the VSD Network AI platform, our presale, and tokenomics.
-        </p>
-      </header>
+    <div className="container mx-auto py-8">
+        <header className="text-center">
+            <BrainCircuit className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
+            <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Network: The Complete Guide</h1>
+            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
+              This document provides a complete, non-technical explanation of the VSD Network, its purpose, its tokens, and its ecosystem.
+            </p>
+        </header>
 
-      <div className="max-w-4xl mx-auto">
-        <Card className="shadow-xl bg-card/80 backdrop-blur-sm">
-          <CardContent className="p-4 sm:p-6 md:p-8">
-            <Accordion type="single" collapsible className="w-full">
-              {faqs.sort((a, b) => faqs.indexOf(a) - faqs.indexOf(b)).map((faq) => (
-                <AccordionItem value={faq.id} key={faq.id}>
-                  <AccordionTrigger className="text-md sm:text-lg md:text-xl text-left hover:no-underline py-4 sm:py-6">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div
-                      className="text-sm sm:text-base md:text-lg text-muted-foreground prose prose-sm sm:prose-base prose-invert max-w-none prose-a:text-primary hover:prose-a:text-primary/80"
-                      dangerouslySetInnerHTML={{ __html: faq.answer }}
-                    />
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </CardContent>
-        </Card>
-      </div>
+        <Section icon={Briefcase} title="Our Mission and Purpose">
+            <p>The VSD Network is the official financial ecosystem for the **Independent Media Group (IMG)**, a large family of companies focused on music, technology, and media. Our main goal is to give creators, artists, and developers access to powerful tools, especially in Artificial Intelligence (AI), that were previously too expensive or difficult to use. We do this by creating a self-sustaining economy powered by our own digital currency, the VSD Token, and funded in part by a unique advertising model.</p>
+        </Section>
 
+        <Section icon={DollarSign} title="The Two-Token System: VSD and VSD Lite">
+             <div>
+                <p>The VSD Network uses two different tokens to power its economy. Understanding both is key to understanding our platform.</p>
+                
+                <h3 className="text-lg font-bold mt-4">1. The VSD Token (The Main Utility Token)</h3>
+                <p>This is the primary, official currency of the entire IMG ecosystem. It is a real cryptocurrency (an ERC-20 token) that has tangible value and multiple uses.</p>
+                <ul>
+                    <li><strong>What is its main purpose?</strong> To be used as "digital fuel" to access services and participate in the economy. Think of it like an arcade token needed to play the games in our digital arcade.</li>
+                    <li><strong>What can you do with it?</strong>
+                        <ul>
+                            <li><strong>Access AI Services:</strong> Use VSD to pay for powerful AI tools, like the "IMG Services" suite which can generate images and other content.</li>
+                            <li><strong>Fund Ad Campaigns:</strong> Advertisers use VSD to purchase "Ad Credits" to fund their campaigns on the network.</li>
+                            <li><strong>Vote on the Future (Governance):</strong> VSD holders can vote on important decisions about how the network is run and what features get built next.</li>
+                            <li><strong>Earn More Tokens (Staking):</strong> You can "stake" (lock up) your VSD tokens to help secure the network and earn rewards for your participation.</li>
+                            <li><strong>Buy and Sell:</strong> Use VSD as the currency to buy, sell, or license digital goods on partner platforms like the <Link href="/audio-exchange">Audio Exchange</Link>.</li>
+                        </ul>
+                    </li>
+                    <li><strong>How do you get VSD Tokens?</strong> Initially, they are available through our official presale. Later, they will be available on cryptocurrency exchanges. You can also get them by converting VSD Lite tokens.</li>
+                </ul>
 
-      <section className="mt-12 sm:mt-16 text-center">
-        <Card className="inline-block p-6 sm:p-8 bg-card/70 backdrop-blur-sm shadow-lg max-w-lg">
-            <CardHeader>
-                <BrainCircuit className="h-8 w-8 sm:h-10 sm:w-10 text-primary mx-auto mb-3" />
-                <CardTitle className="font-headline text-xl sm:text-2xl">Still Have Questions?</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p className="text-muted-foreground mb-4 max-w-md mx-auto text-sm sm:text-base">
-                If your question isn't covered here, please dive into our detailed <Link href="/developers/documentation" className="text-primary hover:underline">Whitepaper</Link> or connect with our community.
-                </p>
-                <Link href="/developers#community">
-                  <Button variant="outline">
-                      Read Whitepaper & Join Community
-                  </Button>
-                </Link>
-            </CardContent>
-        </Card>
-      </section>
+                <h3 className="text-lg font-bold mt-4">2. The VSD Lite Token (The Rewards Token)</h3>
+                <p>VSD Lite is a rewards point system. It is **not** a cryptocurrency and exists only within our website. It is designed to be earned and spent within the VSD ecosystem.</p>
+                <ul>
+                    <li><strong>What is its purpose?</strong> To reward our community for their engagement and help them get started in our ecosystem without needing to spend money.</li>
+                    <li><strong>How do you get VSD Lite?</strong> You earn it by completing simple tasks on the "Earn" page, such as watching videos, clicking links from our partners, and soon, by participating in paid polls.</li>
+                    <li><strong>What can you do with it?</strong> 
+                        <ul>
+                            <li>Its primary function is to be **converted into the main VSD Token**. The current conversion rate is 100 VSD Lite = 1 VSD Token. This allows users to turn their time and engagement into real value within our ecosystem.</li>
+                            <li>Users can also **transfer VSD Lite** to other users on the platform.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </Section>
+
+        <Section icon={Users} title="How to Get Started: A Guide for Users and Advertisers">
+            <div>
+                <h3 className="text-lg font-bold mt-4">For General Users:</h3>
+                <ol>
+                    <li><strong>Earn or Buy Tokens:</strong> You can start for free by visiting the "Earn" page and completing tasks to get VSD Lite tokens. Alternatively, you can purchase the main VSD token directly through the "Buy" page or our official presale.</li>
+                    <li><strong>Create an Account:</strong> By logging in (e.g., with Google), you create a secure account and a wallet is associated with it on our platform. This is where your tokens will be held.</li>
+                    <li><strong>Visit Your Dashboard:</strong> The "Dashboard" is your personal banking suite. Here you can see your token balances, view your transaction history, and access other features like sending tokens or staking.</li>
+                    <li><strong>Explore and Use Services:</strong> With a VSD balance, you can now explore the ecosystem. For example, you could visit the "Audio Exchange" demo to see how VSD can be used for purchases, or you could use your VSD to power AI tools.</li>
+                </ol>
+                <h3 className="text-lg font-bold mt-4">For Advertisers:</h3>
+                <ol>
+                    <li><strong>Submit an Application:</strong> Visit the "For Businesses" page and follow the link to "Register as an Advertiser". You'll fill out a form that is vetted in real-time by our AI.</li>
+                    <li><strong>Get Approved:</strong> If our AI determines your business is a good fit, you are approved instantly. In some cases, an application may be flagged for manual review.</li>
+                    <li><strong>Access the Advertiser Dashboard:</strong> Once approved, you gain access to a special "Advertiser Dashboard" where you can see real-time performance of your campaigns, including total clicks.</li>
+                    <li><strong>Fund Your Account:</strong> To run campaigns, you must have "Ad Credits". This is a prepaid balance that is funded by purchasing credits with VSD tokens.</li>
+                    <li><strong>Launch Campaigns:</strong> A VSD admin will create your campaigns (e.g., a video to watch or a link to click) on your behalf. The total reward payout for the campaign is debited from your Ad Credit balance. When users engage with your ad, they are paid VSD Lite tokens from this budget.</li>
+                </ol>
+            </div>
+        </Section>
+
+        <Section icon={Cpu} title="The Independent Media Group (IMG) Ecosystem">
+            <p>The VSD Network serves as the central bank for a wide range of companies. Here is a list of our subsidiaries and partners:</p>
+            <div className="space-y-4 mt-4">
+                
+                <h4 className="font-bold flex items-center gap-2"><Disc className="text-primary"/>Music Management & Distribution</h4>
+                <ul>
+                    <li><strong>VNDR Music Distribution:</strong> A platform for distributing music to streaming services and managing music publishing.</li>
+                    <li><strong>SoundKlix:</strong> A music streaming platform focused on independent artists.</li>
+                </ul>
+
+                <h4 className="font-bold flex items-center gap-2"><PiggyBank className="text-primary"/>Financial & Monetization Platforms</h4>
+                <ul>
+                    <li><strong>Audio.Exchange:</strong> A marketplace where songs are treated like digital collectibles, creating new ways for artists to make money.</li>
+                    <li><strong>Indie Videos TV:</strong> A 24/7 TV channel that only shows independent music videos and pays artists when their videos are played.</li>
+                    <li><strong>ND 24/7 Indie Radio:</strong> A radio station dedicated to independent artists that also pays them for airplay.</li>
+                </ul>
+
+                <h4 className="font-bold flex items-center gap-2"><Briefcase className="text-primary"/>Business Development & Innovation</h4>
+                <ul>
+                    <li><strong>Blaque.Tech:</strong> An innovation lab that helps people with great ideas build their first product (MVP) for free.</li>
+                    <li><strong>Qreatv Branding Agency:</strong> An agency that helps artists develop their brand and market presence.</li>
+                </ul>
+                
+                <h4 className="font-bold flex items-center gap-2"><GraduationCap className="text-primary"/>Education & Artist Development</h4>
+                <ul>
+                    <li><strong>Music Industry University:</strong> An online university with courses on the business of music in the modern world.</li>
+                    <li><strong>Music Focus Group:</strong> A service that provides artists with data-driven feedback on their music from real listeners.</li>
+                    <li><strong>Inner View Podcasts:</strong> A podcast network focused on indie music and artists.</li>
+                </ul>
+
+                <h4 className="font-bold flex items-center gap-2"><Group className="text-primary"/>Community & Networking</h4>
+                <ul>
+                    <li><strong>The INDIE ARTIST NETWORK:</strong> The main community hub with news, resources, and forums for IMG artists.</li>
+                    <li><strong>ProFile Share:</strong> A platform for artists to showcase their work and securely share files like demos and press kits.</li>
+                </ul>
+
+                <h4 className="font-bold flex items-center gap-2"><BookOpen className="text-primary"/>News & Media</h4>
+                <ul>
+                    <li><strong>Indie Music News:</strong> An independent journalism hub focused on the indie music scene.</li>
+                </ul>
+
+                <h4 className="font-bold flex items-center gap-2"><Route className="text-primary"/>Ecosystem Infrastructure</h4>
+                <ul>
+                    <li><strong>Vsd.Network (This Website):</strong> The central banking and token platform that powers the entire ecosystem.</li>
+                </ul>
+            </div>
+        </Section>
+        
+        <Section icon={LinkIcon} title="Website Pages Explained">
+             <ul>
+                <li><strong>Home:</strong> The main landing page introducing the VSD Network.</li>
+                <li><strong>Network Status:</strong> A page showing the live operational status of all connected services and partner APIs.</li>
+                <li><strong>VSD Token:</strong> A detailed page about the main VSD token, its features, the presale, and its economic model (tokenomics).</li>
+                <li><strong>Buy Tokens:</strong> A page that simulates the process of buying VSD tokens with a credit or debit card.</li>
+                <li><strong>Ecosystem:</strong> A full-screen, interactive slider showcasing all the subsidiary and partner companies in the IMG.</li>
+                <li><strong>Developers:</strong> A portal for developers containing the official Whitepaper, API documentation, and guides for integrating with the VSD Network.</li>
+                <li><strong>For Businesses:</strong> An informational page explaining how businesses can benefit from integrating VSD utility, including advertising. The "Register as an Advertiser" link leads to an AI-powered onboarding page.</li>
+                <li><strong>Knowledge Base:</strong> This very page, serving as the ultimate guide to the VSD Network.</li>
+                <li><strong>Login / Dashboard / Advertiser Dashboard:</strong> The login page allows users to access their personal Dashboard, where they can view their token balance and transaction history. Users with the 'advertiser' role can also access a special Advertiser Dashboard to see their campaign reports.</li>
+             </ul>
+        </Section>
+        
+        <Section icon={Code} title="For Developers and Partners: Integration">
+            <p>For companies in the IMG ecosystem, integrating with the VSD Network is straightforward. The process is designed to be secure and simple:</p>
+            <ol>
+                <li><strong>Registration:</strong> An administrator registers the partner company (called a "Tenant") in the VSD Admin Dashboard.</li>
+                <li><strong>API Key Generation:</strong> A unique, secret API key is generated for the partner. This key is like a password for their application.</li>
+                <li><strong>Secure Backend Calls:</strong> The partner company uses this secret API key from their own secure server (backend) to make calls to the VSD Network API. For example, they could use it to call the AI Image Generation service. The API key should never be exposed in public-facing website code.</li>
+            </ol>
+            <p>This "hub-and-spoke" model ensures that all interactions with the central VSD banking system are secure, authenticated, and auditable. Detailed guides are available in the Developer Portal.</p>
+        </Section>
     </div>
   );
 }
+
+    

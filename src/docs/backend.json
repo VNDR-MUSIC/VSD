@@ -101,7 +101,7 @@
         "to": { "type": "string", "description": "The recipient's wallet address or identifier." },
         "description": { "type": "string", "description": "A brief description of the transaction." }
       },
-      "required": ["id", "type", "status", "amount", "date", "user", "accountId"]
+      "required": ["type", "status", "amount", "date"]
     },
     "Advertisement": {
         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -201,7 +201,7 @@
         "schema": { "$ref": "#/entities/AdvertiserApplication" },
         "description": "Stores applications from users wishing to become advertisers."
     },
-    "/api_logs/{logId}": {
+    "/vsd_api_logs/{logId}": {
       "schema": { "$ref": "#/entities/ApiLog" },
       "description": "Stores a log of all incoming requests to protected VSD Network API endpoints for monitoring and debugging."
     },
@@ -211,3 +211,5 @@
     }
   }
 }
+
+    
