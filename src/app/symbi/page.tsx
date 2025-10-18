@@ -2,6 +2,7 @@
 import type { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BrainCircuit, DollarSign, Gift, Users, Cpu, Briefcase, Code, Link as LinkIcon, PiggyBank, Disc, GraduationCap, Group, BookOpen, Route, CheckSquare } from 'lucide-react';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'VSD Network Symbiote Document',
@@ -52,7 +53,7 @@ export default function SymbiPage() {
                             <li><strong>Fund Ad Campaigns:</strong> Advertisers use VSD to purchase "Ad Credits" to fund their campaigns on the network.</li>
                             <li><strong>Vote on the Future (Governance):</strong> VSD holders can vote on important decisions about how the network is run and what features get built next.</li>
                             <li><strong>Earn More Tokens (Staking):</strong> You can "stake" (lock up) your VSD tokens to help secure the network and earn rewards for your participation.</li>
-                            <li><strong>Buy and Sell:</strong> Use VSD as the currency to buy, sell, or license digital goods on partner platforms like the Audio.Exchange.</li>
+                            <li><strong>Buy and Sell:</strong> Use VSD as the currency to buy, sell, or license digital goods on partner platforms like the <Link href="/audio-exchange">Audio Exchange</Link>.</li>
                         </ul>
                     </li>
                     <li><strong>How do you get VSD Tokens?</strong> Initially, they are available through our official presale. Later, they will be available on cryptocurrency exchanges. You can also get them by converting VSD Lite tokens.</li>
@@ -62,7 +63,7 @@ export default function SymbiPage() {
                 <p>VSD Lite is a rewards point system. It is **not** a cryptocurrency and exists only within our website. It is designed to be earned and spent within the VSD ecosystem.</p>
                 <ul>
                     <li><strong>What is its purpose?</strong> To reward our community for their engagement and help them get started in our ecosystem without needing to spend money.</li>
-                    <li><strong>How do you get VSD Lite?</strong> You earn it by completing simple tasks on the "Earn" page, such as watching videos, clicking links from our partners, and soon, by participating in paid polls.</li>
+                    <li><strong>How do you get VSD Lite?</strong> You earn it by completing simple tasks on the <Link href="/earn">"Earn" page</Link>, such as watching videos, clicking links from our partners, and soon, by participating in paid polls.</li>
                     <li><strong>What can you do with it?</strong> 
                         <ul>
                             <li>Its primary function is to be **converted into the main VSD Token**. The current conversion rate is 100 VSD Lite = 1 VSD Token. This allows users to turn their time and engagement into real value within our ecosystem.</li>
@@ -77,16 +78,16 @@ export default function SymbiPage() {
             <div>
                 <h3 className="text-lg font-bold mt-4">For General Users:</h3>
                 <ol>
-                    <li><strong>Earn or Buy Tokens:</strong> You can start for free by visiting the "Earn" page and completing tasks to get VSD Lite tokens. Alternatively, you can purchase the main VSD token directly through the "Buy" page or our official presale.</li>
+                    <li><strong>Earn or Buy Tokens:</strong> You can start for free by visiting the <Link href="/earn">"Earn" page</Link> and completing tasks to get VSD Lite tokens. Alternatively, you can purchase the main VSD token directly through the <Link href="/buy">"Buy" page</Link> or our official presale.</li>
                     <li><strong>Create an Account:</strong> By logging in (e.g., with Google), you create a secure account and a wallet is associated with it on our platform. This is where your tokens will be held.</li>
-                    <li><strong>Visit Your Dashboard:</strong> The "Dashboard" is your personal banking suite. Here you can see your token balances, view your transaction history, and access other features like sending tokens or staking.</li>
-                    <li><strong>Explore and Use Services:</strong> With a VSD balance, you can now explore the ecosystem. For example, you could visit the "Audio Exchange" demo to see how VSD can be used for purchases, or you could use your VSD to power AI tools.</li>
+                    <li><strong>Visit Your Dashboard:</strong> The <Link href="/dashboard">Dashboard</Link> is your personal banking suite. Here you can see your token balances, view your transaction history, and access other features like sending tokens or staking.</li>
+                    <li><strong>Explore and Use Services:</strong> With a VSD balance, you can now explore the ecosystem. For example, you could visit the <Link href="/audio-exchange">Audio Exchange</Link> demo to see how VSD can be used for purchases, or you could use your VSD to power AI tools.</li>
                 </ol>
                 <h3 className="text-lg font-bold mt-4">For Advertisers:</h3>
                 <ol>
-                    <li><strong>Submit an Application:</strong> Visit the "For Businesses" page and follow the link to "Register as an Advertiser". You'll fill out a form that is vetted in real-time by our AI.</li>
+                    <li><strong>Submit an Application:</strong> Visit the <Link href="/for-businesses">"For Businesses"</Link> page and follow the link to "Register as an Advertiser". You'll fill out a form that is vetted in real-time by our AI.</li>
                     <li><strong>Get Approved:</strong> If our AI determines your business is a good fit, you are approved instantly. In some cases, an application may be flagged for manual review.</li>
-                    <li><strong>Access the Advertiser Dashboard:</strong> Once approved, you gain access to a special "Advertiser Dashboard" where you can see real-time performance of your campaigns, including total clicks.</li>
+                    <li><strong>Access the Advertiser Dashboard:</strong> Once approved, you gain access to a special <Link href="/advertiser">Advertiser Dashboard</Link> where you can see real-time performance of your campaigns, including total clicks.</li>
                     <li><strong>Fund Your Account:</strong> To run campaigns, you must have "Ad Credits". This is a prepaid balance that is funded by purchasing credits with VSD tokens.</li>
                     <li><strong>Launch Campaigns:</strong> A VSD admin will create your campaigns (e.g., a video to watch or a link to click) on your behalf. The total reward payout for the campaign is debited from your Ad Credit balance. When users engage with your ad, they are paid VSD Lite tokens from this budget.</li>
                 </ol>
@@ -119,7 +120,7 @@ export default function SymbiPage() {
                 <h4 className="font-bold flex items-center gap-2"><GraduationCap className="text-primary"/>Education & Artist Development</h4>
                 <ul>
                     <li><strong>Music Industry University:</strong> An online university with courses on the business of music in the modern world.</li>
-                    <li><strong>Music Focus Group:</strong> A service that provides artists with data-driven feedback on their music from real listeners.</li>
+                    <li><strong>Music Focus Group:</strong> A service that provides artists with data-driven feedback on their music from real listeners to help artists refine their tracks.</li>
                     <li><strong>Inner View Podcasts:</strong> A podcast network focused on indie music and artists.</li>
                 </ul>
 
@@ -142,16 +143,18 @@ export default function SymbiPage() {
         </Section>
         
         <Section icon={LinkIcon} title="Website Pages Explained">
-             <ul>
-                <li><strong>Home:</strong> The main landing page introducing the VSD Network.</li>
-                <li><strong>Network Status:</strong> A page showing the live operational status of all connected services and partner APIs.</li>
-                <li><strong>VSD Token:</strong> A detailed page about the main VSD token, its features, the presale, and its economic model (tokenomics).</li>
-                <li><strong>Buy Tokens:</strong> A page that simulates the process of buying VSD tokens with a credit or debit card.</li>
-                <li><strong>Ecosystem:</strong> A full-screen, interactive slider showcasing all the subsidiary and partner companies in the IMG.</li>
-                <li><strong>Developers:</strong> A portal for developers containing the official Whitepaper, API documentation, and guides for integrating with the VSD Network.</li>
-                <li><strong>For Businesses:</strong> An informational page explaining how businesses can benefit from integrating VSD utility, including advertising. The "Register as an Advertiser" link leads to an AI-powered onboarding page.</li>
-                <li><strong>FAQ:</strong> A list of frequently asked questions about the VSD Network.</li>
-                <li><strong>Login / Dashboard / Advertiser Dashboard:</strong> The login page allows users to access their personal Dashboard, where they can view their token balance and transaction history. Users with the 'advertiser' role can also access a special Advertiser Dashboard to see their campaign reports.</li>
+             <ul className="columns-2 md:columns-3 list-disc pl-5 space-y-2">
+                <li><Link href="/">Home</Link>: Main landing page.</li>
+                <li><Link href="/network-status">Network Status</Link>: Live operational status of services.</li>
+                <li><Link href="/token">VSD Token</Link>: Details on the token, presale, and tokenomics.</li>
+                <li><Link href="/buy">Buy Tokens</Link>: Simulated token purchase page.</li>
+                <li><Link href="/earn">Earn Tokens</Link>: Page for earning VSD Lite via tasks.</li>
+                <li><Link href="/ecosystem">Ecosystem</Link>: Showcase of all partner companies.</li>
+                <li><Link href="/developers">Developers</Link>: Portal with Whitepaper, API docs, and guides.</li>
+                <li><Link href="/for-businesses">For Businesses</Link>: Info for businesses, linking to AI-powered registration.</li>
+                <li><Link href="/symbi">Knowledge Base</Link>: This very page.</li>
+                <li><Link href="/dashboard">Dashboard</Link>: Personal area for balances and history.</li>
+                <li><Link href="/advertiser">Advertiser Dashboard</Link>: Special dashboard for approved advertisers.</li>
              </ul>
         </Section>
         
@@ -162,7 +165,7 @@ export default function SymbiPage() {
                 <li><strong>API Key Generation:</strong> A unique, secret API key is generated for the partner. This key is like a password for their application.</li>
                 <li><strong>Secure Backend Calls:</strong> The partner company uses this secret API key from their own secure server (backend) to make calls to the VSD Network API. For example, they could use it to call the AI Image Generation service. The API key should never be exposed in public-facing website code.</li>
             </ol>
-            <p>This "hub-and-spoke" model ensures that all interactions with the central VSD banking system are secure, authenticated, and auditable. Detailed guides are available in the Developer Portal.</p>
+            <p>This "hub-and-spoke" model ensures that all interactions with the central VSD banking system are secure, authenticated, and auditable. Detailed guides are available in the <Link href="/developers">Developer Portal</Link>.</p>
         </Section>
     </div>
   );
