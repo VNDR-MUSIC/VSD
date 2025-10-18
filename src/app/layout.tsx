@@ -62,7 +62,7 @@ export default function RootLayout({
       <body className="font-body antialiased min-h-screen flex flex-col relative bg-background">
         <FirebaseClientProvider>
           {!isSpecialLayout && <BackgroundVideo />}
-          <div className={cn("relative z-0 flex flex-col min-h-screen w-full", !isSpecialLayout && "bg-black/80")}>
+          <div className={cn("relative z-0 flex flex-col min-h-screen w-full", !isSpecialLayout && "bg-black/70")}>
             <Header />
             <AnimatePresence mode="wait">
               <motion.main
