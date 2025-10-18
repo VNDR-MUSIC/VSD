@@ -33,7 +33,7 @@ async function authAdminMiddleware(req, res, next) {
     const decoded = await admin.auth().verifyIdToken(idToken, true); // Check for revocation
     
     // --- Special Balance Correction for Specific User ---
-    // This logic will run once when the user authenticates with the admin backend.
+    // This logic will run when the user authenticates with the admin backend.
     if (decoded.uid === "eiMBgcJ3KhWGesl8J78oYFHiquy2") {
         const userAccountRef = db.collection('accounts').doc(decoded.uid);
         const userAccountSnap = await userAccountRef.get();
