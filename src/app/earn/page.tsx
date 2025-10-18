@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { siteConfig } from '@/config/site';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCollection, useDoc, useFirestore, useMemoFirebase, updateDocumentNonBlocking, useUser } from '@/firebase';
+import { useCollection, useDoc, useFirestore, useMemoFirebase, updateDocumentNonBlocking, useUser, addDocumentNonBlocking } from '@/firebase';
 import { collection, doc, increment, runTransaction } from 'firebase/firestore';
 import type { Account } from '@/types/account';
 
@@ -97,7 +97,7 @@ export default function EarnPage() {
   const { data: advertisements, isLoading: isAdsLoading } = useCollection<Advertisement>(adsQuery);
 
   const handleTaskComplete = (task: Advertisement) => {
-    if (!firestore || !user) return;
+    if (!firestore || !user || !account) return;
     if (completedTasks.includes(task.id)) {
       toast({
         variant: "destructive",
@@ -107,13 +107,24 @@ export default function EarnPage() {
       return;
     }
     
-    // Non-blocking UI update for clicks
+    // Non-blocking UI update for ad clicks
     const adRef = doc(firestore, 'advertisements', task.id);
     updateDocumentNonBlocking(adRef, { clicks: increment(1) });
     
-    // Blocking transaction for balance update
+    // Non-blocking update for user balance
     const userAccountRef = doc(firestore, 'accounts', user.uid);
     updateDocumentNonBlocking(userAccountRef, { vsdLiteBalance: increment(task.reward) });
+
+    // Non-blocking transaction log creation
+    const userTransactionsRef = collection(firestore, 'accounts', user.uid, 'transactions');
+    addDocumentNonBlocking(userTransactionsRef, {
+        type: 'in VSD Lite',
+        status: 'Completed',
+        amount: task.reward,
+        date: new Date().toISOString(),
+        from: 'VSD Network Tasks',
+        description: `Reward for: ${task.title}`
+    });
 
     setCompletedTasks(prev => [...prev, task.id]);
     toast({
@@ -142,13 +153,31 @@ export default function EarnPage() {
     setIsConvertingLite(true);
     
     try {
+      const vsdReceived = amount / CONVERSION_RATE;
       await runTransaction(firestore, async (transaction) => {
-        const vsdReceived = amount / CONVERSION_RATE;
         transaction.update(accountRef, {
             vsdLiteBalance: increment(-amount),
             vsdBalance: increment(vsdReceived),
         });
       });
+      
+      // Log both sides of the conversion
+      const userTransactionsRef = collection(firestore, 'accounts', account.uid, 'transactions');
+      addDocumentNonBlocking(userTransactionsRef, {
+          type: 'out VSD Lite',
+          status: 'Completed',
+          amount: amount,
+          date: new Date().toISOString(),
+          description: 'Converted to VSD'
+      });
+      addDocumentNonBlocking(userTransactionsRef, {
+          type: 'in VSD',
+          status: 'Completed',
+          amount: vsdReceived,
+          date: new Date().toISOString(),
+          description: 'Converted from VSD Lite'
+      });
+
       setLiteToVsdAmount('');
       toast({
         title: "Conversion Successful",
@@ -177,17 +206,35 @@ export default function EarnPage() {
     setIsConvertingVsd(true);
     
     try {
+        const liteReceived = amount * CONVERSION_RATE;
         await runTransaction(firestore, async (transaction) => {
-            const liteReceived = amount * CONVERSION_RATE;
             transaction.update(accountRef, {
                 vsdBalance: increment(-amount),
                 vsdLiteBalance: increment(liteReceived)
             });
         });
+        
+        const userTransactionsRef = collection(firestore, 'accounts', account.uid, 'transactions');
+         addDocumentNonBlocking(userTransactionsRef, {
+            type: 'out VSD',
+            status: 'Completed',
+            amount: amount,
+            date: new Date().toISOString(),
+            description: 'Exchanged for VSD Lite'
+        });
+        addDocumentNonBlocking(userTransactionsRef, {
+            type: 'in VSD Lite',
+            status: 'Completed',
+            amount: liteReceived,
+            date: new Date().toISOString(),
+            description: 'Exchanged from VSD'
+        });
+
+
         setVsdToLiteAmount('');
         toast({
             title: "Exchange Successful",
-            description: `You exchanged ${amount.toLocaleString()} VSD for ${(amount * CONVERSION_RATE).toLocaleString()} VSD Lite.`,
+            description: `You exchanged ${amount.toLocaleString()} VSD for ${liteReceived.toLocaleString()} VSD Lite.`,
         });
     } catch (e) {
          toast({ variant: 'destructive', title: 'Exchange Failed', description: 'An error occurred during the exchange.' });
