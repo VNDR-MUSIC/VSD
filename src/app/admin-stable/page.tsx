@@ -18,6 +18,9 @@ if (!PROJECT) {
 }
 
 function adminProxyUrl(path = '') {
+  // Use the live URL for the deployed function.
+  // In a local Firebase emulator environment, you might need a different URL.
+  // For Firebase App Hosting, this should correctly point to the deployed function.
   return `https://${REGION}-${PROJECT}.cloudfunctions.net/${FUNCTION_NAME}${path}`;
 }
 
@@ -40,7 +43,7 @@ export default function AdminStablePage() {
   async function refreshClaims() {
     try {
       if (!auth.currentUser) return;
-      const idRes = await auth.currentUser.getIdTokenResult(false);
+      const idRes = await auth.currentUser.getIdTokenResult(false); // don't force refresh, just get current
       setClaims(idRes.claims);
       console.log('[admin-stable] token claims:', idRes.claims);
       setStatus('Claims refreshed.');
@@ -61,7 +64,7 @@ export default function AdminStablePage() {
       }
       setStatus(`Signed in as ${u.email} (${u.uid}) — refreshing token...`);
       try {
-        await u.getIdToken(true);
+        await u.getIdToken(true); // Force refresh on initial load
         await refreshClaims();
         setStatus('Token refreshed. Ready.');
       } catch (err) {

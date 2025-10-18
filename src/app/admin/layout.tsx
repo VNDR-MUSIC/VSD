@@ -14,6 +14,7 @@ import {
   Coins,
   Shield,
   LayoutDashboard,
+  Wrench,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -65,6 +66,7 @@ const adminNavItems: NavItem[] = [
     { href: "/admin/analytics", title: "Analytics", icon: BarChart2 },
     { href: "/admin/notifications", title: "Notifications", icon: Bell },
     { href: "/admin/users", title: "User Management", icon: Users },
+    { href: "/admin-stable", title: "Stable Admin (Debug)", icon: Wrench },
 ];
 
 
