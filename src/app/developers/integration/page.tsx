@@ -1,22 +1,13 @@
 
 'use client';
 
-import type { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Share2, KeyRound, ShieldCheck, Workflow, AlertTriangle, Copy, Check, ListChecks } from 'lucide-react';
+import { Share2, KeyRound, ShieldCheck, Workflow, AlertTriangle, ListChecks, Send } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-
-// Metadata cannot be exported from a client component.
-// It should be moved to the nearest server component parent or to a `layout.tsx` file.
-// export const metadata: Metadata = {
-//   title: 'Project Integration | VSD Network',
-//   description: 'A guide for developers on how to connect external IMG projects to the VSD Network, manage permissions, and interact with the central API services.',
-// };
-
 
 const CodeBlock = ({ children, lang = 'bash' }: { children: string; lang?: string }) => {
     const { toast } = useToast();
@@ -79,35 +70,37 @@ export default function IntegrationPage() {
       <Separator />
 
       <div className="space-y-8">
-        <StepCard icon={KeyRound} title="Register & Get Your API Key" step={1}>
-            <p>First, your project must be registered as a "Tenant" in the VSD Network. Our AI-powered system makes this fast and simple.</p>
-            <p>Visit the <Link href="/for-businesses/register">API registration form</Link> and fill out your project details. Our AI will instantly vet your application for compatibility and safety. Upon approval, you will **immediately receive your API key** on-screen.</p>
-             <p>This key authenticates your project and proves it's a trusted "twin" in the IMG ecosystem.</p>
+        <StepCard icon={Send} title="Register Your Project" step={1}>
+            <p>Your project must first be registered as a "Tenant" within the VSD Network. Our AI-driven, self-service process makes this simple.</p>
+            <p>Visit the <Link href="/for-businesses/register">API registration form</Link> and submit your project details. Our AI will instantly vet your application for compatibility and safety. Upon approval, you will **immediately receive your API key** on-screen.</p>
+             <p>This key authenticates your project and proves it's a trusted partner in the IMG ecosystem.</p>
         </StepCard>
 
         <StepCard icon={ShieldCheck} title="Secure the API Key" step={2}>
-            <p>In your project's backend code, you must store this API key as an environment variable. Never expose this key in public client-side code (like a React component).</p>
+            <p>In your new project's backend code, you must store this API key as a secure environment variable. Never expose this key in public client-side code (like a React component).</p>
             
             <div className="flex items-start gap-3 p-4 my-4 rounded-md border border-amber-500/50 bg-amber-500/10">
                 <AlertTriangle className="h-8 w-8 text-amber-400 shrink-0 mt-1" />
                 <div>
-                    <h4 className="font-bold text-yellow-200">Security Warning</h4>
+                    <h4 className="font-bold text-yellow-200">Critical Security Warning</h4>
                     <p className="text-sm text-yellow-300">
-                       Your `INTERNAL_API_KEY` provides direct access to VSD services. It must be kept secret and only used on a secure server backend.
+                       Your API key provides direct, billable access to VSD services. It must be kept secret and only used on a secure server backend.
                     </p>
                 </div>
             </div>
             
-            <p>For a Next.js application, you would add it to a file like `.env.local`:</p>
+            <p>For a Next.js application, you would add it to a file named `.env.local` in your project's root:</p>
             <CodeBlock lang="bash">{`# .env.local
 INTERNAL_API_KEY="vsd_key_..."`}</CodeBlock>
         </StepCard>
         
         <StepCard icon={Workflow} title="Make an Authenticated API Call" step={3}>
-            <p>From your project's backend, make a `fetch` request to a VSD Network endpoint (e.g., `/api/transactions`). Include your API key in the `Authorization` header as a Bearer token.</p>
-            <p>Here is an example of calling the VSD Transaction API from a JavaScript backend:</p>
-            <CodeBlock lang="javascript">{`async function makeVsdTransaction() {
-  const VSD_API_ENDPOINT = 'https://your-vsd-project-url.com/api/transactions';
+            <p>From your project's backend (e.g., a Next.js API route), make a `fetch` or `axios` request to a VSD Network endpoint like `/api/generate-image`. Include your API key in the `Authorization` header as a Bearer token.</p>
+            <p>Here is an example of calling the VSD API from another Next.js project's backend:</p>
+            <CodeBlock lang="javascript">{`// Example in /pages/api/your-endpoint.js
+
+export default async function handler(req, res) {
+  const VSD_API_ENDPOINT = 'https://<your-vsd-network-url>.apphosting.dev/api/generate-image';
   const API_KEY = process.env.INTERNAL_API_KEY;
 
   try {
@@ -117,12 +110,7 @@ INTERNAL_API_KEY="vsd_key_..."`}</CodeBlock>
         'Content-Type': 'application/json',
         'Authorization': \`Bearer \${API_KEY}\`
       },
-      body: JSON.stringify({
-        fromAddress: "0x...",
-        toAddress: "0x...",
-        amount: 100,
-        description: "Test transaction from my app"
-      })
+      body: JSON.stringify({ hint: "a futuristic music studio" })
     });
 
     if (!response.ok) {
@@ -131,25 +119,23 @@ INTERNAL_API_KEY="vsd_key_..."`}</CodeBlock>
     }
 
     const data = await response.json();
-    console.log('Success! Transaction ID:', data.transactionId);
-    return data;
+    // Use the image data in your application
+    res.status(200).json(data);
 
   } catch (error) {
     console.error("Error calling VSD API:", error);
-    // Handle the error in your application
+    res.status(502).json({ error: 'Failed to communicate with VSD Network' });
   }
-}
-
-makeVsdTransaction();`}
+}`}
             </CodeBlock>
         </StepCard>
 
-        <StepCard icon={ListChecks} title="Check for Success" step={4}>
-            <p>How do you know if your integration is working? The **API Access Log**.</p>
-            <p>Go to the VSD Network <Link href="/admin/activity">Admin Dashboard</Link> and click on the **"Activity Logs"** tab. You should see a new entry corresponding to your API call:</p>
+        <StepCard icon={ListChecks} title="Verify the Connection" step={4}>
+            <p>How do you know if your integration is working? The **API Access Log** is your single source of truth.</p>
+            <p>Go to the VSD Network <Link href="/admin/activity">Admin Dashboard</Link> and click on the **"Activity Logs"** tab. You should see a new entry corresponding to your API call from your new project:</p>
             <ul>
-                <li>A **<span className="text-green-400">Success</span>** status with your tenant name means your key is valid and your connection is working perfectly.</li>
-                <li>A **<span className="text-red-400">Failure</span>** status means there is a problem with your API key (it's either missing or incorrect).</li>
+                <li>A **<span className="text-green-400">Success</span>** status with your project's name means your key is valid and your connection is working perfectly.</li>
+                <li>A **<span className="text-red-400">Failure</span>** status means there is a problem with your API key (it's either missing or incorrect). Double-check that it's set correctly in your environment variables.</li>
             </ul>
             <p>This log provides instant, real-time feedback for debugging your connection.</p>
         </StepCard>
