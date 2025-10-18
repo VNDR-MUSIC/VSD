@@ -51,7 +51,7 @@ export function LiveTokenData() {
 
   return (
     <section className="py-12 md:py-20">
-      <Card className="max-w-4xl mx-auto shadow-2xl shadow-primary/10 bg-card/70 backdrop-blur-sm border border-white/10">
+      <Card className="max-w-4xl mx-auto shadow-2xl shadow-primary/10 bg-card/70 backdrop-blur-sm animated-border">
         <CardHeader className="items-center text-center">
           <CardTitle className="font-headline text-2xl sm:text-3xl">Official VSD Token Data</CardTitle>
           <p className="text-muted-foreground max-w-2xl">

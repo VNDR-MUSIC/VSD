@@ -8,11 +8,11 @@ import { cn } from '@/lib/utils';
 
 export function Footer() {
   return (
-    <footer className={cn("border-t border-border/40 bg-background/80 backdrop-blur-sm", "footer-animated-gradient")}>
+    <footer className={cn("border-t border-border/40 bg-background/80 backdrop-blur-sm")}>
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
           {/* Main Links */}
-          <div className="flex flex-col gap-2 p-4 rounded-lg footer-menu-background col-span-2 sm:col-span-1">
+          <div className="flex flex-col gap-2 p-4 rounded-lg col-span-2 sm:col-span-1">
             <h4 className="font-bold mb-2">Platform</h4>
             <Link href="/token" className="text-muted-foreground hover:text-primary transition-colors">VSD Token</Link>
             <Link href="/ecosystem" className="text-muted-foreground hover:text-primary transition-colors">Ecosystem</Link>
@@ -21,7 +21,7 @@ export function Footer() {
           </div>
 
           {/* Developer Links */}
-          <div className="flex flex-col gap-2 p-4 rounded-lg footer-menu-background">
+          <div className="flex flex-col gap-2 p-4 rounded-lg">
             <h4 className="font-bold mb-2">Developers</h4>
             <Link href="/developers/documentation" className="text-muted-foreground hover:text-primary transition-colors">Whitepaper</Link>
             <Link href="/developers/api-reference" className="text-muted-foreground hover:text-primary transition-colors">API Reference</Link>
@@ -30,16 +30,16 @@ export function Footer() {
           </div>
 
           {/* Company Links */}
-          <div className="flex flex-col gap-2 p-4 rounded-lg footer-menu-background">
+          <div className="flex flex-col gap-2 p-4 rounded-lg">
             <h4 className="font-bold mb-2">Company</h4>
             <Link href="/network-status" className="text-muted-foreground hover:text-primary transition-colors">Network Status</Link>
             <Link href="/for-businesses" className="text-muted-foreground hover:text-primary transition-colors">For Businesses</Link>
             <Link href="/compliance" className="text-muted-foreground hover:text-primary transition-colors">Compliance</Link>
-            <Link href="/faq" className="text-muted-foreground hover:text-primary transition-colors">FAQ</Link>
+            <Link href="/symbi" className="text-muted-foreground hover:text-primary transition-colors">Knowledge Base</Link>
           </div>
 
           {/* VSD Network Info */}
-          <div className="flex flex-col gap-2 p-4 rounded-lg footer-menu-background">
+          <div className="flex flex-col gap-2 p-4 rounded-lg">
              <div className="flex items-center gap-2 mb-2">
               <Logo size={24} />
               <span className="font-headline font-bold">{siteConfig.name}</span>

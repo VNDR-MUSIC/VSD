@@ -154,24 +154,6 @@ h1, h2, h3, h4, h5, h6, .font-headline {
     background-size: 200% 100%;
     animation: animated-border-gradient 4.5s linear infinite;
   }
-  
-  @keyframes footer-gradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  .footer-menu-background {
-    background: linear-gradient(-60deg, hsl(var(--primary) / 0.05), hsl(var(--background) / 0.1), hsl(var(--secondary) / 0.1), hsl(var(--background) / 0.1));
-    background-size: 400% 400%;
-    animation: footer-gradient 30s ease infinite;
-  }
-
-  .footer-animated-gradient {
-    background: linear-gradient(-60deg, hsl(var(--background)), hsl(var(--primary) / 0.4), hsl(var(--background)), hsl(var(--primary) / 0.2));
-    background-size: 400% 400%;
-    animation: footer-gradient 30s ease infinite;
-  }
 }
 
 @layer components {

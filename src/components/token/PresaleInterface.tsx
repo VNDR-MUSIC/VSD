@@ -22,7 +22,7 @@ const TokenomicsDetail = ({ title, value, description }: { title: string, value:
 
 export const PresaleInterface = () => {
   return (
-    <Card className="shadow-xl bg-gradient-to-br from-primary/20 via-card/90 to-secondary/20 backdrop-blur-xl border-primary/30">
+    <Card className="shadow-xl bg-gradient-to-br from-primary/20 via-card/90 to-secondary/20 backdrop-blur-xl animated-border">
       <CardHeader className="items-center">
         <div className="flex items-center gap-3 mb-2">
           <Gift className="h-10 w-10 text-primary" />
