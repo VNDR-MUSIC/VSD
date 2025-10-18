@@ -5,9 +5,12 @@ import { NextResponse } from 'next/server';
 import axios from 'axios';
 
 // This is the secure backend bridge. It receives a request from our own app's
-// frontend, attaches the SECRET API key, and forwards it to the main VSD Transaction API.
+// frontend (like the Audio Exchange demo), attaches the SECRET API key, 
+// and forwards it to the main VSD Transaction API.
 
 export async function POST(request: Request) {
+  // Determine the target URL. Use the environment variable if available, otherwise default to localhost.
+  // This allows the bridge to work in both production and local development.
   const VSD_API_URL = process.env.NEXT_PUBLIC_APP_URL
     ? `${process.env.NEXT_PUBLIC_APP_URL}/api/transactions`
     : 'http://localhost:9002/api/transactions';
@@ -22,7 +25,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    // Forward the request to the actual VSD Transaction API
+    // Forward the request to the actual VSD Transaction API, including the secret key.
     const vsdApiResponse = await axios.post(VSD_API_URL, body, {
       headers: {
         'Content-Type': 'application/json',
@@ -30,7 +33,7 @@ export async function POST(request: Request) {
       },
     });
 
-    // Return the response from the VSD API directly to the client
+    // Return the response from the VSD API directly to the client that called the bridge.
     return NextResponse.json(vsdApiResponse.data, { status: vsdApiResponse.status });
 
   } catch (error: any) {
@@ -39,12 +42,12 @@ export async function POST(request: Request) {
       errorData: error.response?.data,
     });
     
-    // Return the error response from the downstream API if available
+    // If the downstream API returned an error, forward that error response.
     if (error.response) {
       return NextResponse.json(error.response.data, { status: error.response.status });
     }
 
-    // Otherwise, return a generic error
+    // Otherwise, return a generic gateway error.
     return NextResponse.json({ error: 'Failed to process transaction via VSD bridge.' }, { status: 502 });
   }
 }

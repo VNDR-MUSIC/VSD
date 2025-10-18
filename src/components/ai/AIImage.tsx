@@ -18,7 +18,7 @@ interface AIImageProps extends Omit<ImageProps, 'src' | 'alt'> {
   objectFit?: "contain" | "cover" | "fill" | "none" | "scale-down" | undefined;
 }
 
-// This function now securely calls our backend API route
+// This function securely calls our backend API route to generate an image.
 async function generateImageViaApi(hint: string): Promise<string> {
     const response = await fetch('/api/generate-image', {
         method: 'POST',
@@ -115,7 +115,7 @@ export function AIImage({
       alt={alt}
       width={layout === "fill" ? undefined : width}
       height={layout === "fill" ? undefined : height}
-      className={className}
+      className={cn("transition-opacity duration-500", isLoading ? "opacity-0" : "opacity-100", className)}
       priority={priority}
       unoptimized={isDataUri} 
       data-ai-hint={hint}

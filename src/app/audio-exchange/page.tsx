@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Music, FileText, ImageIcon, Send } from 'lucide-react';
+import { Loader2, Music, ImageIcon, Send, FileText } from 'lucide-react';
 import { AIImage } from '@/components/ai/AIImage';
 import type { Metadata } from 'next';
 import { useCollection, useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
@@ -14,8 +14,6 @@ import type { Account } from '@/types/account';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// This is a client component, so we can't export metadata directly.
-// But we can define it for reference or for moving to a server component later.
 const metadata: Metadata = {
   title: 'Audio Exchange Demo | VSD Network',
   description: 'Demonstration of a partner project using the VSD Network API for token transactions and AI-generated content, showcasing the potential of the ecosystem.',
@@ -25,11 +23,9 @@ interface Advertisement {
     id: string;
     title: string;
     url: string;
-    reward: number; // For the sake of demo, we'll treat 'reward' as 'price'
+    reward: number; // For demo purposes, we'll treat 'reward' as the 'price' in VSD.
 }
 
-
-// This component now makes REAL API calls to the VSD Network backend
 export default function AudioExchangePage() {
   useProtectedRoute();
   const { toast } = useToast();
@@ -44,9 +40,7 @@ export default function AudioExchangePage() {
   const adsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'advertisements') : null, [firestore]);
   const { data: tracks, isLoading: isLoadingTracks } = useCollection<Advertisement>(adsQuery);
 
-
-  // MOCK recipient wallet address
-  const MOCK_RECIPIENT_ADDRESS = "0xDef...456";
+  const MOCK_RECIPIENT_ADDRESS = "0xArtistWallet...789";
 
   const handlePurchase = async (track: Advertisement) => {
     setIsLoading(track.id);
@@ -73,9 +67,7 @@ export default function AudioExchangePage() {
       // Call the secure, local bridge API route
       const response = await fetch('/api/vsd-bridge', {
         method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(transactionPayload),
       });
       
@@ -137,7 +129,7 @@ export default function AudioExchangePage() {
                    />
                    <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
                       <ImageIcon className="h-3 w-3" />
-                      <span>Album Art</span>
+                      <span>AI Album Art</span>
                    </div>
                  </div>
                 <CardTitle className="font-headline text-xl sm:text-2xl">{track.title}</CardTitle>
