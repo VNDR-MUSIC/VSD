@@ -13,8 +13,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { Briefcase, Loader2, Send } from 'lucide-react';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
-import { useUser, useFirestore, setDocumentNonBlocking } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
+import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 
@@ -25,6 +25,30 @@ const advertiserApplicationSchema = z.object({
 });
 
 type AdvertiserApplicationFormValues = z.infer<typeof advertiserApplicationSchema>;
+
+// This function calls our internal API to create a task in Agiled
+async function createTaskInPms(applicationData: AdvertiserApplicationFormValues & { userEmail: string | null }) {
+    try {
+        const response = await fetch('/api/agiled/create-task', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title: `New Advertiser Application: ${applicationData.companyName}`,
+                description: `A new application has been submitted.\n\nCompany: ${applicationData.companyName}\nWebsite: ${applicationData.website}\nEmail: ${applicationData.userEmail}\n\nDescription:\n${applicationData.businessDescription}`
+            })
+        });
+
+        if (!response.ok) {
+            const errorResult = await response.json();
+            console.error("Failed to create PM task:", errorResult.error);
+        } else {
+            console.log("Successfully created task in project management system.");
+        }
+    } catch (error) {
+        console.error("Error calling task creation API:", error);
+    }
+}
+
 
 export function AdvertiserRegistrationClient() {
   const { isLoading: isAuthLoading } = useProtectedRoute();
@@ -62,8 +86,12 @@ export function AdvertiserRegistrationClient() {
     };
     
     try {
-      const docRef = doc(firestore, 'advertiserApplications', applicationId);
-      setDocumentNonBlocking(docRef, applicationData);
+      const docRef = collection(firestore, 'advertiserApplications');
+      await addDocumentNonBlocking(docRef, applicationData);
+      
+      // After successfully saving to Firestore, trigger the PMS task creation
+      // This is a "fire-and-forget" call; we don't block the UI for it.
+      createTaskInPms({ ...data, userEmail: user.email });
 
       toast({
         title: "Application Submitted!",
@@ -174,5 +202,3 @@ export function AdvertiserRegistrationClient() {
     </div>
   );
 }
-
-    
