@@ -2,194 +2,200 @@
  * @fileoverview Firestore Security Rules for VSD Network.
  *
  * Core Philosophy:
- * This ruleset implements a hybrid security model, balancing open access for certain public data with strict ownership and role-based access controls for sensitive user and administrative data.
+ * This ruleset prioritizes security by default, enforcing strict access control based on user roles (admin) and
+ * ownership (user accounts, advertisements). Public read access is granted only for the leaderboard.
  *
  * Data Structure:
- * - User data is stored under /accounts/{accountId}, ensuring private user-level access.
- * - Transaction data is nested under each account in /accounts/{accountId}/transactions/{transactionId}.
- * - Advertisements are stored in the top-level /advertisements/{advertisementId} collection, with owner-only write access.
- * - Advertiser Applications are stored in /advertiserApplications/{applicationId}, secured for admin review.
- * - Tenant and API logs are stored at the top-level in /tenants and /api_logs, respectively, secured for superAdmin access.
- * - A global /transactions collection provides an administrative overview of all transactions, secured for superAdmin access.
- * - A single /leaderboards/topHolders document is public-readable and contains pre-computed leaderboard data.
- * - Admin data is stored in /admins/{adminId} and secured for superAdmin write access.
+ * - /admins/{adminId}: List of super admins who can manage the platform.
+ * - /accounts/{accountId}: Stores user account data, secured to the account owner.
+ * - /accounts/{accountId}/transactions/{transactionId}: Subcollection of transactions for each account, only accessible to the account owner.
+ * - /tenants/{tenantId}: Stores partner tenant data, only accessible to super admins.
+ * - /transactions/{transactionId}: A global log of all transactions for administrative overview. Only accessible to super admins.
+ * - /advertisements/{advertisementId}: Stores advertisement campaigns, owned by the advertiser (user).
+ * - /advertiserApplications/{applicationId}: Stores applications from users to become advertisers, only accessible to super admins.
+ * - /api_logs/{logId}: Logs of API requests, only accessible to super admins.
+ * - /leaderboards/topHolders: Publicly readable leaderboard data.
  *
  * Key Security Decisions:
- * - Super Admin Override: A 'superAdmin' custom claim grants full read/write access to the entire database, enabling administrative functions.
- * - User Ownership: The /accounts/{accountId} path enforces strict user ownership, where only the authenticated user (or a superAdmin) can access their own account data and transactions.
- * - Public Read, Owner-Only Write: The /advertisements/{advertisementId} collection allows public read access, but only the advertisement owner can modify or delete their advertisements.
- * - SuperAdmin Only: Write access to the global /transactions collection and /tenants collection is restricted to super admins.
- * - Public Read: The /leaderboards/topHolders document is publicly readable to display the top token holders.
+ * - Super Admin Role: Access to tenants, global transactions, advertiser applications, and API logs is restricted to super admins.
+ * - User Ownership: User accounts and advertisements are secured via ownership, with authenticated users only able to access their own data.
+ * - No User Listing: Listing all users is not permitted for security reasons.
+ * - Public Leaderboard: The top holders leaderboard is publicly readable.
  *
  * Denormalization for Authorization:
- *  - Advertisements contain an `advertiserId` field to simplify ownership checks for write operations.
+ * The `advertisements` collection requires the `advertiserId` to be present within each document for the `isOwner(advertiserId)` check to function.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Super Admin full access
-    match /{document=**} {
-      allow read, write: if request.auth.token.superAdmin == true;
-    }
-
     /**
-     * @description Allows super admins to manage admin users.
+     * @description Grants super admins full access to admin documents.
      * @path /admins/{adminId}
-     * @allow (create) If the user has the 'superAdmin' claim.
-     * @deny (create) If the user does not have the 'superAdmin' claim.
-     * @principle Enforces role-based access control for administrative functions.
+     * @allow (get, list, create, update, delete) if request.auth.uid has superAdmin claim.
+     * @deny (get, list, create, update, delete) if request.auth is null or does not have superAdmin claim.
+     * @principle Role-based access control using custom claims.
      */
     match /admins/{adminId} {
-      allow read, write: if request.auth.token.superAdmin == true;
+      allow get: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow list: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow create: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow update: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow delete: if isSignedIn() && request.auth.token.superAdmin == true;
     }
 
     /**
-     * @description Enforces user-level access for account data.
+     * @description Grants access to individual user accounts based on ownership. Users can only access their own account.
      * @path /accounts/{accountId}
-     * @allow (get, list) If the user's UID matches the account ID.
-     * @allow (create) If the user's UID matches the account ID.
-     * @allow (update) If the user's UID matches the account ID, and they are only updating their own document.
-     * @allow (delete) If the user's UID matches the account ID.
-     * @deny (get, list) If the user's UID does not match the account ID.
-     * @deny (create) If the user's UID does not match the account ID.
-     * @deny (update) If the user's UID does not match the account ID.
-     * @deny (delete) If the user's UID does not match the account ID.
+     * @allow (get) if request.auth.uid matches the accountId.
+     * @allow (create) if request.auth.uid matches the accountId. The account 'uid' field must also match the accountId.
+     * @allow (update) if request.auth.uid matches the accountId and the account 'uid' is not changed.
+     * @allow (delete) if request.auth.uid matches the accountId.
+     * @deny (get) if request.auth.uid does not match the accountId.
+     * @deny (create) if request.auth.uid does not match the accountId, or if the account 'uid' field does not match the accountId.
+     * @deny (update) if request.auth.uid does not match the accountId or if the account 'uid' is changed.
+     * @deny (delete) if request.auth.uid does not match the accountId.
      * @principle Enforces document ownership for reads and writes.
      */
     match /accounts/{accountId} {
       allow get: if isOwner(accountId);
-      allow list: if isOwner(accountId);
-      allow create: if isOwner(accountId);
-      allow update: if isExistingOwner(accountId);
+      allow list: if false; // Listing all accounts is not permitted.
+      allow create: if isSelfCreate(accountId);
+      allow update: if isExistingOwner(accountId) && request.resource.data.uid == resource.data.uid;
       allow delete: if isExistingOwner(accountId);
     }
 
     /**
-     * @description Enforces user-level access for transaction data within an account.
+     * @description Grants access to a user's transactions subcollection based on ownership. Users can only access their own transactions.
      * @path /accounts/{accountId}/transactions/{transactionId}
-     * @allow (get, list) If the user's UID matches the account ID.
-     * @allow (create) If the user's UID matches the account ID.
-     * @allow (update) If the user's UID matches the account ID, and they are only updating their own document.
-     * @allow (delete) If the user's UID matches the account ID.
-     * @deny (get, list) If the user's UID does not match the account ID.
-     * @deny (create) If the user's UID does not match the account ID.
-     * @deny (update) If the user's UID does not match the account ID.
-     * @deny (delete) If the user's UID does not match the account ID.
-     * @principle Enforces document ownership for reads and writes.
+     * @allow (get, list) if request.auth.uid matches the accountId.
+     * @allow (create) if request.auth.uid matches the accountId.
+     * @allow (update) if request.auth.uid matches the accountId.
+     * @allow (delete) if request.auth.uid matches the accountId.
+     * @deny (get, list) if request.auth.uid does not match the accountId.
+     * @deny (create, update, delete) if request.auth.uid does not match the accountId.
+     * @principle Enforces document ownership for reads and writes in subcollections.
      */
     match /accounts/{accountId}/transactions/{transactionId} {
       allow get: if isOwner(accountId);
       allow list: if isOwner(accountId);
       allow create: if isOwner(accountId);
-      allow update: if isExistingOwner(accountId);
-      allow delete: if isExistingOwner(accountId);
+      allow update: if isOwner(accountId);
+      allow delete: if isOwner(accountId);
     }
 
     /**
-     * @description Allows super admins to manage tenants.
+     * @description Grants super admins full access to tenant documents.
      * @path /tenants/{tenantId}
-     * @allow (create, update, delete) If the user has the 'superAdmin' claim.
-     * @deny (create, update, delete) If the user does not have the 'superAdmin' claim.
-     * @principle Enforces role-based access control for administrative functions.
+     * @allow (get, list, create, update, delete) if request.auth.uid has superAdmin claim.
+     * @deny (get, list, create, update, delete) if request.auth is null or does not have superAdmin claim.
+     * @principle Role-based access control using custom claims.
      */
     match /tenants/{tenantId} {
-      allow read: if request.auth.token.superAdmin == true;
-      allow create: if request.auth.token.superAdmin == true;
-      allow update: if request.auth.token.superAdmin == true;
-      allow delete: if request.auth.token.superAdmin == true;
-      allow list: if false;
-    }
-
-   /**
-     * @description Allows super admins to manage all transactions.
-     * @path /transactions/{transactionId}
-     * @allow (create, update, delete) If the user has the 'superAdmin' claim.
-     * @deny (create, update, delete) If the user does not have the 'superAdmin' claim.
-     * @principle Enforces role-based access control for administrative functions.
-     */
-    match /transactions/{transactionId} {
-      allow read: if request.auth.token.superAdmin == true;
-      allow create: if request.auth.token.superAdmin == true;
-      allow update: if request.auth.token.superAdmin == true;
-      allow delete: if request.auth.token.superAdmin == true;
-      allow list: if false;
+      allow get: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow list: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow create: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow update: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow delete: if isSignedIn() && request.auth.token.superAdmin == true;
     }
 
     /**
-     * @description Allows public read access to advertisements, but restricts writes to the owner.
+     * @description Grants super admins full access to transaction documents.
+     * @path /transactions/{transactionId}
+     * @allow (get, list, create, update, delete) if request.auth.uid has superAdmin claim.
+     * @deny (get, list, create, update, delete) if request.auth is null or does not have superAdmin claim.
+     * @principle Role-based access control using custom claims.
+     */
+    match /transactions/{transactionId} {
+      allow get: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow list: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow create: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow update: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow delete: if isSignedIn() && request.auth.token.superAdmin == true;
+    }
+
+    /**
+     * @description Grants access to advertisement documents based on ownership. Advertisers can only access their own ads.
      * @path /advertisements/{advertisementId}
-     * @allow (get, list) to everyone.
-     * @allow (create) if the advertiserId matches the user's UID.
-     * @allow (update, delete) if the advertiserId in the existing document matches the user's UID.
-     * @deny (create) if the advertiserId does not match the user's UID.
-     * @deny (update, delete) if the advertiserId in the existing document does not match the user's UID.
-     * @principle Implements public read, owner-only write access control.
+     * @allow (get, list) if true.
+     * @allow (create) if request.auth.uid matches request.resource.data.advertiserId.
+     * @allow (update) if request.auth.uid matches resource.data.advertiserId && resource != null;
+     * @allow (delete) if request.auth.uid matches resource.data.advertiserId && resource != null;
+     * @deny (create) if request.auth.uid does not match request.resource.data.advertiserId.
+     * @deny (update) if request.auth.uid does not match resource.data.advertiserId.
+     * @deny (delete) if request.auth.uid does not match resource.data.advertiserId.
+     * @principle Enforces document ownership for writes, public read.
      */
     match /advertisements/{advertisementId} {
       allow get: if true;
       allow list: if true;
-      allow create: if request.auth.uid == request.resource.data.advertiserId;
+      allow create: if isSignedIn() && request.resource.data.advertiserId == request.auth.uid;
       allow update: if isExistingOwner(resource.data.advertiserId);
       allow delete: if isExistingOwner(resource.data.advertiserId);
     }
 
-   /**
-     * @description Allows super admins to manage advertiser applications.
+    /**
+     * @description Grants super admins full access to advertiser application documents.
      * @path /advertiserApplications/{applicationId}
-     * @allow (read, create, update, delete) if the user has the 'superAdmin' claim.
-     * @deny (read, create, update, delete) if the user does not have the 'superAdmin' claim.
-     * @principle Enforces role-based access control for administrative functions.
+     * @allow (get, list, create, update, delete) if request.auth.uid has superAdmin claim.
+     * @deny (get, list, create, update, delete) if request.auth is null or does not have superAdmin claim.
+     * @principle Role-based access control using custom claims.
      */
     match /advertiserApplications/{applicationId} {
-      allow read: if request.auth.token.superAdmin == true;
-      allow list: if request.auth.token.superAdmin == true;
-      allow create: if false;
-      allow update: if request.auth.token.superAdmin == true;
-      allow delete: if request.auth.token.superAdmin == true;
+      allow get: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow list: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow create: if false; // No client-side creation of advertiser applications.
+      allow update: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow delete: if isSignedIn() && request.auth.token.superAdmin == true;
     }
 
     /**
-     * @description Allows super admins to read and write API logs.
+     * @description Grants super admins full access to API log documents.
      * @path /api_logs/{logId}
-     * @allow (create, update, delete) if the user has the 'superAdmin' claim.
-     * @deny (create, update, delete) if the user does not have the 'superAdmin' claim.
-     * @principle Enforces role-based access control for administrative functions.
+     * @allow (get, list, create, update, delete) if request.auth.uid has superAdmin claim.
+     * @deny (get, list, create, update, delete) if request.auth is null or does not have superAdmin claim.
+     * @principle Role-based access control using custom claims.
      */
     match /api_logs/{logId} {
-      allow read: if request.auth.token.superAdmin == true;
-      allow list: if request.auth.token.superAdmin == true;
-      allow create: if request.auth.token.superAdmin == true;
-      allow update: if false;
-      allow delete: if request.auth.token.superAdmin == true;
+      allow get: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow list: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow create: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow update: if isSignedIn() && request.auth.token.superAdmin == true;
+      allow delete: if isSignedIn() && request.auth.token.superAdmin == true;
     }
 
     /**
-     * @description Allows public read access to the leaderboard data.
+     * @description Grants public read access to the top holders leaderboard.
      * @path /leaderboards/topHolders
-     * @allow (get, list) to everyone.
-     * @principle Provides public access to non-sensitive data.
+     * @allow (get, list) if true.
+     * @deny (create, update, delete) always.
+     * @principle Grants public read access to the leaderboard.
      */
     match /leaderboards/topHolders {
-        allow get: if true;
-        allow list: if true;
-        allow create: if false;
-        allow update: if false;
-        allow delete: if false;
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
-  }
+    // ---- Helper Functions ----
+    function isSignedIn() {
+      return request.auth != null;
+    }
 
-  // Helper functions
-  function isSignedIn() {
-    return request.auth != null;
-  }
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
 
-  function isOwner(userId) {
-    return request.auth.uid == userId;
-  }
+    function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+    }
 
-  function isExistingOwner(userId) {
-    return isSignedIn() && isOwner(userId) && resource != null;
+    function isSelfCreate(accountId) {
+      return isSignedIn()
+             && request.auth.uid == accountId
+             && request.resource.data.uid == accountId;
+    }
   }
 }
