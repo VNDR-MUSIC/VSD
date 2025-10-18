@@ -166,6 +166,12 @@ h1, h2, h3, h4, h5, h6, .font-headline {
     background-size: 400% 400%;
     animation: footer-gradient 15s ease infinite;
   }
+
+  .footer-animated-gradient {
+    background: linear-gradient(-45deg, hsl(var(--background)), hsl(var(--primary) / 0.4), hsl(var(--background)), hsl(var(--primary) / 0.2));
+    background-size: 400% 400%;
+    animation: footer-gradient 15s ease infinite;
+  }
 }
 
 @layer components {
@@ -195,5 +201,3 @@ h1, h2, h3, h4, h5, h6, .font-headline {
     @apply transform scale-[1.03] shadow-lg shadow-primary/30 brightness-110;
   }
 }
-
-    
