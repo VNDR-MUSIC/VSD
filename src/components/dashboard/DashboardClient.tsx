@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -325,9 +324,10 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
         
         const balanceToCheck = tokenType === 'vsd' ? userAccount.vsdBalance : userAccount.vsdLiteBalance;
         const balanceField = tokenType === 'vsd' ? 'vsdBalance' : 'vsdLiteBalance';
+        const tokenName = tokenType === 'vsd' ? 'VSD' : 'VSD Lite';
         
         if (amount > balanceToCheck) {
-            toast({ variant: 'destructive', title: `Insufficient ${tokenType.toUpperCase()} balance`, description: `You do not have enough ${tokenType.toUpperCase()} to complete this transaction.` });
+            toast({ variant: 'destructive', title: `Insufficient Balance`, description: `You have an insufficient ${tokenName} balance to complete this transaction. You are overdrawn.` });
             setIsLoading(false);
             return;
         }
@@ -338,7 +338,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
             const recipientSnapshot = await getDocs(q);
 
             if (recipientSnapshot.empty) {
-                toast({ variant: 'destructive', title: 'Recipient Not Found', description: 'No user found with that wallet address.' });
+                toast({ variant: 'destructive', title: 'Recipient Not Found', description: 'The recipient wallet address is incorrect or does not exist on the VSD Network.' });
                 setIsLoading(false);
                 return;
             }
@@ -350,16 +350,13 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
                 const fromRef = doc(firestore, 'accounts', user.uid);
                 const toRef = doc(firestore, 'accounts', recipientDoc.id);
 
-                // 1. Decrement sender's balance
                 transaction.update(fromRef, { [balanceField]: increment(-amount) });
-                // 2. Increment recipient's balance
                 transaction.update(toRef, { [balanceField]: increment(amount) });
             });
 
-            // 3. Log transaction for sender
             const fromTxCollection = collection(firestore, 'accounts', user.uid, 'transactions');
             await addDocumentNonBlocking(fromTxCollection, {
-                type: `out ${tokenType}`,
+                type: `out ${tokenName}`,
                 status: 'Completed',
                 amount,
                 date: new Date().toISOString(),
@@ -367,10 +364,9 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
                 description: finalDescription
             });
             
-            // 4. Log transaction for recipient
             const toTxCollection = collection(firestore, 'accounts', recipientDoc.id, 'transactions');
             await addDocumentNonBlocking(toTxCollection, {
-                type: `in ${tokenType}`,
+                type: `in ${tokenName}`,
                 status: 'Completed',
                 amount,
                 date: new Date().toISOString(),
@@ -380,15 +376,16 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
 
             toast({
                 title: 'Transaction Successful',
-                description: `Sent ${amount} ${tokenType.toUpperCase()} to ${recipientAccount.displayName}.`,
+                description: `Sent ${amount} ${tokenName} to ${recipientAccount.displayName}.`,
             });
             setIsOpen(false);
 
         } catch (error: any) {
+            console.error("Transaction failed:", error);
             toast({
                 variant: 'destructive',
                 title: 'Transaction Failed',
-                description: error.message || 'An unexpected error occurred.',
+                description: 'An unexpected error occurred while processing the transaction. Please try again.',
             });
         } finally {
             setIsLoading(false);
@@ -429,7 +426,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
                             <Input id="toAddress" name="toAddress" required />
                         </div>
                          <div className="grid gap-2">
-                            <Label htmlFor="amount">Amount ({tokenType.toUpperCase()})</Label>
+                            <Label htmlFor="amount">Amount ({tokenType ? (tokenType === 'vsd' ? 'VSD' : 'VSD Lite') : '...'})</Label>
                             <Input id="amount" name="amount" type="number" step="any" required />
                              <p className="text-xs text-muted-foreground"> Your balance: {tokenType === 'vsd' 
                                 ? `${(userAccount?.vsdBalance ?? 0).toLocaleString()} VSD` 
@@ -441,9 +438,9 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="submit" disabled={isLoading}>
+                        <Button type="submit" disabled={isLoading || !tokenType}>
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {isLoading ? 'Processing...' : `Send ${tokenType.toUpperCase()}`}
+                            {isLoading ? 'Processing...' : `Send ${tokenType ? (tokenType === 'vsd' ? 'VSD' : 'VSD Lite') : ''}`}
                         </Button>
                     </DialogFooter>
                 </form>
@@ -451,7 +448,3 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
         </Dialog>
     );
 }
-
-    
-
-    

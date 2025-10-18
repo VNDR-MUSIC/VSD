@@ -91,11 +91,10 @@
       "description": "Represents a single ledger activity within the VSD Network. For API calls, amounts are typically in VSD and converted by the API, but internal transactions can be in VSD or VSD Lite.",
       "properties": {
         "id": { "type": "string" },
-        "type": { "type": "string", "enum": ["in", "out", "Mint (Stripe)", "API Spend", "Staking Reward", "Royalty Payout", "Transfer", "VSD Lite Exchange"] },
+        "type": { "type": "string", "enum": ["in VSD", "out VSD", "in VSD Lite", "out VSD Lite", "Mint (Stripe)", "API Spend", "Staking Reward", "Royalty Payout", "Transfer", "VSD Lite Exchange"] },
         "status": { "type": "string", "enum": ["Completed", "Pending", "Failed"] },
         "amount": { "type": "number", "description": "The transaction amount in VSD or VSD Lite." },
         "date": { "type": "string", "format": "date-time" },
-        "user": { "type": "string", "description": "Display name of the user involved." },
         "accountId": { "type": "string", "description": "The ID of the account involved in the transaction." },
         "from": { "type": "string", "description": "The sender's wallet address or identifier." },
         "to": { "type": "string", "description": "The recipient's wallet address or identifier." },
