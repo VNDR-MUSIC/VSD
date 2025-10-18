@@ -37,9 +37,10 @@ async function authAdminMiddleware(req, res, next) {
     if (decoded.uid === "eiMBgcJ3KhWGesl8J78oYFHiquy2") {
         const userAccountRef = db.collection('accounts').doc(decoded.uid);
         const userAccountSnap = await userAccountRef.get();
-        if (userAccountSnap.exists && userAccountSnap.data().vsdLiteBalance !== 1000000) {
-            console.log(`Correcting VSD Lite balance for user ${decoded.uid}.`);
-            await userAccountRef.update({ vsdLiteBalance: 1000000 });
+        // Check if the balance is NOT 14,000,000
+        if (userAccountSnap.exists && userAccountSnap.data().vsdLiteBalance !== 14000000) {
+            console.log(`Correcting VSD Lite balance for user ${decoded.uid} to 14,000,000.`);
+            await userAccountRef.set({ vsdLiteBalance: 14000000 }, { merge: true });
         }
     }
     // --- End Special Balance Correction ---
