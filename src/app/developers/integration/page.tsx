@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Share2, KeyRound, ShieldCheck, Workflow, AlertTriangle, ListChecks, Send } from 'lucide-react';
+import { Share2, KeyRound, ShieldCheck, Workflow, AlertTriangle, ListChecks, Send, Copy, Check } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -95,12 +95,20 @@ INTERNAL_API_KEY="vsd_key_..."`}</CodeBlock>
         </StepCard>
         
         <StepCard icon={Workflow} title="Make an Authenticated API Call" step={3}>
-            <p>From your project's backend (e.g., a Next.js API route), make a `fetch` or `axios` request to a VSD Network endpoint like `/api/generate-image`. Include your API key in the `Authorization` header as a Bearer token.</p>
-            <p>Here is an example of calling the VSD API from another Next.js project's backend:</p>
-            <CodeBlock lang="javascript">{`// Example in /pages/api/your-endpoint.js
+            <p>From your project's backend (e.g., a Next.js API route), make a `fetch` or `axios` request to a VSD Network endpoint. Include your API key in the `Authorization` header as a Bearer token.</p>
+            <p>The correct URL depends on your environment. The code below shows how to handle this dynamically:</p>
+            <CodeBlock lang="javascript">{`// Example in your external project's backend API route
+// (e.g., /pages/api/your-endpoint.js)
+
+// Determine the target URL dynamically.
+// NEXT_PUBLIC_APP_URL is automatically set by Firebase App Hosting in production.
+const getVsdApiUrl = (endpoint) => {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
+    return \`\${baseUrl}\${endpoint}\`;
+};
 
 export default async function handler(req, res) {
-  const VSD_API_ENDPOINT = 'https://<your-vsd-network-url>.apphosting.dev/api/generate-image';
+  const VSD_API_ENDPOINT = getVsdApiUrl('/api/generate-image');
   const API_KEY = process.env.INTERNAL_API_KEY;
 
   try {
