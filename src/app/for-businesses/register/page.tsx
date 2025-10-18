@@ -2,12 +2,12 @@
 import type { Metadata } from 'next';
 import { AdvertiserRegistrationClient } from './AdvertiserRegistrationClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckSquare, Cpu, Gift, ListChecks, Send } from 'lucide-react';
+import { CheckSquare, Cpu, Gift, ListChecks, Send, KeyRound } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 export const metadata: Metadata = {
-  title: 'Advertiser Registration | VSD Network',
-  description: 'Apply to become an advertiser on the VSD Network and reach our community of creators and innovators.',
+  title: 'Advertiser & API Registration | VSD Network',
+  description: 'Apply to become an advertiser or register for API access on the VSD Network to reach our community of creators and innovators.',
 };
 
 const StepCard = ({ icon: Icon, title, step, children }: { icon: React.ElementType, title: string, step: number, children: React.ReactNode }) => (
@@ -61,12 +61,12 @@ export default function AdvertiserRegistrationPage() {
                 </Card>
                  <Card className="bg-card/80">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><ListChecks className="h-6 w-6"/>The Advertiser Process</CardTitle>
+                        <CardTitle className="flex items-center gap-2"><ListChecks className="h-6 w-6"/>The Business & Developer Process</CardTitle>
                         <CardDescription>Our AI-powered system makes it easy.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <StepCard step={1} icon={Send} title="Submit Your Application">
-                            Fill out the form above with your business details. Be descriptive for the best analysis.
+                            Fill out the form above with your business or project details. Be descriptive for the best analysis.
                         </StepCard>
                         <StepCard step={2} icon={Cpu} title="Instant AI Vetting">
                             Our AI analyzes your application in real-time for brand alignment and safety, providing an instant verdict.
@@ -81,10 +81,10 @@ export default function AdvertiserRegistrationPage() {
                             </div>
                             <div>
                                 <div className="flex items-center gap-3 mb-2">
-                                    <CheckSquare className="h-5 w-5 text-green-400" />
+                                    <KeyRound className="h-5 w-5 text-green-400" />
                                     <p className="text-lg font-semibold font-headline">Launch & Monitor</p>
                                 </div>
-                                <p className="text-muted-foreground">If approved, an admin grants you the 'advertiser' role. You then get access to the Advertiser Dashboard to fund your account and monitor campaign performance.</p>
+                                <p className="text-muted-foreground">If approved, you are granted the appropriate role ('advertiser' or API access) and given your credentials. You can then access the Advertiser Dashboard or start using your API key and monitor usage in the Admin logs.</p>
                             </div>
                         </div>
                     </CardContent>

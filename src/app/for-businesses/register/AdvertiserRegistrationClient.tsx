@@ -11,22 +11,28 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Briefcase, Loader2, Send, Sparkles, CheckCircle, XCircle, FileDown, Rocket, Gift } from 'lucide-react';
+import { Briefcase, Loader2, Send, Sparkles, CheckCircle, XCircle, FileDown, Rocket, Gift, Copy, Check, KeyRound } from 'lucide-react';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
-import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
+import { useUser, useFirestore, adminProxyCreate } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import { vetAdvertiser } from '@/ai/flows/vet-advertiser-flow';
 import { VetAdvertiserOutput, VetAdvertiserInput, AdvertiserApplicationSchema,type AdvertiserApplicationFormValues } from '@/types/advertiser-vetting';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
+function generateApiKey() {
+    const prefix = 'vsd_';
+    const randomPart = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    return prefix + randomPart;
+}
 
 export function AdvertiserRegistrationClient() {
   const { isLoading: isAuthLoading } = useProtectedRoute();
   const { user } = useUser();
   const firestore = useFirestore();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [vettingResult, setVettingResult] = useState<VetAdvertiserOutput | null>(null);
+  const [vettingResult, setVettingResult] = useState<VetAdvertiserOutput & { apiKey?: string } | null>(null);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -39,13 +45,18 @@ export function AdvertiserRegistrationClient() {
     },
   });
 
+  const handleCopy = (key: string) => {
+    navigator.clipboard.writeText(key);
+    toast({ title: "API Key Copied!" });
+  };
+
   const handleDownloadReason = () => {
     if (!vettingResult || !vettingResult.reason) return;
     const blob = new Blob([`Vetting Result for ${form.getValues('companyName')}:\n\nStatus: ${vettingResult.status}\n\nReason:\n${vettingResult.reason}`], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'advertiser-application-reason.txt';
+    a.download = 'application-reason.txt';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -70,7 +81,7 @@ export function AdvertiserRegistrationClient() {
     try {
       // Call the AI vetting flow
       const result = await vetAdvertiser(flowInput);
-      setVettingResult(result);
+      let finalResult: VetAdvertiserOutput & { apiKey?: string } = { ...result };
 
       // Save the application to Firestore regardless of status
       const applicationData = {
@@ -80,7 +91,7 @@ export function AdvertiserRegistrationClient() {
           status: result.status,
           submittedAt: new Date().toISOString(),
           ...data,
-          vettingReason: result.reason, // Save AI's reasoning
+          vettingReason: result.reason,
       };
       const docRef = collection(firestore, 'advertiserApplications');
       await addDocumentNonBlocking(docRef, applicationData);
@@ -90,6 +101,18 @@ export function AdvertiserRegistrationClient() {
             title: "Application Approved!",
             description: "Congratulations! Our AI has approved your application.",
         });
+
+        // Create a tenant and generate an API key
+        const newTenant = {
+            name: data.companyName,
+            domain: data.website,
+            apiKey: generateApiKey(),
+            status: 'Active' as const,
+            createdAt: new Date().toISOString(),
+        };
+        await adminProxyCreate('tenants', newTenant);
+        finalResult.apiKey = newTenant.apiKey;
+
       } else {
          toast({
             title: "Application Needs Review",
@@ -97,6 +120,8 @@ export function AdvertiserRegistrationClient() {
             variant: "destructive"
         });
       }
+      
+      setVettingResult(finalResult);
 
     } catch (error) {
       console.error("Error submitting application:", error);
@@ -147,6 +172,21 @@ export function AdvertiserRegistrationClient() {
                  </CardFooter>
             </Card>
 
+            {vettingResult.status === 'approved' && vettingResult.apiKey && (
+                 <Card className="text-left bg-card/80">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><KeyRound className="h-6 w-6" /> Your API Key</CardTitle>
+                        <CardDescription>This key is used to authenticate your server-side requests to the VSD Network API. Keep it secure and do not expose it on the client-side.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex items-center gap-2 bg-muted p-3 rounded-md">
+                           <code className="text-sm font-mono break-all">{vettingResult.apiKey}</code>
+                           <Button variant="ghost" size="icon" className="shrink-0" onClick={() => handleCopy(vettingResult.apiKey!)}><Copy className="h-4 w-4" /></Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
             {vettingResult.status === 'approved' && (
                 <Card className="text-left bg-card/80">
                     <CardHeader>
@@ -169,9 +209,9 @@ export function AdvertiserRegistrationClient() {
     <div className="space-y-12 py-8">
       <header className="text-center">
         <Briefcase className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
-        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">Become a VSD Network Advertiser</h1>
+        <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Network Business Registration</h1>
         <CardDescription className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-            Our AI-powered onboarding system will analyze your application in real-time. We'll assess if your business is a good fit for our community of creators and tech enthusiasts, who earn VSD Lite tokens by watching videos, clicking links, and soon, participating in polls.
+           Register to become an advertiser or to gain API access for your project. Our AI-powered system will analyze your application in real-time and provide an instant verdict.
         </CardDescription>
       </header>
 
@@ -188,9 +228,9 @@ export function AdvertiserRegistrationClient() {
                 name="companyName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company Name</FormLabel>
+                    <FormLabel>Company or Project Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Your Awesome Company" {...field} />
+                      <Input placeholder="e.g., Your Awesome App" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -214,9 +254,9 @@ export function AdvertiserRegistrationClient() {
                 name="businessDescription"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Business & Advertising Goals</FormLabel>
+                    <FormLabel>Business & Goals</FormLabel>
                      <FormControl>
-                      <Textarea rows={6} placeholder="Tell us about your business, your target audience, and what you'd like to advertise on the VSD Network. Be descriptive for the best analysis. (Min. 50 characters)" {...field} />
+                      <Textarea rows={6} placeholder="Tell us about your business or project, your target audience, and your goals (e.g., advertising, API integration). Be descriptive for the best analysis. (Min. 50 characters)" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

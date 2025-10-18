@@ -72,21 +72,17 @@ export default function IntegrationPage() {
         <Share2 className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
         <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">How to Integrate Your Website</h1>
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-          Connect your project to the VSD Network in 4 simple steps to leverage centralized AI services and token utilities.
+          Connect your project to the VSD Network in minutes using our automated, AI-powered onboarding system to leverage centralized AI services and token utilities.
         </p>
       </header>
 
       <Separator />
 
       <div className="space-y-8">
-        <StepCard icon={KeyRound} title="Get Registered & Receive API Key" step={1}>
-            <p>First, your project must be registered as a "Tenant" in the VSD Network. If you are not yet registered, please complete the <Link href="/for-businesses/register">API registration form</Link>.</p>
-            <p>Once your application is approved, an administrator will register your project in the <Link href="/admin">Admin Dashboard</Link>. During this process, the admin will:</p>
-            <ul>
-                <li>Add your project's name (e.g., "My Awesome App") and domain.</li>
-                <li>Generate a unique `INTERNAL_API_KEY` for your project.</li>
-            </ul>
-            <p>The administrator will then securely provide you with this API key. This key authenticates your project and proves it's a trusted "twin" in the IMG ecosystem.</p>
+        <StepCard icon={KeyRound} title="Register & Get Your API Key" step={1}>
+            <p>First, your project must be registered as a "Tenant" in the VSD Network. Our AI-powered system makes this fast and simple.</p>
+            <p>Visit the <Link href="/for-businesses/register">API registration form</Link> and fill out your project details. Our AI will instantly vet your application for compatibility and safety. Upon approval, you will **immediately receive your API key** on-screen.</p>
+             <p>This key authenticates your project and proves it's a trusted "twin" in the IMG ecosystem.</p>
         </StepCard>
 
         <StepCard icon={ShieldCheck} title="Secure the API Key" step={2}>
@@ -150,7 +146,7 @@ makeVsdTransaction();`}
 
         <StepCard icon={ListChecks} title="Check for Success" step={4}>
             <p>How do you know if your integration is working? The **API Access Log**.</p>
-            <p>Go to the VSD Network <Link href="/admin">Admin Dashboard</Link> and click on the **"API Access Log"** tab. You should see a new entry corresponding to your API call:</p>
+            <p>Go to the VSD Network <Link href="/admin/activity">Admin Dashboard</Link> and click on the **"Activity Logs"** tab. You should see a new entry corresponding to your API call:</p>
             <ul>
                 <li>A **<span className="text-green-400">Success</span>** status with your tenant name means your key is valid and your connection is working perfectly.</li>
                 <li>A **<span className="text-red-400">Failure</span>** status means there is a problem with your API key (it's either missing or incorrect).</li>
