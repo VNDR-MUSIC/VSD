@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -77,6 +76,7 @@ interface Tenant {
     apiKey: string;
     status: 'Active' | 'Inactive';
     createdAt: string;
+    userId: string; // Added to support ownership-based rules
 }
 
 interface Advertisement {
@@ -148,8 +148,8 @@ export function AdminDashboard() {
     setIsClient(true);
   }, []);
 
-  const tenantsQuery = useMemoFirebase(() => firestore && user ? collection(firestore, 'tenants') : null, [firestore, user]);
-  const advertisementsQuery = useMemoFirebase(() => firestore && user ? collection(firestore, 'advertisements') : null, [firestore, user]);
+  const tenantsQuery = useMemoFirebase(() => firestore && isAdmin ? collection(firestore, 'tenants') : null, [firestore, isAdmin]);
+  const advertisementsQuery = useMemoFirebase(() => firestore && isAdmin ? collection(firestore, 'advertisements') : null, [firestore, isAdmin]);
   const applicationsQuery = useMemoFirebase(() => firestore && isAdmin ? query(collection(firestore, 'advertiserApplications'), where('status', '==', 'pending')) : null, [firestore, isAdmin]);
   
   // Admin-only queries, now dependent on `isAdmin` flag from the protected route hook
@@ -903,11 +903,16 @@ function AddAdvertisementDialog() {
 
 function AddTenantDialog() {
   const { toast } = useToast();
+  const { user } = useUser();
   const [isOpen, setIsOpen] = React.useState(false);
   const firestore = useFirestore();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Authentication Error', description: 'You must be logged in to create a tenant.' });
+        return;
+    }
     const formData = new FormData(event.currentTarget);
     const name = formData.get('name') as string;
     const domain = formData.get('domain') as string;
@@ -924,6 +929,7 @@ function AddTenantDialog() {
       status: "Active",
       apiKey: `vsd_key_${crypto.randomUUID()}`, // In production, generate this securely on the backend
       createdAt: new Date().toISOString(),
+      userId: user.uid, // Associate the tenant with the creating admin
     };
 
     if (!firestore) {
