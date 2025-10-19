@@ -176,28 +176,28 @@ export function DashboardClient() {
         <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-2">My Dashboard</h1>
         <p className="text-base sm:text-lg text-muted-foreground">Welcome to your VSD Network banking suite.</p>
       </header>
+       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <AnimatedBalanceCard 
+            title="VSD Balance"
+            description="Main Network Utility Token"
+            value={account?.vsdBalance ?? 0}
+            icon={Wallet}
+            isLoading={isLoading}
+            walletAddress={account?.walletAddress}
+            onCopy={handleCopyToClipboard}
+          />
+           <AnimatedBalanceCard 
+            title="VSD Lite Balance"
+            description="Earned Reward Points"
+            value={account?.vsdLiteBalance ?? 0}
+            icon={Gift}
+            isVsdLite={true}
+            isLoading={isLoading}
+          />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <AnimatedBalanceCard 
-                title="VSD Balance"
-                description="Main Network Utility Token"
-                value={account?.vsdBalance ?? 0}
-                icon={Wallet}
-                isLoading={isLoading}
-                walletAddress={account?.walletAddress}
-                onCopy={handleCopyToClipboard}
-              />
-               <AnimatedBalanceCard 
-                title="VSD Lite Balance"
-                description="Earned Reward Points"
-                value={account?.vsdLiteBalance ?? 0}
-                icon={Gift}
-                isVsdLite={true}
-                isLoading={isLoading}
-              />
-          </div>
           <div className="flex flex-col sm:flex-row gap-4">
                 <TooltipProvider>
                     <Tooltip>
