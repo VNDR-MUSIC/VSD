@@ -120,11 +120,12 @@ export default function EarnPage() {
     // Non-blocking transaction log creation
     const userTransactionsRef = collection(firestore, 'accounts', user.uid, 'transactions');
     addDocumentNonBlocking(userTransactionsRef, {
-        type: 'Task Reward',
+        type: 'in VSD Lite',
         status: 'Completed',
         amount: task.reward,
         date: new Date().toISOString(),
         from: 'VSD Network Tasks',
+        to: account.displayName,
         description: `Reward for: ${task.title}`
     });
 
@@ -166,10 +167,12 @@ export default function EarnPage() {
       // Log both sides of the conversion
       const userTransactionsRef = collection(firestore, 'accounts', account.uid, 'transactions');
       addDocumentNonBlocking(userTransactionsRef, {
-          type: 'VSD Lite Exchange',
+          type: 'out VSD Lite',
           status: 'Completed',
-          amount: -amount,
+          amount: amount,
           date: new Date().toISOString(),
+          from: account.walletAddress,
+          to: 'VSD Network Treasury',
           description: `Converted to ${vsdReceived.toLocaleString()} VSD`
       });
       addDocumentNonBlocking(userTransactionsRef, {
@@ -177,6 +180,8 @@ export default function EarnPage() {
           status: 'Completed',
           amount: vsdReceived,
           date: new Date().toISOString(),
+          from: 'VSD Network Treasury',
+          to: account.walletAddress,
           description: `Converted from ${amount.toLocaleString()} VSD Lite`
       });
 
@@ -222,6 +227,8 @@ export default function EarnPage() {
             status: 'Completed',
             amount: amount,
             date: new Date().toISOString(),
+            from: account.walletAddress,
+            to: 'VSD Network Treasury',
             description: `Exchanged for ${liteReceived.toLocaleString()} VSD Lite`
         });
         addDocumentNonBlocking(userTransactionsRef, {
@@ -229,6 +236,8 @@ export default function EarnPage() {
             status: 'Completed',
             amount: liteReceived,
             date: new Date().toISOString(),
+            from: 'VSD Network Treasury',
+            to: account.walletAddress,
             description: `Exchanged from ${amount.toLocaleString()} VSD`
         });
 

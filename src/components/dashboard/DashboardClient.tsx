@@ -147,7 +147,7 @@ export function DashboardClient() {
                 await updateDocumentNonBlocking(accountRef, updates);
                 
                 await addDocumentNonBlocking(transactionsRef, {
-                    type: 'Daily Login Bonus',
+                    type: 'in VSD Lite',
                     status: 'Completed',
                     amount: dailyReward,
                     date: now.toISOString(),
@@ -499,6 +499,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
                 status: 'Completed',
                 amount,
                 date: new Date().toISOString(),
+                from: userAccount.walletAddress,
                 to: recipientAccount.walletAddress,
                 description: finalDescription
             });
@@ -510,6 +511,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
                 amount,
                 date: new Date().toISOString(),
                 from: userAccount.walletAddress,
+                to: recipientAccount.walletAddress,
                 description: finalDescription
             });
 
