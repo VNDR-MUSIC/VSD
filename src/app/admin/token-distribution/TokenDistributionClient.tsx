@@ -159,7 +159,7 @@ export function TokenDistributionClient() {
                                             </PopoverTrigger>
                                             <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                                                 <Command>
-                                                    <CommandInput placeholder="Search user..." />
+                                                    <CommandInput placeholder="Search users by name or email..." />
                                                     <CommandList>
                                                         <CommandEmpty>No user found.</CommandEmpty>
                                                         <CommandGroup>

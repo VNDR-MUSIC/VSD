@@ -434,7 +434,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
                 nameSnapshot.forEach(doc => resultsMap.set(doc.id, { uid: doc.id, ...doc.data() } as Account));
                 emailSnapshot.forEach(doc => resultsMap.set(doc.id, { uid: doc.id, ...doc.data() } as Account));
                 
-                const combinedResults = Array.from(resultsMap.values()).filter(acc => acc.uid !== user?.uid);
+                const combinedResults = Array.from(resultsMap.values());
                 setSearchResults(combinedResults);
             } else {
                 setSearchResults([]);
@@ -444,7 +444,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
         return () => {
             clearTimeout(handler);
         };
-    }, [search, firestore, user]);
+    }, [search, firestore]);
 
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
