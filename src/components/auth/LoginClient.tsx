@@ -35,18 +35,28 @@ export function LoginClient() {
     if (isNewUser && firestore) {
         console.log("New user detected, creating account document...");
         
+        // --- SPECIAL BALANCE GRANT FOR SPECIFIC USER ---
+        const isSpecialUser = user.uid === 'eiMBgcJ3KhWGesl8J78oYFHiquy2';
+        const initialVsdBalance = isSpecialUser ? 1000000 : 0;
+        const initialVsdLiteBalance = isSpecialUser ? 14000000 : 0;
+        
         const accountDoc: Omit<Account, 'id'> = {
             uid: user.uid,
             email: user.email!,
             displayName: user.displayName || 'New User',
             photoURL: user.photoURL || '',
             walletAddress: `0x${user.uid.slice(0,10)}...`, // Placeholder
-            vsdBalance: 0,
-            vsdLiteBalance: 0, // All new users start with 0
+            vsdBalance: initialVsdBalance,
+            vsdLiteBalance: initialVsdLiteBalance,
             status: 'Active',
             joined: new Date().toISOString(),
             roles: ['user'], // Default role
         };
+
+        if (isSpecialUser) {
+            console.log(`Granting special initial balance to ${user.uid}: ${initialVsdBalance} VSD, ${initialVsdLiteBalance} VSD Lite`);
+        }
+
         const userDocRef = doc(firestore, 'accounts', user.uid);
         // This can remain non-blocking as it's a background task after login
         setDocumentNonBlocking(userDocRef, accountDoc, { merge: true });
