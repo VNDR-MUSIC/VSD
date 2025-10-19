@@ -175,6 +175,10 @@ h1, h2, h3, h4, h5, h6, .font-headline {
     background-size: 400% 400%;
     animation: footer-gradient 15s ease infinite;
   }
+  
+  .mask-gradient-to-bottom {
+    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  }
 }
 
 @layer components {

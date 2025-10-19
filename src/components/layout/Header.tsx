@@ -186,7 +186,7 @@ export function Header() {
       );
   });
   
-  const headerClasses = "sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60";
+  const headerClasses = "sticky top-0 z-50 w-full animated-gradient-background mask-gradient-to-bottom";
 
   return (
     <header className={cn(headerClasses)}>
