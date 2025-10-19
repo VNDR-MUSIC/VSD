@@ -493,25 +493,39 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
                 transaction.update(toRef, { [balanceField]: increment(amount) });
             });
 
+            // Log for sender
             const fromTxCollection = collection(firestore, 'accounts', user.uid, 'transactions');
             await addDocumentNonBlocking(fromTxCollection, {
                 type: `out ${tokenName}`,
                 status: 'Completed',
                 amount,
                 date: new Date().toISOString(),
-                from: userAccount.walletAddress,
-                to: recipientAccount.walletAddress,
+                from: userAccount.displayName,
+                to: recipientAccount.displayName,
                 description: finalDescription
             });
             
+            // Log for receiver
             const toTxCollection = collection(firestore, 'accounts', recipientAccount.uid, 'transactions');
             await addDocumentNonBlocking(toTxCollection, {
                 type: `in ${tokenName}`,
                 status: 'Completed',
                 amount,
                 date: new Date().toISOString(),
-                from: userAccount.walletAddress,
-                to: recipientAccount.walletAddress,
+                from: userAccount.displayName,
+                to: recipientAccount.displayName,
+                description: finalDescription
+            });
+
+            // Log for global feed
+            const globalTxCollection = collection(firestore, 'transactions');
+             await addDocumentNonBlocking(globalTxCollection, {
+                type: `Transfer ${tokenName}`,
+                status: 'Completed',
+                amount,
+                date: new Date().toISOString(),
+                from: userAccount.displayName,
+                to: recipientAccount.displayName,
                 description: finalDescription
             });
 

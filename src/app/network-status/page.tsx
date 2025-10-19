@@ -6,9 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from '@/components/ui/badge';
-import { Wifi, Signal, Users } from 'lucide-react';
+import { Wifi, Signal, Users, Coins, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
+import { collection, doc, query, orderBy, limit } from 'firebase/firestore';
 import type { Account } from '@/types/account';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -27,6 +27,17 @@ interface Leaderboard {
     topHolders: Account[];
 }
 
+interface GlobalTransaction {
+  id: string;
+  type: string;
+  from: string;
+  to: string;
+  amount: number;
+  status: 'Completed' | 'Pending' | 'Failed';
+  date: string;
+  description: string;
+}
+
 const StatusIndicator = ({ status }: { status: string }) => {
   const baseClasses = "h-3 w-3 rounded-full mr-2 inline-block";
   if (status === 'Active') {
@@ -38,15 +49,12 @@ const StatusIndicator = ({ status }: { status: string }) => {
 const TopHoldersCard = () => {
     const firestore = useFirestore();
     
-    // Create a reference to the specific leaderboard document.
     const leaderboardDocRef = useMemoFirebase(() => {
         if (!firestore) return null;
         return doc(firestore, 'leaderboards', 'topHolders');
     }, [firestore]);
 
-    // Use useDoc to fetch the single leaderboard document.
     const { data: leaderboard, isLoading } = useDoc<Leaderboard>(leaderboardDocRef);
-
     const topHolders = leaderboard?.topHolders;
 
     return (
@@ -116,6 +124,72 @@ const TopHoldersCard = () => {
     );
 }
 
+const GlobalTransactionsCard = () => {
+    const firestore = useFirestore();
+    const transactionsQuery = useMemoFirebase(() => 
+        firestore ? query(collection(firestore, 'transactions'), orderBy('date', 'desc'), limit(10)) : null,
+        [firestore]
+    );
+    const { data: transactions, isLoading } = useCollection<GlobalTransaction>(transactionsQuery);
+
+    return (
+        <Card className="shadow-2xl bg-card/80 backdrop-blur-sm">
+            <CardHeader>
+                <CardTitle className="font-headline text-2xl flex items-center gap-2">
+                    <Coins className="h-6 w-6" />
+                    Global Transaction Feed
+                </CardTitle>
+                <CardDescription>
+                    A live feed of the latest transactions across the VSD Network.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Type</TableHead>
+                            <TableHead>Description</TableHead>
+                            <TableHead className="text-right">Amount</TableHead>
+                            <TableHead className="text-right">Time</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {isLoading ? (
+                            Array.from({ length: 5 }).map((_, i) => (
+                                <TableRow key={i}>
+                                    <TableCell colSpan={4}><Skeleton className="h-6 w-full" /></TableCell>
+                                </TableRow>
+                            ))
+                        ) : transactions && transactions.length > 0 ? (
+                            transactions.map((tx) => (
+                                <TableRow key={tx.id}>
+                                     <TableCell>
+                                        <div className="flex items-center gap-2">
+                                            {tx.type.includes('in') ? <ArrowDownLeft className="h-4 w-4 text-green-500"/> : <ArrowUpRight className="h-4 w-4 text-red-500" />}
+                                            <span className="font-medium text-xs">{tx.type}</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-xs text-muted-foreground max-w-[200px] truncate">{tx.description}</TableCell>
+                                    <TableCell className={`text-right font-bold text-sm ${tx.type.includes('Lite') ? 'text-yellow-400' : 'text-primary'}`}>
+                                        {tx.amount.toLocaleString()}
+                                    </TableCell>
+                                    <TableCell className="text-right text-xs text-muted-foreground">{formatDistanceToNow(new Date(tx.date), { addSuffix: true })}</TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
+                             <TableRow>
+                                <TableCell colSpan={4} className="h-24 text-center">
+                                    No global transactions yet.
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+    );
+};
+
 
 export default function NetworkStatusPage() {
   const firestore = useFirestore();
@@ -132,6 +206,10 @@ export default function NetworkStatusPage() {
         </p>
       </header>
 
+      <Separator />
+
+      <GlobalTransactionsCard />
+      
       <Separator />
       
       <TopHoldersCard />
