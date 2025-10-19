@@ -10,4 +10,7 @@ export interface Account {
   status: 'Active' | 'Suspended';
   joined: string;
   roles: ('admin' | 'advertiser' | 'user')[];
+  lastLoginReward?: string;
 }
+
+    

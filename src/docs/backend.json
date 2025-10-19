@@ -66,6 +66,11 @@
             "type": "string",
             "enum": ["admin", "advertiser", "user"]
           }
+        },
+        "lastLoginReward": {
+            "type": "string",
+            "description": "ISO timestamp of when the last daily login reward was granted.",
+            "format": "date-time"
         }
       },
       "required": ["uid", "email", "walletAddress", "vsdBalance", "vsdLiteBalance", "status", "joined", "roles"]
@@ -92,7 +97,7 @@
       "description": "Represents a single ledger activity within the VSD Network. For API calls, amounts are typically in VSD and converted by the API, but internal transactions can be in VSD or VSD Lite.",
       "properties": {
         "id": { "type": "string" },
-        "type": { "type": "string", "enum": ["in VSD", "out VSD", "in VSD Lite", "out VSD Lite", "Mint (Stripe)", "API Spend", "Staking Reward", "Airdrop", "Task Reward", "VSD Lite Exchange"] },
+        "type": { "type": "string", "enum": ["in VSD", "out VSD", "in VSD Lite", "out VSD Lite", "Mint (Stripe)", "API Spend", "Staking Reward", "Airdrop", "Task Reward", "VSD Lite Exchange", "Daily Login Bonus"] },
         "status": { "type": "string", "enum": ["Completed", "Pending", "Failed"] },
         "amount": { "type": "number", "description": "The transaction amount in VSD or VSD Lite." },
         "date": { "type": "string", "format": "date-time" },
@@ -211,3 +216,6 @@
     }
   }
 }
+
+
+    

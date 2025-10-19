@@ -14,7 +14,7 @@ import { doc, collection, runTransaction, increment, query, where, getDocs, limi
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import type { Account } from '@/types/account';
-import { format } from 'date-fns';
+import { format, isBefore, subHours } from 'date-fns';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -103,17 +103,43 @@ export function DashboardClient() {
 
   const isLoading = isAuthLoading || isAccountLoading;
 
-  React.useEffect(() => {
-    // Special check to grant VSD Lite to a specific user if their balance is 0
-    if (account && account.uid === 'eiMBgcJ3KhWGesl8J78oYFHiquy2' && account.vsdLiteBalance === 0 && accountRef) {
-        console.log("Specific user detected with zero balance. Granting 1,000,000 VSD Lite.");
-        updateDocumentNonBlocking(accountRef, { vsdLiteBalance: 1000000 });
-        toast({
-            title: "Balance Corrected",
-            description: "Your VSD Lite balance has been set to 1,000,000.",
-        });
-    }
-  }, [account, accountRef, toast]);
+    React.useEffect(() => {
+        const checkDailyReward = async () => {
+            if (account && accountRef && transactionsRef) {
+                const now = new Date();
+                const twentyFourHoursAgo = subHours(now, 24);
+                const lastRewardDate = account.lastLoginReward ? new Date(account.lastLoginReward) : null;
+
+                if (!lastRewardDate || isBefore(lastRewardDate, twentyFourHoursAgo)) {
+                    const dailyReward = 100;
+                    
+                    // Update balance and timestamp
+                    await updateDocumentNonBlocking(accountRef, {
+                        vsdLiteBalance: increment(dailyReward),
+                        lastLoginReward: now.toISOString(),
+                    });
+
+                    // Log the transaction
+                    await addDocumentNonBlocking(transactionsRef, {
+                        type: 'Daily Login Bonus',
+                        status: 'Completed',
+                        amount: dailyReward,
+                        date: now.toISOString(),
+                        description: `Daily login reward for ${format(now, 'PPP')}`,
+                        from: 'VSD Network',
+                        to: account.displayName
+                    });
+
+                    toast({
+                        title: "Daily Bonus!",
+                        description: `You've received ${dailyReward} VSD Lite for your daily login!`,
+                    });
+                }
+            }
+        };
+
+        checkDailyReward();
+  }, [account, accountRef, transactionsRef, toast]);
 
 
   const handleCopyToClipboard = () => {
@@ -577,3 +603,5 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
         </Dialog>
     );
 }
+
+    
