@@ -3,7 +3,6 @@
 
 import * as React from 'react';
 import {
-  ArrowUpRight,
   DollarSign,
   Users,
   KeyRound,
@@ -11,7 +10,9 @@ import {
   Library,
   Banknote,
   Globe,
-  Wallet
+  Wallet,
+  Send,
+  Loader2
 } from 'lucide-react';
 import {
   Card,
@@ -19,33 +20,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter
 } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { useAdminProxy, useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import type { Account } from '@/types/account';
-import type { Tenant } from '@/types/tenant';
-import { siteConfig } from '@/config/site';
-import { doc } from 'firebase/firestore';
-
-interface AdvertiserApplication {
-    id: string;
-    userName: string;
-    companyName: string;
-    status: 'pending' | 'approved' | 'rejected';
-    submittedAt: string;
-}
+import { useTokenMetrics } from '@/hooks/useTokenMetrics';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 
 const StatCard = ({ title, value, icon: Icon, description, isLoading, valueClassName }: { title: string, value: string, icon: React.ElementType, description: string, isLoading: boolean, valueClassName?: string }) => (
     <Card>
@@ -62,199 +44,113 @@ const StatCard = ({ title, value, icon: Icon, description, isLoading, valueClass
 
 export function AdminDashboard() {
   useProtectedRoute({ adminOnly: true });
-  const { user } = useUser();
-  const firestore = useFirestore();
+  const { metrics, airdropPreview, simulateAirdrop } = useTokenMetrics();
+  const [airdropInput, setAirdropInput] = React.useState('');
+  const { toast } = useToast();
 
-  const adminAccountRef = useMemoFirebase(() => user && firestore ? doc(firestore, 'accounts', user.uid) : null, [firestore, user]);
-  const { data: adminAccount, isLoading: adminAccountLoading } = useDoc<Account>(adminAccountRef);
+  const handleAirdropSimulation = () => {
+    if (!airdropInput) {
+      toast({ variant: 'destructive', title: 'Input Required', description: 'Please enter a valid JSON distribution.' });
+      return;
+    }
+    try {
+      const distribution = JSON.parse(airdropInput);
+      const resultMessage = simulateAirdrop(distribution);
+      toast({
+        title: 'Airdrop Simulation',
+        description: resultMessage,
+        variant: resultMessage.includes('exceeds') ? 'destructive' : 'default'
+      });
+    } catch (e) {
+      toast({ variant: 'destructive', title: 'Invalid JSON', description: 'Please check the format. Example: {"uid1":1000, "uid2":500}' });
+    }
+  };
 
-  const { data: tenants, isLoading: tenantsLoading } = useAdminProxy<Tenant>('tenants');
-  const { data: accounts, isLoading: accountsLoading } = useAdminProxy<Account>('accounts');
-  const { data: applications, isLoading: applicationsLoading } = useAdminProxy<AdvertiserApplication>('advertiserApplications');
-
-  const circulatingVSD = accounts?.reduce((sum, acc) => sum + (acc.vsdBalance || 0), 0) ?? 0;
-  const circulatingVSDLite = accounts?.reduce((sum, acc) => sum + (acc.vsdLiteBalance || 0), 0) ?? 0;
-  const totalSupply = siteConfig.tokenValues.TOTAL_SUPPLY;
-  const marketCap = totalSupply * siteConfig.tokenValues.VSD_PRICE_USD;
-  const treasuryBalance = totalSupply - circulatingVSD;
-
-  const recentApplications = applications
-    ?.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
-    .slice(0, 5);
-  
-  const recentTenants = tenants
-    ?.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, 5);
-
-  const isLoading = tenantsLoading || accountsLoading || applicationsLoading || adminAccountLoading;
 
   return (
     <>
       <div className="flex items-center">
-        <h1 className="text-lg font-semibold md:text-2xl">Dashboard</h1>
+        <h1 className="text-lg font-semibold md:text-2xl">Dashboard &amp; Token Metrics</h1>
       </div>
       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-         <StatCard 
-            title="Personal VSD Balance" 
-            value={adminAccount?.vsdBalance?.toLocaleString() ?? '0'}
-            icon={Wallet}
-            description="Your own VSD token balance."
-            isLoading={isLoading}
-        />
         <StatCard 
-            title="Personal VSD Lite" 
-            value={adminAccount?.vsdLiteBalance?.toLocaleString() ?? '0'}
-            icon={Coins}
-            description="Your own VSD Lite rewards balance."
-            isLoading={isLoading}
-            valueClassName="text-yellow-400"
-        />
-        <StatCard 
-            title="Total Users" 
-            value={accounts?.length.toLocaleString() ?? '0'}
-            icon={Users}
-            description="Total registered accounts in the network."
-            isLoading={isLoading}
-        />
-         <StatCard 
-            title="Connected Tenants" 
-            value={tenants?.length.toLocaleString() ?? '0'}
-            icon={KeyRound}
-            description="Number of integrated partner applications."
-            isLoading={isLoading}
-        />
-         <StatCard 
             title="Total VSD Supply" 
-            value={totalSupply.toLocaleString()}
+            value={metrics.totalSupply.toLocaleString()}
             icon={Library}
             description="The maximum and total supply of VSD."
-            isLoading={isLoading}
-        />
-        <StatCard 
-            title="Market Cap (USD)" 
-            value={`$${marketCap.toLocaleString()}`}
-            icon={DollarSign}
-            description={`Based on a $${siteConfig.tokenValues.VSD_PRICE_USD} token price.`}
-            isLoading={isLoading}
+            isLoading={metrics.loading}
         />
         <StatCard 
             title="Circulating VSD" 
-            value={circulatingVSD.toLocaleString()}
+            value={metrics.circulatingVSD.toLocaleString()}
             icon={Globe}
             description="Total VSD held by all users."
-            isLoading={isLoading}
+            isLoading={metrics.loading}
         />
          <StatCard 
             title="VSD in Treasury" 
-            value={treasuryBalance.toLocaleString()}
+            value={metrics.treasuryVSD.toLocaleString()}
             icon={Banknote}
             description="Total Supply - Circulating Supply."
-            isLoading={isLoading}
+            isLoading={metrics.loading}
         />
          <StatCard 
             title="Circulating VSD Lite" 
-            value={circulatingVSDLite.toLocaleString()}
+            value={metrics.circulatingVSDLite.toLocaleString()}
             icon={Coins}
             description="Total rewards points across all users."
-            isLoading={isLoading}
+            isLoading={metrics.loading}
+            valueClassName="text-yellow-400"
         />
       </div>
       <div className="grid gap-4 md:gap-8 lg:grid-cols-2">
-        <Card>
-            <CardHeader className="flex flex-row items-center">
-                <div className="grid gap-2">
-                    <CardTitle>Recent Tenants</CardTitle>
-                    <CardDescription>
-                        Newly integrated partner applications.
-                    </CardDescription>
-                </div>
-                <Button asChild size="sm" className="ml-auto gap-1">
-                    <Link href="/admin/api-management">
-                        View All
-                        <ArrowUpRight className="h-4 w-4" />
-                    </Link>
-                </Button>
+          <Card>
+            <CardHeader>
+                <CardTitle>Airdrop Simulator</CardTitle>
+                <CardDescription>
+                    Enter a JSON object of user UIDs and token amounts to simulate a VSD airdrop from the treasury.
+                </CardDescription>
             </CardHeader>
             <CardContent>
-                 <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Created</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {isLoading ? (
-                            Array.from({length: 3}).map((_, i) => (
-                                <TableRow key={i}>
-                                    <TableCell><Skeleton className="h-5 w-24"/></TableCell>
-                                    <TableCell><Skeleton className="h-5 w-16"/></TableCell>
-                                    <TableCell className="text-right"><Skeleton className="h-5 w-20 ml-auto"/></TableCell>
-                                </TableRow>
-                            ))
-                        ) : recentTenants?.map((tenant) => (
-                            <TableRow key={tenant.id}>
-                                <TableCell className="font-medium">{tenant.name}</TableCell>
-                                <TableCell>
-                                    <Badge variant={tenant.status === 'Active' ? 'default' : 'secondary'}>{tenant.status}</Badge>
-                                </TableCell>
-                                <TableCell className="text-right">{new Date(tenant.createdAt).toLocaleDateString()}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                 </Table>
+                <Textarea
+                    placeholder='{"uid1": 1000, "uid2": 5000}'
+                    value={airdropInput}
+                    onChange={(e) => setAirdropInput(e.target.value)}
+                    className="h-24 font-mono text-xs"
+                />
             </CardContent>
-        </Card>
-        <Card>
-            <CardHeader className="flex flex-row items-center">
-                <div className="grid gap-2">
-                    <CardTitle>Advertiser Applications</CardTitle>
-                    <CardDescription>
-                        Recent applications from users to become advertisers.
-                    </CardDescription>
-                </div>
-                 <Button asChild size="sm" className="ml-auto gap-1">
-                    <Link href="/admin/users">
-                        View All
-                        <ArrowUpRight className="h-4 w-4" />
-                    </Link>
+            <CardFooter className="justify-between">
+                 <Button onClick={handleAirdropSimulation}>
+                    <Send className="mr-2 h-4 w-4" />
+                    Simulate Airdrop
                 </Button>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Applicant</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Submitted</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                         {isLoading ? (
-                            Array.from({length: 3}).map((_, i) => (
-                                <TableRow key={i}>
-                                    <TableCell><Skeleton className="h-5 w-24"/></TableCell>
-                                    <TableCell><Skeleton className="h-5 w-16"/></TableCell>
-                                    <TableCell className="text-right"><Skeleton className="h-5 w-20 ml-auto"/></TableCell>
-                                </TableRow>
-                            ))
-                        ) : recentApplications?.map((app) => (
-                            <TableRow key={app.id}>
-                                <TableCell>
-                                    <div className="font-medium">{app.userName}</div>
-                                    <div className="text-sm text-muted-foreground">{app.companyName}</div>
-                                </TableCell>
-                                <TableCell>
-                                    <Badge variant={app.status === 'pending' ? 'destructive' : 'default'}>{app.status}</Badge>
-                                </TableCell>
-                                <TableCell className="text-right">{new Date(app.submittedAt).toLocaleDateString()}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </CardContent>
+                <Button variant="secondary" disabled>
+                    <Loader2 className="mr-2 h-4 w-4" />
+                    Execute Airdrop (Coming Soon)
+                </Button>
+            </CardFooter>
         </Card>
+        
+        {Object.keys(airdropPreview).length > 0 && (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Airdrop Preview</CardTitle>
+                    <CardDescription>
+                        This is a preview of the distribution. No balances have been changed.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="max-h-48 overflow-y-auto">
+                    <ul className="space-y-2">
+                        {Object.entries(airdropPreview).map(([uid, amount]) => (
+                            <li key={uid} className="flex justify-between items-center text-sm bg-muted/50 p-2 rounded-md">
+                                <span className="font-mono text-xs text-muted-foreground">{uid}</span>
+                                <span className="font-bold">{amount.toLocaleString()} VSD</span>
+                            </li>
+                        ))}
+                    </ul>
+                </CardContent>
+            </Card>
+        )}
       </div>
     </>
   );
