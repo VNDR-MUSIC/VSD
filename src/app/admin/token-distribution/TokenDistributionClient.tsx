@@ -113,8 +113,8 @@ export function TokenDistributionClient() {
         if (!allAccounts) return [];
         const lowercasedQuery = searchQuery.toLowerCase();
         return allAccounts.filter(account =>
-            account.displayName.toLowerCase().includes(lowercasedQuery) ||
-            account.email.toLowerCase().includes(lowercasedQuery)
+            (account.displayName || '').toLowerCase().includes(lowercasedQuery) ||
+            (account.email || '').toLowerCase().includes(lowercasedQuery)
         );
     }, [allAccounts, searchQuery]);
 
@@ -279,7 +279,7 @@ export function TokenDistributionClient() {
                                             <TableCell>
                                                 <div className="flex items-center gap-3">
                                                     <Avatar>
-                                                        <AvatarImage src={account.photoURL} />
+                                                        <AvatarImage src={account.photoURL ?? undefined} />
                                                         <AvatarFallback>{account.displayName?.charAt(0) ?? 'U'}</AvatarFallback>
                                                     </Avatar>
                                                     <div>

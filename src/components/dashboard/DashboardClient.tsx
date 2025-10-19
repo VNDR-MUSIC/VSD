@@ -261,7 +261,7 @@ export function DashboardClient() {
                     <Tooltip>
                         <TooltipTrigger asChild>
                              <div className="w-full sm:w-1/2">
-                                <SendVsdDialog userAccount={account} isAllowed={canSendTokens} />
+                                <SendVsdDialog userAccount={account} />
                              </div>
                         </TooltipTrigger>
                          {!canSendTokens && (
@@ -405,7 +405,7 @@ export function DashboardClient() {
   );
 }
 
-function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null, isAllowed: boolean }) {
+function SendVsdDialog({ userAccount }: { userAccount: Account | null }) {
     const { toast } = useToast();
     const [isOpen, setIsOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
@@ -417,6 +417,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
     
     const firestore = useFirestore();
     const { user } = useUser();
+    const canSendTokens = (userAccount?.vsdBalance ?? 0) >= 20;
 
     // Debounce search input
     React.useEffect(() => {
@@ -433,7 +434,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
                 const resultsMap = new Map<string, Account>();
                 nameSnapshot.forEach(doc => resultsMap.set(doc.id, { uid: doc.id, ...doc.data() } as Account));
                 emailSnapshot.forEach(doc => resultsMap.set(doc.id, { uid: doc.id, ...doc.data() } as Account));
-                
+                                
                 const combinedResults = Array.from(resultsMap.values());
                 setSearchResults(combinedResults);
             } else {
@@ -552,7 +553,7 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button className="btn-hover-effect w-full" disabled={!isAllowed}>
+                <Button className="btn-hover-effect w-full" disabled={!canSendTokens}>
                     Send
                 </Button>
             </DialogTrigger>
