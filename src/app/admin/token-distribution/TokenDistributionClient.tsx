@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useAdminProxy, adminProxyWrite, adminProxyCreate } from '@/firebase';
+import { useAdminProxy, adminProxyWrite, adminProxyCreate, useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import type { Account } from '@/types/account';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Send, ChevronsUpDown, Check, Search } from 'lucide-react';
@@ -18,6 +18,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { cn } from '@/lib/utils';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { doc } from 'firebase/firestore';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -34,8 +35,22 @@ export function TokenDistributionClient() {
     const [searchQuery, setSearchQuery] = React.useState('');
     const [currentPage, setCurrentPage] = React.useState(1);
     
-    const { data: accounts, isLoading: accountsLoading } = useAdminProxy<Account>('accounts');
-    
+    const { user } = useUser();
+    const firestore = useFirestore();
+
+    const { data: accountsFromProxy, isLoading: accountsLoading } = useAdminProxy<Account>('accounts');
+    const adminAccountRef = useMemoFirebase(() => user && firestore ? doc(firestore, 'accounts', user.uid) : null, [user, firestore]);
+    const { data: adminAccount, isLoading: adminAccountLoading } = useDoc<Account>(adminAccountRef);
+
+    const allAccounts = React.useMemo(() => {
+        if (!accountsFromProxy) return adminAccount ? [adminAccount] : [];
+        const accountsMap = new Map(accountsFromProxy.map(acc => [acc.uid, acc]));
+        if (adminAccount) {
+            accountsMap.set(adminAccount.uid, adminAccount);
+        }
+        return Array.from(accountsMap.values());
+    }, [accountsFromProxy, adminAccount]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedUser || !amount || !description) {
@@ -45,7 +60,7 @@ export function TokenDistributionClient() {
 
         setIsLoading(true);
         const numericAmount = Number(amount);
-        const targetAccount = accounts?.find(acc => acc.uid === selectedUser);
+        const targetAccount = allAccounts?.find(acc => acc.uid === selectedUser);
         
         if (!targetAccount) {
             toast({ variant: 'destructive', title: 'User Not Found' });
@@ -95,13 +110,13 @@ export function TokenDistributionClient() {
     };
     
     const filteredAccounts = React.useMemo(() => {
-        if (!accounts) return [];
+        if (!allAccounts) return [];
         const lowercasedQuery = searchQuery.toLowerCase();
-        return accounts.filter(account =>
+        return allAccounts.filter(account =>
             account.displayName.toLowerCase().includes(lowercasedQuery) ||
             account.email.toLowerCase().includes(lowercasedQuery)
         );
-    }, [accounts, searchQuery]);
+    }, [allAccounts, searchQuery]);
 
     const paginatedAccounts = React.useMemo(() => {
         const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -124,7 +139,7 @@ export function TokenDistributionClient() {
                             <CardDescription>Directly distribute VSD or VSD Lite tokens to a user account. This action is logged.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            {accountsLoading ? <Skeleton className="h-40 w-full" /> : (
+                            {accountsLoading || adminAccountLoading ? <Skeleton className="h-40 w-full" /> : (
                                 <>
                                     <div className="space-y-2">
                                         <Label htmlFor="user-select">Select User</Label>
@@ -137,7 +152,7 @@ export function TokenDistributionClient() {
                                                 className="w-full justify-between"
                                                 >
                                                 {selectedUser
-                                                    ? accounts?.find((acc) => acc.uid === selectedUser)?.displayName
+                                                    ? allAccounts?.find((acc) => acc.uid === selectedUser)?.displayName
                                                     : "Select a user to receive tokens..."}
                                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                                 </Button>
@@ -148,7 +163,7 @@ export function TokenDistributionClient() {
                                                     <CommandList>
                                                         <CommandEmpty>No user found.</CommandEmpty>
                                                         <CommandGroup>
-                                                            {accounts?.map((acc) => (
+                                                            {allAccounts?.map((acc) => (
                                                             <CommandItem
                                                                 key={acc.uid}
                                                                 value={`${acc.displayName} ${acc.email}`}
@@ -214,7 +229,7 @@ export function TokenDistributionClient() {
 
                         </CardContent>
                         <CardFooter>
-                            <Button type="submit" disabled={isLoading || accountsLoading}>
+                            <Button type="submit" disabled={isLoading || accountsLoading || adminAccountLoading}>
                                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 <Send className="mr-2 h-4 w-4" />
                                 Send Airdrop
@@ -250,7 +265,7 @@ export function TokenDistributionClient() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {accountsLoading ? (
+                                {accountsLoading || adminAccountLoading ? (
                                     Array.from({ length: 5 }).map((_, i) => (
                                         <TableRow key={i}>
                                             <TableCell><Skeleton className="h-8 w-full" /></TableCell>
