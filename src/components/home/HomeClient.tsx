@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { useUser } from "@/firebase";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "../ui/skeleton";
+import { LiveTokenData } from "./LiveTokenData";
 
 const FeatureCard = ({ icon: Icon, title, description }: { icon: React.ElementType, title: string, description: string }) => (
     <Card className="text-center items-center flex flex-col bg-card/70 backdrop-blur-sm border-white/10 shadow-lg h-full">
@@ -108,6 +109,8 @@ export function HomeClient() {
             </Button>
           </div>
         </section>
+
+        <LiveTokenData />
 
         {/* --- Core Pillars Section --- */}
         <section className="animate-fade-in-up animation-delay-600">

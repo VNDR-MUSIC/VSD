@@ -1,7 +1,7 @@
 
 'use client';
 
-import { DollarSign, Cpu, ArrowRightLeft, Database, Shield } from 'lucide-react';
+import { DollarSign, Cpu, ArrowRightLeft, Database, Shield, Users } from 'lucide-react';
 import React from 'react';
 import { siteConfig } from '@/config/site';
 
@@ -15,7 +15,7 @@ const tickerItems = [
     {
         Icon: Database,
         label: 'Total Supply',
-        value: '1,000,000,000 VSD',
+        value: '700,000,000 VSD',
     },
     {
         Icon: Shield,
@@ -34,25 +34,15 @@ const tickerItems = [
         value: 'IMG Services AI',
     },
     {
-        Icon: null,
-        label: 'Partner Highlight',
-        value: 'VNDR Music',
-    },
-     {
-        Icon: null,
-        label: 'Partner Highlight',
-        value: 'Blaque Tech',
-    },
-      {
-        Icon: null,
-        label: 'Partner Highlight',
-        value: 'Audio.Exchange',
+        Icon: Users,
+        label: 'Ecosystem',
+        value: 'Independent Media Group',
     },
 ];
 
-const TickerItem = ({ Icon, label, value, valueColor = 'text-foreground' }: { Icon: React.ElementType | null, label: string, value: string, valueColor?: string }) => (
+const TickerItem = ({ Icon, label, value, valueColor = 'text-foreground' }: { Icon: React.ElementType, label: string, value: string, valueColor?: string }) => (
     <div className="flex items-center space-x-4 mx-6">
-        {Icon && <Icon className="h-5 w-5 text-primary shrink-0" />}
+        <Icon className="h-5 w-5 text-primary shrink-0" />
         <div className="flex items-baseline space-x-2">
             <span className="text-sm text-muted-foreground whitespace-nowrap">{label}:</span>
             <span className={`font-bold font-mono text-sm whitespace-nowrap ${valueColor}`}>{value}</span>

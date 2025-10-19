@@ -79,9 +79,9 @@ export function LiveTokenData() {
               isLoading={isLoadingTransactions}
             />
             <DataCard 
-              icon={FileCode} 
-              title="Decimals" 
-              value={18} 
+              icon={Users} 
+              title="Total Holders" 
+              value={blockchainData.holders ?? '--'} 
               isLoading={isLoadingBlockchain}
             />
           </div>
