@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import { adminProxyWrite } from '@/firebase';
+import { adminProxyWrite, useUser } from '@/firebase';
 import type { Account } from '@/types/account';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -17,10 +17,11 @@ interface EditUserRolesDialogProps {
 
 const ALL_ROLES = ['user', 'advertiser', 'admin'];
 
-export function EditUserRolesDialog({ user, onClose }: EditUserRolesDialogProps) {
+export function EditUserRolesDialog({ user: editingUser, onClose }: EditUserRolesDialogProps) {
     const [isSubmitting, setIsSubmitting] = React.useState(false);
-    const [selectedRoles, setSelectedRoles] = React.useState<string[]>(user.roles || ['user']);
+    const [selectedRoles, setSelectedRoles] = React.useState<string[]>(editingUser.roles || ['user']);
     const { toast } = useToast();
+    const { user: adminUser } = useUser();
 
     const handleRoleChange = (role: string, checked: boolean) => {
         setSelectedRoles(prev => {
@@ -35,12 +36,14 @@ export function EditUserRolesDialog({ user, onClose }: EditUserRolesDialogProps)
     };
 
     const handleSubmit = async () => {
+        if (!adminUser) return;
         setIsSubmitting(true);
         try {
-            await adminProxyWrite('accounts', user.uid, { roles: selectedRoles });
+            const idToken = await adminUser.getIdToken(true);
+            await adminProxyWrite(idToken, 'accounts', editingUser.uid, { roles: selectedRoles });
             toast({
                 title: 'Roles Updated',
-                description: `Successfully updated roles for ${user.displayName}.`,
+                description: `Successfully updated roles for ${editingUser.displayName}.`,
             });
             onClose();
         } catch (error: any) {
@@ -58,7 +61,7 @@ export function EditUserRolesDialog({ user, onClose }: EditUserRolesDialogProps)
         <Dialog open={true} onOpenChange={onClose}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Edit Roles for {user.displayName}</DialogTitle>
+                    <DialogTitle>Edit Roles for {editingUser.displayName}</DialogTitle>
                     <DialogDescription>
                         Assign or remove roles for this user. The 'user' role cannot be removed.
                     </DialogDescription>

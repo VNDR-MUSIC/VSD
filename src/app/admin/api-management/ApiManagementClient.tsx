@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { CreateTenantDialog } from './CreateTenantDialog';
-import { useAdminProxy, adminProxyWrite, adminProxyDelete } from '@/firebase';
+import { useAdminProxy, adminProxyWrite, adminProxyDelete, useUser } from '@/firebase';
 import type { Tenant } from '@/types/tenant';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
@@ -30,6 +30,7 @@ const TenantRowSkeleton = () => (
 export function ApiManagementClient() {
     useProtectedRoute({ adminOnly: true });
     const { toast } = useToast();
+    const { user } = useUser();
     const [copiedKey, setCopiedKey] = React.useState<string | null>(null);
 
     const { data: tenants, isLoading, error } = useAdminProxy<Tenant>('tenants');
@@ -42,9 +43,11 @@ export function ApiManagementClient() {
     };
 
     const handleToggleStatus = async (tenant: Tenant) => {
+        if (!user) return;
         const newStatus = tenant.status === 'Active' ? 'Inactive' : 'Active';
         try {
-            await adminProxyWrite('tenants', tenant.id, { status: newStatus });
+            const idToken = await user.getIdToken(true);
+            await adminProxyWrite(idToken, 'tenants', tenant.id, { status: newStatus });
             toast({
                 title: 'Tenant Status Updated',
                 description: `${tenant.name} is now ${newStatus}.`,
@@ -61,8 +64,10 @@ export function ApiManagementClient() {
     };
 
     const handleDelete = async (tenant: Tenant) => {
+        if (!user) return;
         try {
-            await adminProxyDelete('tenants', tenant.id);
+            const idToken = await user.getIdToken(true);
+            await adminProxyDelete(idToken, 'tenants', tenant.id);
             toast({
                 title: 'Tenant Deleted',
                 description: `${tenant.name} has been permanently deleted.`,

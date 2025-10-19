@@ -12,9 +12,10 @@ import { Button } from '@/components/ui/button';
 import { Check, X, MoreHorizontal, UserCog, Ban } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useAdminProxy, adminProxyWrite } from '@/firebase';
+import { useAdminProxy, adminProxyWrite, useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import type { Account } from '@/types/account';
 import { EditUserRolesDialog } from './EditUserRolesDialog';
+import { doc } from 'firebase/firestore';
 
 
 interface AdvertiserApplication {
@@ -39,26 +40,43 @@ const UserRowSkeleton = () => (
 export function UserManagementClient() {
     useProtectedRoute({ adminOnly: true });
     const { toast } = useToast();
+    const { user } = useUser();
+    const firestore = useFirestore();
 
-    const { data: accounts, isLoading: accountsLoading, error: accountsError } = useAdminProxy<Account>('accounts');
+    const { data: accountsFromProxy, isLoading: accountsLoading, error: accountsError } = useAdminProxy<Account>('accounts');
     const { data: applications, isLoading: applicationsLoading, error: applicationsError } = useAdminProxy<AdvertiserApplication>('advertiserApplications');
     
+    // Fetch the admin's own account data to ensure it's in the list
+    const adminAccountRef = useMemoFirebase(() => user && firestore ? doc(firestore, 'accounts', user.uid) : null, [user, firestore]);
+    const { data: adminAccount, isLoading: adminAccountLoading } = useDoc<Account>(adminAccountRef);
+
     const [editingUser, setEditingUser] = React.useState<Account | null>(null);
+
+    const allAccounts = React.useMemo(() => {
+        if (!accountsFromProxy) return adminAccount ? [adminAccount] : [];
+        const accountsMap = new Map(accountsFromProxy.map(acc => [acc.uid, acc]));
+        if (adminAccount) {
+            accountsMap.set(adminAccount.uid, adminAccount);
+        }
+        return Array.from(accountsMap.values());
+    }, [accountsFromProxy, adminAccount]);
 
     const pendingApplications = React.useMemo(() => {
         return applications?.filter(app => app.status === 'pending') || [];
     }, [applications]);
     
     const handleApplication = async (application: AdvertiserApplication, newStatus: 'approved' | 'rejected') => {
+        if (!user) return;
         try {
+            const idToken = await user.getIdToken(true);
             // Update the application status
-            await adminProxyWrite('advertiserApplications', application.id, { status: newStatus });
+            await adminProxyWrite(idToken, 'advertiserApplications', application.id, { status: newStatus });
 
             if (newStatus === 'approved') {
-                const userDoc = accounts?.find(acc => acc.uid === application.userId);
+                const userDoc = allAccounts?.find(acc => acc.uid === application.userId);
                 if (userDoc && !userDoc.roles.includes('advertiser')) {
                     const updatedRoles = [...userDoc.roles, 'advertiser'];
-                    await adminProxyWrite('accounts', application.userId, { roles: updatedRoles });
+                    await adminProxyWrite(idToken, 'accounts', application.userId, { roles: updatedRoles });
                 }
             }
 
@@ -76,9 +94,11 @@ export function UserManagementClient() {
     };
     
     const handleToggleSuspend = async (account: Account) => {
+        if (!user) return;
         const newStatus = account.status === 'Active' ? 'Suspended' : 'Active';
         try {
-            await adminProxyWrite('accounts', account.uid, { status: newStatus });
+            const idToken = await user.getIdToken(true);
+            await adminProxyWrite(idToken, 'accounts', account.uid, { status: newStatus });
             toast({
                 title: `User ${newStatus}`,
                 description: `${account.displayName} has been ${newStatus.toLowerCase()}.`,
@@ -174,15 +194,15 @@ export function UserManagementClient() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {accountsLoading ? (
+                            {accountsLoading || adminAccountLoading ? (
                                 Array.from({length: 5}).map((_, i) => <UserRowSkeleton key={i} />)
-                            ) : accounts && accounts.length > 0 ? (
-                                accounts.map((account) => (
+                            ) : allAccounts && allAccounts.length > 0 ? (
+                                allAccounts.map((account) => (
                                     <TableRow key={account.uid}>
                                         <TableCell>
                                             <div className="flex items-center gap-3">
                                                 <Avatar>
-                                                    <AvatarImage src={account.photoURL} />
+                                                    <AvatarImage src={account.photoURL ?? undefined} />
                                                     <AvatarFallback>{account.displayName?.charAt(0) ?? 'U'}</AvatarFallback>
                                                 </Avatar>
                                                 <span className="font-medium">{account.displayName}</span>

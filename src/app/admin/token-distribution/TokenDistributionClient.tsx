@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -53,6 +52,10 @@ export function TokenDistributionClient() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!user) {
+            toast({ variant: 'destructive', title: 'Authentication Error', description: 'You must be logged in.' });
+            return;
+        }
         if (!selectedUser || !amount || !description) {
             toast({ variant: 'destructive', title: 'Missing Information', description: 'Please select a user and enter an amount and description.' });
             return;
@@ -69,11 +72,12 @@ export function TokenDistributionClient() {
         }
 
         try {
+            const idToken = await user.getIdToken(true);
             const balanceField = tokenType === 'vsd' ? 'vsdBalance' : 'vsdLiteBalance';
             const currentBalance = targetAccount[balanceField] || 0;
             const newBalance = currentBalance + numericAmount;
 
-            await adminProxyWrite('accounts', selectedUser, { [balanceField]: newBalance });
+            await adminProxyWrite(idToken, 'accounts', selectedUser, { [balanceField]: newBalance });
             
             const transactionData = {
                 type: 'Airdrop' as const,
@@ -86,7 +90,7 @@ export function TokenDistributionClient() {
                 to: targetAccount.walletAddress,
                 user: targetAccount.displayName,
             };
-            await adminProxyCreate(`accounts/${selectedUser}/transactions`, transactionData);
+            await adminProxyCreate(idToken, `accounts/${selectedUser}/transactions`, transactionData);
             
             toast({
                 title: 'Airdrop Successful',
