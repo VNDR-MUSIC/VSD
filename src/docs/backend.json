@@ -71,6 +71,15 @@
             "type": "string",
             "description": "ISO timestamp of when the last daily login reward was granted.",
             "format": "date-time"
+        },
+        "loginStreak": {
+            "type": "number",
+            "description": "The user's consecutive daily login count."
+        },
+        "lastStreakDay": {
+            "type": "string",
+            "description": "ISO timestamp of the last login that counted towards the streak.",
+            "format": "date-time"
         }
       },
       "required": ["uid", "email", "walletAddress", "vsdBalance", "vsdLiteBalance", "status", "joined", "roles"]
@@ -216,6 +225,3 @@
     }
   }
 }
-
-
-    

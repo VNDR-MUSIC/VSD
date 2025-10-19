@@ -11,6 +11,6 @@ export interface Account {
   joined: string;
   roles: ('admin' | 'advertiser' | 'user')[];
   lastLoginReward?: string;
+  loginStreak?: number;
+  lastStreakDay?: string;
 }
-
-    

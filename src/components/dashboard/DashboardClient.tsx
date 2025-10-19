@@ -14,7 +14,7 @@ import { doc, collection, runTransaction, increment, query, where, getDocs, limi
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import type { Account } from '@/types/account';
-import { format, isBefore, subHours } from 'date-fns';
+import { format, isSameDay, isSameMonth, subDays } from 'date-fns';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -105,40 +105,72 @@ export function DashboardClient() {
 
     React.useEffect(() => {
         const checkDailyReward = async () => {
-            if (account && accountRef && transactionsRef) {
-                const now = new Date();
-                const twentyFourHoursAgo = subHours(now, 24);
-                const lastRewardDate = account.lastLoginReward ? new Date(account.lastLoginReward) : null;
+            if (!account || !accountRef || !transactionsRef) return;
 
-                if (!lastRewardDate || isBefore(lastRewardDate, twentyFourHoursAgo)) {
-                    const dailyReward = 100;
-                    
-                    // Update balance and timestamp
-                    await updateDocumentNonBlocking(accountRef, {
-                        vsdLiteBalance: increment(dailyReward),
-                        lastLoginReward: now.toISOString(),
-                    });
+            const now = new Date();
+            const lastStreakDay = account.lastStreakDay ? new Date(account.lastStreakDay) : null;
 
-                    // Log the transaction
-                    await addDocumentNonBlocking(transactionsRef, {
-                        type: 'Daily Login Bonus',
-                        status: 'Completed',
-                        amount: dailyReward,
-                        date: now.toISOString(),
-                        description: `Daily login reward for ${format(now, 'PPP')}`,
-                        from: 'VSD Network',
-                        to: account.displayName
-                    });
+            // Don't do anything if they already logged in today
+            if (lastStreakDay && isSameDay(now, lastStreakDay)) {
+                return;
+            }
 
-                    toast({
-                        title: "Daily Bonus!",
-                        description: `You've received ${dailyReward} VSD Lite for your daily login!`,
-                    });
-                }
+            let currentStreak = account.loginStreak || 0;
+            
+            // Monthly Reset
+            if (lastStreakDay && !isSameMonth(now, lastStreakDay)) {
+                currentStreak = 0;
+            }
+
+            // Check for consecutive day
+            const yesterday = subDays(now, 1);
+            if (lastStreakDay && isSameDay(yesterday, lastStreakDay)) {
+                currentStreak += 1; // It's a consecutive login
+            } else {
+                currentStreak = 1; // Not consecutive or first login, start streak at 1
+            }
+
+            if (currentStreak > 7) {
+                currentStreak = 7; // Cap the streak at 7
+            }
+            
+            const updates: Partial<Account> = {
+                loginStreak: currentStreak,
+                lastStreakDay: now.toISOString(),
+            };
+
+            // Issue reward if streak is 7 days or less
+            if (currentStreak <= 7) {
+                const dailyReward = 25; // New reward amount
+                updates.vsdLiteBalance = increment(dailyReward) as any;
+
+                await updateDocumentNonBlocking(accountRef, updates);
+                
+                await addDocumentNonBlocking(transactionsRef, {
+                    type: 'Daily Login Bonus',
+                    status: 'Completed',
+                    amount: dailyReward,
+                    date: now.toISOString(),
+                    description: `Daily login reward for ${format(now, 'PPP')} (Streak day ${currentStreak})`,
+                    from: 'VSD Network',
+                    to: account.displayName
+                });
+
+                toast({
+                    title: `Day ${currentStreak} Bonus!`,
+                    description: `You've received ${dailyReward} VSD Lite for your daily login!`,
+                });
+            } else {
+                 // If streak is already > 7, just update the login time without a reward
+                 await updateDocumentNonBlocking(accountRef, { lastStreakDay: now.toISOString() });
             }
         };
 
-        checkDailyReward();
+        // This check should only run once when the account data is first loaded.
+        if (account) {
+            checkDailyReward();
+        }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, accountRef, transactionsRef, toast]);
 
 
@@ -603,5 +635,3 @@ function SendVsdDialog({ userAccount, isAllowed }: { userAccount: Account | null
         </Dialog>
     );
 }
-
-    
