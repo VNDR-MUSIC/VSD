@@ -33,6 +33,40 @@ async function authAdminMiddleware(req, res, next) {
 
     const decoded = await admin.auth().verifyIdToken(idToken, true); // Check for revocation
     
+    // --- VSD TOKEN RESET LOGIC ---
+    // This is a temporary, one-time operation triggered by the admin login
+    // to reset balances as per the user's request.
+    if (decoded.uid === BANK_UID && req.query.reset_balances === 'true') {
+        const resetFlagRef = db.collection('internal_state').doc('balanceReset');
+        const resetFlagDoc = await resetFlagRef.get();
+
+        if (!resetFlagDoc.exists || !resetFlagDoc.data().completed) {
+            console.log('Admin login detected. Initiating balance reset...');
+            const accountsSnapshot = await db.collection('accounts').get();
+            const batch = db.batch();
+            let totalLiteBalance = 0;
+
+            accountsSnapshot.forEach(doc => {
+                const data = doc.data();
+                if (doc.id !== BANK_UID) {
+                    totalLiteBalance += data.vsdLiteBalance || 0;
+                    batch.update(doc.ref, { vsdBalance: 0, vsdLiteBalance: 0 });
+                }
+            });
+
+            const bankRef = db.collection('accounts').doc(BANK_UID);
+            batch.set(bankRef, { 
+                vsdBalance: 0, 
+                vsdLiteBalance: totalLiteBalance // Set, not increment, to ensure a clean slate
+            }, { merge: true });
+            
+            await batch.commit();
+            await resetFlagRef.set({ completed: true, timestamp: admin.firestore.FieldValue.serverTimestamp() });
+            console.log(`Balance reset complete. Consolidated ${totalLiteBalance} VSD Lite to bank.`);
+        }
+    }
+    // --- END OF RESET LOGIC ---
+
     // Check for superAdmin claim or if UID is in the allowed list.
     const isSuperAdmin = decoded.superAdmin === true || ALLOWED_ADMINS.includes(decoded.uid);
     let isAdminByCollection = false;
@@ -45,35 +79,6 @@ async function authAdminMiddleware(req, res, next) {
     if (isSuperAdmin || isAdminByCollection) {
         req.adminUid = decoded.uid;
         req.adminClaims = decoded;
-        
-        // --- VSD TOKEN RESET LOGIC ---
-        // This is a temporary, one-time operation triggered by the admin login
-        // to reset balances as per the user's request.
-        if (decoded.uid === BANK_UID && req.query.reset_balances === 'true') {
-            console.log('Admin login detected. Initiating balance reset...');
-            const accountsSnapshot = await db.collection('accounts').get();
-            const batch = db.batch();
-            let totalLiteBalance = 0;
-
-            accountsSnapshot.forEach(doc => {
-                if (doc.id !== BANK_UID) {
-                    const data = doc.data();
-                    totalLiteBalance += data.vsdLiteBalance || 0;
-                    batch.update(doc.ref, { vsdBalance: 0, vsdLiteBalance: 0 });
-                }
-            });
-
-            const bankRef = db.collection('accounts').doc(BANK_UID);
-            batch.set(bankRef, { 
-                vsdBalance: 0, 
-                vsdLiteBalance: admin.firestore.FieldValue.increment(totalLiteBalance)
-            }, { merge: true });
-            
-            await batch.commit();
-            console.log(`Balance reset complete. Consolidated ${totalLiteBalance} VSD Lite to bank.`);
-        }
-        // --- END OF RESET LOGIC ---
-
         return next();
     }
 

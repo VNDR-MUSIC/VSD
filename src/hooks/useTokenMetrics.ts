@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from "react";
@@ -6,7 +5,8 @@ import { useAdminProxy } from "@/firebase";
 import type { Account } from "@/types/account";
 
 export function useTokenMetrics() {
-  const { data: accounts, isLoading: isAccountsLoading } = useAdminProxy<Account>('accounts');
+  // Add the reset_balances option to the hook call
+  const { data: accounts, isLoading: isAccountsLoading } = useAdminProxy<Account>('accounts', { reset_balances: true });
   
   const [metrics, setMetrics] = useState({
     totalSupply: 700_000_000,
