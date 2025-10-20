@@ -12,7 +12,6 @@ import { BackgroundVideo } from '@/components/layout/BackgroundVideo';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
-import { Ticker } from '@/components/ui/Ticker';
 
 const fontHeadline = Orbitron({
   subsets: ['latin'],
@@ -34,21 +33,7 @@ export default function RootLayout({
   const shouldReduceMotion = useReducedMotion();
 
   const isSpecialLayout = pathname.startsWith('/admin') || pathname.startsWith('/advertiser');
-  const isPublicPage = [
-    '/',
-    '/login',
-    '/token',
-    '/buy',
-    '/ecosystem',
-    '/developers',
-    '/for-businesses',
-    '/symbi',
-    '/network-status',
-    '/compliance'
-  ].some(path => pathname === path || (path !== '/' && pathname.startsWith(path)));
   
-  const showTicker = !isSpecialLayout && !isPublicPage;
-
   const pageVariants = {
     initial: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
     animate: { opacity: 1, y: 0 },
@@ -80,7 +65,6 @@ export default function RootLayout({
           {!isSpecialLayout && <BackgroundVideo />}
           <div className={cn("relative z-0 flex flex-col min-h-screen w-full")}>
             <Header />
-            {showTicker && <div className="sticky top-16 z-40"><Ticker /></div>}
             <AnimatePresence mode="wait">
               <motion.main
                 key={pathname}
