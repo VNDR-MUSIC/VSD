@@ -22,7 +22,6 @@ type BuyVsdFormValues = z.infer<typeof buyVsdSchema>;
 
 export default function BuyVsdPage() {
   const { isLoading: isAuthLoading } = useProtectedRoute();
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<BuyVsdFormValues>({
@@ -35,21 +34,6 @@ export default function BuyVsdPage() {
   const vsdAmount = form.watch('vsdAmount');
   const VSD_PRICE_USD = 0.01;
   const usdAmount = (vsdAmount || 0) * VSD_PRICE_USD;
-
-  const onSubmit = async (data: BuyVsdFormValues) => {
-    setIsLoading(true);
-    
-    console.log("Creating Stripe session for:", data);
-
-    await new Promise(resolve => setTimeout(resolve, 1500)); 
-
-    toast({
-      title: "Redirecting to Stripe...",
-      description: "This is a demonstration. In a real application, you would now be redirected to a secure Stripe payment page.",
-    });
-
-    setIsLoading(false);
-  };
   
   if (isAuthLoading) {
      return (
@@ -78,7 +62,7 @@ export default function BuyVsdPage() {
 
       <Card className="max-w-md mx-auto shadow-xl bg-card/80 backdrop-blur-sm">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form>
             <CardHeader>
               <CardTitle className="font-headline text-2xl">Purchase VSD</CardTitle>
               <CardDescription>Enter the amount of VSD you wish to buy.</CardDescription>
@@ -104,22 +88,13 @@ export default function BuyVsdPage() {
                 </span>
               </div>
               <p className="text-xs text-muted-foreground text-center">
-                Transactions are securely processed by Stripe. Your VSD tokens will be sent to your connected wallet after payment confirmation.
+                This is a demonstration. Real transactions via Stripe are coming soon. Your card will not be charged.
               </p>
             </CardContent>
             <CardFooter>
-              <Button type="submit" disabled={isLoading} size="lg" className="w-full font-bold btn-hover-effect">
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="mr-2 h-5 w-5" />
-                    Buy with Stripe
-                  </>
-                )}
+              <Button type="button" disabled={true} size="lg" className="w-full font-bold">
+                <CreditCard className="mr-2 h-5 w-5" />
+                Stripe Integration Coming Soon
               </Button>
             </CardFooter>
           </form>

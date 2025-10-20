@@ -8,8 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Music, ImageIcon, Send, FileText } from 'lucide-react';
 import { AIImage } from '@/components/ai/AIImage';
 import type { Metadata } from 'next';
-import { useCollection, useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
+import { useCollection, useDoc, useFirestore, useMemoFirebase, useUser, addDocumentNonBlocking } from '@/firebase';
+import { collection, doc, runTransaction, increment } from 'firebase/firestore';
 import type { Account } from '@/types/account';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -26,6 +26,8 @@ interface Advertisement {
     reward: number; // For demo purposes, we'll treat 'reward' as the 'price' in VSD.
 }
 
+const MOCK_ARTIST_UID = "artist_placeholder_uid"; // A placeholder UID for the receiving artist
+
 export default function AudioExchangePage() {
   useProtectedRoute();
   const { toast } = useToast();
@@ -34,53 +36,68 @@ export default function AudioExchangePage() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
   const accountRef = useMemoFirebase(() => user && firestore ? doc(firestore, 'accounts', user.uid) : null, [firestore, user]);
-  const { data: account } = useDoc<Account>(accountRef);
+  const { data: account, isLoading: isAccountLoading } = useDoc<Account>(accountRef);
   
-  // Fetch 'advertisements' to use as mock tracks for this demo
   const adsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'advertisements') : null, [firestore]);
   const { data: tracks, isLoading: isLoadingTracks } = useCollection<Advertisement>(adsQuery);
-
-  const MOCK_RECIPIENT_ADDRESS = "0xArtistWallet...789";
 
   const handlePurchase = async (track: Advertisement) => {
     setIsLoading(track.id);
     
-    if (!account || !account.walletAddress) {
-      toast({ variant: "destructive", title: "Wallet Not Found", description: "Your wallet address could not be found. Please ensure your account is set up correctly." });
+    if (!account || !accountRef || !user || !firestore) {
+      toast({ variant: "destructive", title: "Wallet Not Found", description: "Your account could not be found. Please ensure you are logged in." });
       setIsLoading(null);
       return;
+    }
+
+    if (account.vsdBalance < track.reward) {
+        toast({ variant: "destructive", title: "Insufficient VSD Balance", description: "You do not have enough VSD to complete this purchase." });
+        setIsLoading(null);
+        return;
     }
     
     try {
       toast({
         title: "Processing Transaction...",
-        description: `Simulating a VSD transaction for ${track.reward} VSD.`,
+        description: `Transferring ${track.reward} VSD from your wallet.`,
       });
 
-      const transactionPayload = {
-          fromAddress: account.walletAddress,
-          toAddress: MOCK_RECIPIENT_ADDRESS,
-          amount: track.reward, // Using reward as price for demo
-          description: `Purchase of audio license: ${track.title}`,
-      };
-      
-      // Call the secure, local bridge API route
-      const response = await fetch('/api/vsd-bridge', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(transactionPayload),
+      const artistAccountRef = doc(firestore, 'accounts', MOCK_ARTIST_UID);
+
+      await runTransaction(firestore, async (transaction) => {
+        // Debit the buyer's account
+        transaction.update(accountRef, { vsdBalance: increment(-track.reward) });
+        // Credit the artist's account (assuming it exists)
+        transaction.update(artistAccountRef, { vsdBalance: increment(track.reward) });
       });
+
+      const purchaseDescription = `Purchase of audio license: ${track.title}`;
       
-      if (!response.ok) {
-        const errorResult = await response.json();
-        throw new Error(errorResult.error || 'Transaction failed to process.');
-      }
-      
-      const transactionResult: any = await response.json();
+      // Add transaction log for the buyer
+      const buyerTxRef = collection(firestore, 'accounts', user.uid, 'transactions');
+      await addDocumentNonBlocking(buyerTxRef, {
+        type: 'out VSD',
+        amount: track.reward,
+        status: 'Completed',
+        date: new Date().toISOString(),
+        description: purchaseDescription,
+        to: 'Anonymous Artist',
+      });
+
+      // Add transaction log for the artist
+      const artistTxRef = collection(firestore, 'accounts', MOCK_ARTIST_UID, 'transactions');
+       await addDocumentNonBlocking(artistTxRef, {
+        type: 'in VSD',
+        amount: track.reward,
+        status: 'Completed',
+        date: new Date().toISOString(),
+        description: purchaseDescription,
+        from: account.displayName,
+      });
 
       toast({
         title: "Transaction Confirmed",
-        description: `TXN ID: ${transactionResult.transactionId}. Your purchase is complete.`,
+        description: `Your purchase of "${track.title}" is complete.`,
       });
       
     } catch (error: any) {
@@ -95,18 +112,20 @@ export default function AudioExchangePage() {
     }
   };
 
+  const isPageLoading = isLoadingTracks || isAccountLoading;
+
   return (
     <div className="space-y-12 py-8">
       <header className="text-center">
         <Music className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-4" />
         <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-primary">VSD Network in Action</h1>
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-          This page is a live proof-of-concept demonstrating how a partner project, the "Audio Exchange," integrates with the VSD Network. It showcases three core functionalities: using VSD tokens for payments, secure communication with the central API, and leveraging shared AI services for features like dynamic album art.
+          This page is a live proof-of-concept demonstrating how a partner project, the "Audio Exchange," integrates with the VSD Network. It showcases using VSD tokens for payments via live Firestore transactions.
         </p>
       </header>
       
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-        {isLoadingTracks ? (
+        {isPageLoading ? (
           Array.from({ length: 3 }).map((_, i) => (
             <Card key={i} className="flex flex-col shadow-lg bg-card/80 backdrop-blur-sm">
               <Skeleton className="w-full h-[450px]" />
@@ -142,7 +161,7 @@ export default function AudioExchangePage() {
                   </div>
                   <p className="text-xs text-muted-foreground flex items-center gap-2 pt-2">
                       <FileText className="h-4 w-4" />
-                      <span>Purchase includes a simulated on-chain record via the VSD Transaction API.</span>
+                      <span>Purchase creates a real transaction on the VSD Network ledger.</span>
                   </p>
               </CardContent>
               <CardFooter>

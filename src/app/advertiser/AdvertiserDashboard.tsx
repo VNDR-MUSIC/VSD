@@ -42,8 +42,8 @@ import { Logo } from '@/components/icons/Logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { useCollection, useFirestore, useUser, useMemoFirebase, useDoc } from '@/firebase';
+import { collection, query, where, doc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Account } from '@/types/account';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
@@ -88,6 +88,9 @@ export function AdvertiserDashboard() {
   const firestore = useFirestore();
   const { user } = useUser();
 
+  const accountRef = useMemoFirebase(() => user && firestore ? doc(firestore, 'accounts', user.uid) : null, [firestore, user]);
+  const { data: account, isLoading: isAccountLoading } = useDoc<Account>(accountRef);
+
   const advertisementsQuery = useMemoFirebase(
     () => user && firestore ? query(collection(firestore, 'advertisements'), where('advertiserId', '==', user.uid)) : null,
     [firestore, user]
@@ -97,6 +100,7 @@ export function AdvertiserDashboard() {
 
   const totalClicks = advertisements?.reduce((acc, ad) => acc + (ad.clicks || 0), 0) || 0;
   const totalRewardPaid = advertisements?.reduce((acc, ad) => acc + (ad.clicks || 0) * ad.reward, 0) || 0;
+  const isLoading = advertisementsLoading || isAccountLoading;
 
   const chartData = React.useMemo(() => {
     if (!advertisements) return [];
@@ -128,8 +132,8 @@ export function AdvertiserDashboard() {
                         <Wallet className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                         <div className="text-2xl font-bold">1,500,000 <span className="text-base text-yellow-400">VSD Lite</span></div>
-                        <p className="text-xs text-muted-foreground">Mock balance for campaign rewards</p>
+                         {isLoading ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">{(account?.vsdLiteBalance ?? 0).toLocaleString()} <span className="text-base text-yellow-400">VSD Lite</span></div>}
+                        <p className="text-xs text-muted-foreground">Your balance for campaign rewards.</p>
                     </CardContent>
                 </Card>
                 <Card>
