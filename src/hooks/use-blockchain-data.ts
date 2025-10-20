@@ -2,13 +2,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, getDocs, limit, query } from 'firebase/firestore';
+import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 import { siteConfig } from '@/config/site';
+import type { Account } from '@/types/account';
 
 interface BlockchainData {
   totalSupply: string;
   holders: number;
+}
+
+interface Leaderboard {
+    updatedAt: string;
+    topHolders: Account[];
 }
 
 export function useBlockchainData() {
@@ -19,11 +25,9 @@ export function useBlockchainData() {
   const [error, setError] = useState<string | null>(null);
   const firestore = useFirestore();
 
-  const accountsQuery = useMemoFirebase(
-    () => (firestore ? query(collection(firestore, 'accounts'), limit(1)) : null),
-    [firestore]
-  );
-  const { data: accounts, isLoading: accountsLoading } = useCollection(accountsQuery,);
+  const leaderboardDocRef = useMemoFirebase(() => firestore ? doc(firestore, 'leaderboards', 'topHolders') : null, [firestore]);
+  const { data: leaderboard, isLoading: isLeaderboardLoading } = useDoc<Leaderboard>(leaderboardDocRef);
+
 
   useEffect(() => {
     // This is a mock function. In a real app, this would use ethers.js
@@ -35,13 +39,9 @@ export function useBlockchainData() {
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 1200));
 
-        if (!firestore) {
-          throw new Error("Firestore not available");
-        }
+        if (isLeaderboardLoading) return; // Wait for leaderboard data
         
-        // Fetch total number of accounts to simulate "holders"
-        const accountsSnapshot = await getDocs(collection(firestore, 'accounts'));
-        const holderCount = accountsSnapshot.size;
+        const holderCount = leaderboard?.topHolders?.length ?? 0;
 
         setData({
           totalSupply: siteConfig.tokenValues.TOTAL_SUPPLY.toString(),
@@ -57,7 +57,7 @@ export function useBlockchainData() {
     };
 
     fetchOnChainData();
-  }, [firestore]);
+  }, [firestore, leaderboard, isLeaderboardLoading]);
 
   return { data, isLoading, error };
 }

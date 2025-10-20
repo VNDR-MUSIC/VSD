@@ -1,172 +1,24 @@
-/**
- * @fileoverview Firestore Security Rules for VSD Network.
- *
- * Core Philosophy:
- * This ruleset employs a hybrid security model. User data is generally restricted to owner-only access.
- * Certain collections are publicly readable, while administrative functions are protected via
- * explicit admin role checks. Data consistency is enforced where necessary to maintain
- * relational integrity.
- *
- * Data Structure:
- * - /admins/{adminId}: List of admin users.
- * - /accounts/{accountId}: User account data, access controlled by user ID.
- * - /accounts/{accountId}/transactions/{transactionId}: Transaction history for individual accounts.
- * - /tenants/{tenantId}: Tenant information, generally secured.
- * - /transactions/{transactionId}: Global transaction logs, admin-only.
- * - /advertisements/{advertisementId}: Public advertisements with owner-only writes.
- * - /advertiserApplications/{applicationId}: Applications to become advertisers.
- * - /api_logs/{logId}: Logs of API requests.
- * - /leaderboards/topHolders: Public leaderboard data.
- *
- * Key Security Decisions:
- * - User listing is generally disallowed except for leaderboards.
- * - Admin privileges are explicitly managed through the /admins collection.
- * - All writes require authentication.
- *
- * Denormalization for Authorization:
- *  - The `Advertisement` entity requires an `advertiserId` field to track ownership.
- *  - The `AdvertiserApplication` entity requires a `userId` field to track ownership.
- */
 
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
     function isAdmin() {
-       return exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      return request.auth != null && (
+        request.auth.token.email == "support@vndrmusic.com" ||
+        request.auth.token.email == "admin@vndrmusic.com"
+      );
     }
-
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
-    }
-
-    /**
-     * @description Grants admin read and write access.
-     * @path /admins/{adminId}
-     * @allow (get, list) if isAdmin()
-     * @deny (create, update, delete) if !isAdmin()
-     * @principle Enforces role-based access control.
-     */
-    match /admins/{adminId} {
-      allow get: if isAdmin();
-      allow list: if isAdmin();
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
-    }
-
-    /**
-     * @description Allows a user to read their own account data.
-     * @path /accounts/{accountId}
-     * @allow (get) if isOwner(accountId)
-     * @allow (create) if isOwner(accountId)
-     * @allow (update, delete) if isExistingOwner(accountId)
-     * @deny (list) Always deny listing of accounts.
-     * @deny (create) if accountId != request.auth.uid
-     * @principle Enforces document ownership for writes.
-     */
-    match /accounts/{accountId} {
-      allow get: if isOwner(accountId);
-      allow list: if false;
-      allow create: if isOwner(accountId) && request.resource.data.uid == request.auth.uid;
-      allow update: if isExistingOwner(accountId) && request.resource.data.uid == resource.data.uid;
-      allow delete: if isExistingOwner(accountId);
-    }
-
-    /**
-     * @description Allows a user to manage their own transaction history.
-     * @path /accounts/{accountId}/transactions/{transactionId}
-     * @allow (get, list) if isOwner(accountId)
-     * @allow (create) if isOwner(accountId)
-     * @allow (update, delete) if isExistingOwner(accountId)
-     * @principle Restricts access to a user's own data tree.
-     */
-    match /accounts/{accountId}/transactions/{transactionId} {
-      allow get: if isOwner(accountId);
-      allow list: if isOwner(accountId);
-      allow create: if isOwner(accountId);
-      allow update: if isExistingOwner(accountId);
-      allow delete: if isExistingOwner(accountId);
-    }
-
-    /**
-     * @description Restricts access to tenant information for authorized users only (e.g., admins).
-     * @path /tenants/{tenantId}
-     */
-    match /tenants/{tenantId} {
-      allow get: if isAdmin();
-      allow list: if isAdmin();
-      allow create: if isAdmin();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
-    }
-
-    /**
-     * @description Grants admin-only access to global transaction logs.
-     * @path /transactions/{transactionId}
-     */
-    match /transactions/{transactionId} {
-      allow get: if isAdmin();
-      allow list: if isAdmin();
-      allow create: if isAdmin();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
-    }
-
-    /**
-     * @description Allows public reading of advertisements, but restricts writes to the advertiser.
-     * @path /advertisements/{advertisementId}
-     */
-    match /advertisements/{advertisementId} {
+    
+    // Public read-only access for leaderboard
+    match /leaderboards/topHolders {
       allow get: if true;
-      allow list: if true;
-      allow create: if isSignedIn() && request.resource.data.advertiserId == request.auth.uid;
-      allow update: if isSignedIn() && resource.data.advertiserId == request.auth.uid;
-      allow delete: if isSignedIn() && resource.data.advertiserId == request.auth.uid;
+      allow list, write, delete: if isAdmin();
     }
-
-    /**
-     * @description Restricts access to advertiser applications. Admins can read all, users can only create their own.
-     * @path /advertiserApplications/{applicationId}
-     */
-    match /advertiserApplications/{applicationId} {
-      allow get: if isAdmin() || (isSignedIn() && request.resource.data.userId == request.auth.uid);
-      allow list: if isAdmin();
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isAdmin();
-      allow delete: if false;
-    }
-
-    /**
-     * @description Restricts access to API logs. Only admins can read and write logs.
-     * @path /api_logs/{logId}
-     */
-    match /api_logs/{logId} {
-      allow get: if isAdmin();
-      allow list: if isAdmin();
-      allow create: if isAdmin();
-      allow update: if false;
-      allow delete: if false;
-    }
-
-   /**
-    * @description Allows public read access to the leaderboard. Writes are disabled.
-    * @path /leaderboards/topHolders
-    */
-    match /leaderboards/{leaderboardId} {
-        allow get: if true;
-        allow list: if false;
-        allow create: if false;
-        allow update: if false;
-        allow delete: if false;
+    
+    // Admin access for all other collections
+    match /{document=**} {
+      allow read, write, list, delete: if isAdmin();
     }
   }
 }

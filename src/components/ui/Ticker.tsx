@@ -4,10 +4,16 @@
 import { DollarSign, Cpu, ArrowRightLeft, Database, Users, Coins } from 'lucide-react';
 import React from 'react';
 import Link from 'next/link';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 import type { Account } from '@/types/account';
 import { Skeleton } from './skeleton';
+import { useBlockchainData } from '@/hooks/use-blockchain-data';
+
+interface Leaderboard {
+    updatedAt: string;
+    topHolders: Account[];
+}
 
 const TickerItem = ({ Icon, label, value, valueColor = 'text-foreground', isLoading }: { Icon: React.ElementType, label: string, value: string, valueColor?: string, isLoading?: boolean }) => (
     <div className="flex items-center space-x-4 mx-6">
@@ -25,9 +31,11 @@ const TickerItem = ({ Icon, label, value, valueColor = 'text-foreground', isLoad
 
 export function Ticker() {
     const firestore = useFirestore();
-    const accountsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'accounts') : null, [firestore]);
-    const { data: accounts, isLoading: accountsLoading } = useCollection<Account>(accountsQuery);
+    const leaderboardDocRef = useMemoFirebase(() => firestore ? doc(firestore, 'leaderboards', 'topHolders') : null, [firestore]);
+    const { data: leaderboard, isLoading: isLeaderboardLoading } = useDoc<Leaderboard>(leaderboardDocRef);
+    const { data: blockchainData, isLoading: isBlockchainLoading } = useBlockchainData();
 
+    const accounts = leaderboard?.topHolders;
     const circulatingVSD = React.useMemo(() => accounts?.reduce((sum, acc) => sum + (acc.vsdBalance || 0), 0) ?? 0, [accounts]);
     const circulatingVSDLite = React.useMemo(() => accounts?.reduce((sum, acc) => sum + (acc.vsdLiteBalance || 0), 0) ?? 0, [accounts]);
 
@@ -52,7 +60,8 @@ export function Ticker() {
         {
             Icon: Users,
             label: 'Total Holders',
-            value: (accounts?.length ?? 0).toLocaleString(),
+            value: (blockchainData?.holders ?? '--').toLocaleString(),
+            isLoading: isBlockchainLoading,
         },
         {
             Icon: Cpu,
@@ -63,13 +72,14 @@ export function Ticker() {
 
     // Duplicate the items to create a seamless loop
     const doubledItems = [...tickerItems, ...tickerItems];
+    const isLoading = isLeaderboardLoading || isBlockchainLoading;
 
     return (
         <Link href="/token" className="block relative w-full overflow-hidden bg-background/80 backdrop-blur-sm border-y border-border py-2 cursor-pointer group">
             <div className="flex animate-marquee group-hover:pause">
                 {doubledItems.map((item, index) => (
                     <React.Fragment key={index}>
-                        <TickerItem {...item} isLoading={accountsLoading} />
+                        <TickerItem {...item} isLoading={isLoading} />
                         {index < doubledItems.length - 1 && <div className="border-l border-border/50 h-6 self-center" />}
                     </React.Fragment>
                 ))}
