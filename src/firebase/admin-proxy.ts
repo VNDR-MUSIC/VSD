@@ -24,7 +24,7 @@ async function fetchWithAuth(url: string, options: RequestInit = {}, idToken: st
     return response.json();
 }
 
-export function useAdminProxy<T>(collectionName: string) {
+export function useAdminProxy<T>(collectionName: string, options: { reset_balances?: boolean } = {}) {
     const [data, setData] = useState<T[] | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -47,8 +47,19 @@ export function useAdminProxy<T>(collectionName: string) {
             setError(null);
             try {
                 const idToken = await user.getIdToken(true);
-                const result = await fetchWithAuth(`${PROXY_URL}?collection=${collectionName}`, {}, idToken);
-                setData(result.docs);
+                let url = `${PROXY_URL}?collection=${collectionName}`;
+                if (options.reset_balances) {
+                    url += '&reset_balances=true';
+                }
+                const result = await fetchWithAuth(url, {}, idToken);
+
+                // Gracefully handle cases where 'docs' is missing
+                if (result && Array.isArray(result.docs)) {
+                    setData(result.docs);
+                } else {
+                    setData([]); // Set to empty array if docs are not found
+                }
+
             } catch (err: any) {
                 setError(err.message);
                 console.error(`Failed to fetch collection ${collectionName}:`, err);
@@ -58,41 +69,28 @@ export function useAdminProxy<T>(collectionName: string) {
         };
 
         fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [collectionName, user, isUserLoading, auth]); // Depend on user, auth, and loading state
 
     return { data, isLoading, error };
 }
 
-export async function adminProxyCreate(collection: string, data: any) {
-    const { getAuth } = await import('firebase/auth');
-    const auth = getAuth();
-    if (!auth.currentUser) throw new Error("Authentication required for admin operation.");
-    const idToken = await auth.currentUser.getIdToken(true);
 
+export async function adminProxyCreate(idToken: string, collection: string, data: any) {
     return fetchWithAuth(PROXY_URL, {
         method: 'POST',
         body: JSON.stringify({ op: 'create', collection, data }),
     }, idToken);
 }
 
-export async function adminProxyWrite(collection: string, docId: string, data: any) {
-     const { getAuth } = await import('firebase/auth');
-    const auth = getAuth();
-    if (!auth.currentUser) throw new Error("Authentication required for admin operation.");
-    const idToken = await auth.currentUser.getIdToken(true);
-
+export async function adminProxyWrite(idToken: string, collection: string, docId: string, data: any) {
     return fetchWithAuth(PROXY_URL, {
         method: 'POST',
         body: JSON.stringify({ op: 'write', collection, docId, data }),
     }, idToken);
 }
 
-export async function adminProxyDelete(collection: string, docId: string) {
-     const { getAuth } = await import('firebase/auth');
-    const auth = getAuth();
-    if (!auth.currentUser) throw new Error("Authentication required for admin operation.");
-    const idToken = await auth.currentUser.getIdToken(true);
-    
+export async function adminProxyDelete(idToken: string, collection: string, docId: string) {
     return fetchWithAuth(PROXY_URL, {
         method: 'POST',
         body: JSON.stringify({ op: 'delete', collection, docId }),
