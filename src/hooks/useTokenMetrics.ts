@@ -1,18 +1,12 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from "react";
-import { collection } from "firebase/firestore";
-import { useFirestore, useCollection, useUser } from "@/firebase";
+import { useState, useEffect } from "react";
+import { useAdminProxy } from "@/firebase";
 import type { Account } from "@/types/account";
 
 export function useTokenMetrics() {
-  const firestore = useFirestore();
-  const { user, isUserLoading } = useUser();
-  
-  // Only create the collection reference if the user is authenticated
-  const accountsCollection = useMemo(() => (firestore && user) ? collection(firestore, "accounts") : null, [firestore, user]);
-  const { data: accounts, isLoading: isAccountsLoading } = useCollection<Account>(accountsCollection);
+  const { data: accounts, isLoading: isAccountsLoading } = useAdminProxy<Account>('accounts');
   
   const [metrics, setMetrics] = useState({
     totalSupply: 700_000_000,
@@ -25,11 +19,7 @@ export function useTokenMetrics() {
   const [airdropPreview, setAirdropPreview] = useState<{[uid: string]: number}>({});
 
   useEffect(() => {
-    // The main loading state depends on both user auth and account data fetching
-    const isLoading = isUserLoading || isAccountsLoading;
-
-    if (isLoading || !accounts) {
-      // Keep loading state if we're waiting for user or data
+    if (isAccountsLoading || !accounts) {
       setMetrics(prev => ({ ...prev, loading: true }));
       return;
     }
@@ -52,7 +42,7 @@ export function useTokenMetrics() {
       loading: false,
     });
 
-  }, [accounts, isAccountsLoading, isUserLoading, metrics.totalSupply]);
+  }, [accounts, isAccountsLoading, metrics.totalSupply]);
 
   const simulateAirdrop = (distribution: {[uid: string]: number}) => {
     let totalDistributed = 0;
