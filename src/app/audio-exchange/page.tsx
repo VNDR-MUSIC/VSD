@@ -7,17 +7,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Music, ImageIcon, Send, FileText } from 'lucide-react';
 import { AIImage } from '@/components/ai/AIImage';
-import type { Metadata } from 'next';
 import { useCollection, useDoc, useFirestore, useMemoFirebase, useUser, addDocumentNonBlocking } from '@/firebase';
 import { collection, doc, runTransaction, increment } from 'firebase/firestore';
 import type { Account } from '@/types/account';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const metadata: Metadata = {
-  title: 'Audio Exchange Demo | VSD Network',
-  description: 'Demonstration of a partner project using the VSD Network API for token transactions and AI-generated content, showcasing the potential of the ecosystem.',
-};
 
 interface Advertisement {
     id: string;
@@ -26,7 +20,7 @@ interface Advertisement {
     reward: number; // For demo purposes, we'll treat 'reward' as the 'price' in VSD.
 }
 
-const MOCK_ARTIST_UID = "artist_placeholder_uid"; // A placeholder UID for the receiving artist
+const MOCK_ARTIST_UID = "eiMBgcJ3KhWGesl8J78oYFHiquy2"; // VSD Network House Artist Account
 
 export default function AudioExchangePage() {
   useProtectedRoute();
@@ -81,7 +75,7 @@ export default function AudioExchangePage() {
         status: 'Completed',
         date: new Date().toISOString(),
         description: purchaseDescription,
-        to: 'Anonymous Artist',
+        to: 'VSD House Artist',
       });
 
       // Add transaction log for the artist
@@ -152,7 +146,7 @@ export default function AudioExchangePage() {
                    </div>
                  </div>
                 <CardTitle className="font-headline text-xl sm:text-2xl">{track.title}</CardTitle>
-                <CardDescription>By Anonymous Artist</CardDescription>
+                <CardDescription>By VSD House Artist</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow space-y-2">
                   <div className="flex justify-between items-center p-3 rounded-md bg-muted/50">
