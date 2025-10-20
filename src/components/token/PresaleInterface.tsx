@@ -8,13 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Wallet, Gift, ArrowRight } from "lucide-react";
+import { Wallet, Gift, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { AIImage } from "@/components/ai/AIImage";
-import { useWeb3React } from '@web3-react/core';
-import { InjectedConnector } from '@web3-react/injected-connector';
+import { useToast } from '@/hooks/use-toast';
+import { parseEther } from "ethers";
+import { useWeb3 } from '../providers/Web3Provider';
 
-const injected = new InjectedConnector({ supportedChainIds: [1, 3, 4, 5, 42] });
+
+const VSD_PRICE_USD = 0.01; // This would ideally come from a config or API
+const MOCK_ETH_PRICE_USD = 3000; // Mock price for demonstration
 
 const TokenomicsDetail = ({ title, value, description }: { title: string, value: string, description?: string }) => (
   <div>
@@ -25,15 +27,65 @@ const TokenomicsDetail = ({ title, value, description }: { title: string, value:
 );
 
 export const PresaleInterface = () => {
-  const { account, active, activate, deactivate } = useWeb3React();
+  const { account, signer, connectWallet, disconnectWallet, isLoading: isConnecting } = useWeb3();
+  const { toast } = useToast();
+  const [contributionAmount, setContributionAmount] = React.useState('');
+  const [currency, setCurrency] = React.useState('ETH');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  
+  const vsdToReceive = React.useMemo(() => {
+    const amount = parseFloat(contributionAmount);
+    if (isNaN(amount) || amount <= 0) return 0;
+    const usdValue = amount * MOCK_ETH_PRICE_USD; // Assuming ETH for now
+    return usdValue / VSD_PRICE_USD;
+  }, [contributionAmount]);
 
-  const handleConnect = () => {
-    activate(injected);
+
+  const handleContribute = async () => {
+    if (!signer || !account) {
+        toast({ variant: "destructive", title: "Wallet not connected" });
+        return;
+    }
+    
+    const amount = parseFloat(contributionAmount);
+    if (isNaN(amount) || amount <= 0) {
+        toast({ variant: "destructive", title: "Invalid Amount", description: "Please enter a valid contribution amount." });
+        return;
+    }
+
+    setIsSubmitting(true);
+    toast({ title: 'Preparing Transaction...', description: 'Please check your wallet to confirm.' });
+
+    try {
+        const tx = {
+            to: "0xPRESALE_CONTRACT_ADDRESS", // Replace with your actual contract address
+            value: parseEther(contributionAmount),
+        };
+        
+        console.log("Simulating transaction:", tx);
+        
+        // const response = await signer.sendTransaction(tx);
+        // await response.wait();
+        // For simulation purposes:
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        toast({
+            title: "Transaction Submitted (Simulated)",
+            description: `Your contribution of ${contributionAmount} ${currency} has been submitted.`,
+        });
+
+    } catch (error: any) {
+        console.error("Contribution failed:", error);
+        toast({
+            variant: "destructive",
+            title: "Transaction Failed",
+            description: error?.reason || error?.message || "An unknown error occurred.",
+        });
+    } finally {
+        setIsSubmitting(false);
+    }
   };
 
-  const handleDisconnect = () => {
-    deactivate();
-  };
 
   const truncateAddress = (address: string) => {
     return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
@@ -72,9 +124,11 @@ export const PresaleInterface = () => {
                     id="amount"
                     placeholder="e.g., 0.5"
                     className="text-base"
-                    disabled={!active}
+                    disabled={!account}
+                    value={contributionAmount}
+                    onChange={(e) => setContributionAmount(e.target.value)}
                   />
-                  <Tabs defaultValue="ETH" className="w-[100px]">
+                  <Tabs value={currency} onValueChange={setCurrency} className="w-[100px]">
                     <TabsList className="grid w-full grid-cols-2 h-10">
                       <TabsTrigger value="ETH" className="text-xs px-2">ETH</TabsTrigger>
                       <TabsTrigger value="USDT" className="text-xs px-2">USDT</TabsTrigger>
@@ -85,25 +139,40 @@ export const PresaleInterface = () => {
               <div className="p-3 bg-muted/50 rounded-md text-center">
                 <p className="text-sm text-muted-foreground">You will receive (approx.):</p>
                 <p className="text-xl font-bold text-primary">
-                  --- VSD
+                  {vsdToReceive.toLocaleString()} VSD
                 </p>
               </div>
-              {active && account ? (
+              {account ? (
                 <div className="space-y-2">
                     <p className="text-center text-sm text-muted-foreground">Connected: <span className="font-mono text-green-400">{truncateAddress(account)}</span></p>
-                    <Button size="lg" className="w-full font-bold text-lg py-6 btn-hover-effect" disabled>
-                        Contribution Coming Soon
+                    <Button 
+                      size="lg" 
+                      className="w-full font-bold text-lg py-6 btn-hover-effect" 
+                      onClick={handleContribute}
+                      disabled={isSubmitting}
+                    >
+                        {isSubmitting ? (
+                            <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                        ) : (
+                             <Wallet className="mr-2 h-6 w-6" />
+                        )}
+                        {isSubmitting ? 'Processing...' : 'Contribute Now'}
                     </Button>
-                    <Button variant="link" className="w-full" onClick={handleDisconnect}>Disconnect Wallet</Button>
+                    <Button variant="link" className="w-full" onClick={disconnectWallet}>Disconnect Wallet</Button>
                 </div>
               ) : (
                 <Button
                     size="lg"
                     className="w-full font-bold text-lg py-6 btn-hover-effect"
-                    onClick={handleConnect}
+                    onClick={connectWallet}
+                    disabled={isConnecting}
                 >
-                    <Wallet className="mr-2 h-6 w-6" />
-                    Connect Wallet to Participate
+                    {isConnecting ? (
+                        <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                    ) : (
+                        <Wallet className="mr-2 h-6 w-6" />
+                    )}
+                    {isConnecting ? 'Connecting...' : 'Connect Wallet to Participate'}
                 </Button>
               )}
               <p className="text-xs text-muted-foreground text-center">
@@ -119,14 +188,14 @@ export const PresaleInterface = () => {
             <h4 className="text-lg sm:text-xl font-semibold text-center mb-4">How to Participate - Step-by-Step:</h4>
             <ol className="list-decimal list-inside space-y-3 text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto">
                 <li><strong>Prepare Your Wallet:</strong> Ensure you have a compatible Web3 wallet (e.g., MetaMask, Trust Wallet) funded with ETH or USDT.</li>
-                <li><strong>Connect Your Wallet:</strong> Click the "Connect Wallet" button on our official presale platform (the real platform will be linked here when live).</li>
-                <li><strong>Complete KYC/AML:</strong> You will be guided through a quick and secure KYC/AML verification process. This is mandatory for participation.</li>
+                <li><strong>Connect Your Wallet:</strong> Click the "Connect Wallet" button on our official presale platform.</li>
+                <li><strong>Complete KYC/AML:</strong> In a real presale, you would be guided through a secure KYC/AML verification process. This is mandatory for participation.</li>
                 <li><strong>Enter Contribution Amount:</strong> Specify how much ETH or USDT you wish to contribute. The equivalent VSD token amount will be displayed.</li>
                 <li><strong>Confirm Transaction:</strong> Review the details and confirm the transaction in your wallet.</li>
                 <li><strong>Receive VSD Tokens:</strong> Your VSD tokens will be allocated to your wallet according to the presale vesting schedule after the TGE (Token Generation Event).</li>
             </ol>
             <p className="text-center text-muted-foreground text-xs mt-4">
-              Always ensure you are on the official VSD Network website or presale portal. Beware of scams.
+              Always ensure you are on the official VSD Network website. Beware of scams.
             </p>
         </div>
       </CardContent>
