@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useUser, useAuth } from '@/firebase';
 
-const PROXY_URL = process.env.NEXT_PUBLIC_ADMIN_PROXY_URL || 'http://127.0.0.1:5001/vsd-network/us-central1/adminProxy';
+const PROXY_URL = process.env.NEXT_PUBLIC_ADMIN_PROXY_URL || 'http://localhost:5001/vsd-network/us-central1/adminProxy';
 
 async function fetchWithAuth(url: string, options: RequestInit = {}, idToken: string | null) {
     if (!idToken) {
@@ -63,21 +63,36 @@ export function useAdminProxy<T>(collectionName: string) {
     return { data, isLoading, error };
 }
 
-export async function adminProxyCreate(idToken: string, collection: string, data: any) {
+export async function adminProxyCreate(collection: string, data: any) {
+    const { getAuth } = await import('firebase/auth');
+    const auth = getAuth();
+    if (!auth.currentUser) throw new Error("Authentication required for admin operation.");
+    const idToken = await auth.currentUser.getIdToken(true);
+
     return fetchWithAuth(PROXY_URL, {
         method: 'POST',
         body: JSON.stringify({ op: 'create', collection, data }),
     }, idToken);
 }
 
-export async function adminProxyWrite(idToken: string, collection: string, docId: string, data: any) {
+export async function adminProxyWrite(collection: string, docId: string, data: any) {
+     const { getAuth } = await import('firebase/auth');
+    const auth = getAuth();
+    if (!auth.currentUser) throw new Error("Authentication required for admin operation.");
+    const idToken = await auth.currentUser.getIdToken(true);
+
     return fetchWithAuth(PROXY_URL, {
         method: 'POST',
         body: JSON.stringify({ op: 'write', collection, docId, data }),
     }, idToken);
 }
 
-export async function adminProxyDelete(idToken: string, collection: string, docId: string) {
+export async function adminProxyDelete(collection: string, docId: string) {
+     const { getAuth } = await import('firebase/auth');
+    const auth = getAuth();
+    if (!auth.currentUser) throw new Error("Authentication required for admin operation.");
+    const idToken = await auth.currentUser.getIdToken(true);
+    
     return fetchWithAuth(PROXY_URL, {
         method: 'POST',
         body: JSON.stringify({ op: 'delete', collection, docId }),
