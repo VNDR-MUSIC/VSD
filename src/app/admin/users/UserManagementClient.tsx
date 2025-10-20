@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -9,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Check, X, MoreHorizontal, UserCog, Ban } from 'lucide-react';
+import { Check, X, MoreHorizontal, UserCog, Ban, Copy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAdminProxy, adminProxyWrite, useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
@@ -25,6 +26,11 @@ interface AdvertiserApplication {
     companyName: string;
     status: 'pending' | 'approved' | 'rejected';
     submittedAt: string;
+}
+
+interface Admin {
+    id: string;
+    uid: string;
 }
 
 const UserRowSkeleton = () => (
@@ -45,6 +51,7 @@ export function UserManagementClient() {
 
     const { data: accountsFromProxy, isLoading: accountsLoading, error: accountsError } = useAdminProxy<Account>('accounts');
     const { data: applications, isLoading: applicationsLoading, error: applicationsError } = useAdminProxy<AdvertiserApplication>('advertiserApplications');
+    const { data: admins, isLoading: adminsLoading, error: adminsError } = useAdminProxy<Admin>('admins');
     
     // Fetch the admin's own account data to ensure it's in the list
     const adminAccountRef = useMemoFirebase(() => user && firestore ? doc(firestore, 'accounts', user.uid) : null, [user, firestore]);
@@ -61,9 +68,21 @@ export function UserManagementClient() {
         return Array.from(accountsMap.values());
     }, [accountsFromProxy, adminAccount]);
 
+    const allUIDs = React.useMemo(() => {
+        const uids = new Set<string>();
+        allAccounts.forEach(acc => uids.add(acc.uid));
+        admins?.forEach(admin => uids.add(admin.id));
+        return Array.from(uids);
+    }, [allAccounts, admins]);
+
     const pendingApplications = React.useMemo(() => {
         return applications?.filter(app => app.status === 'pending') || [];
     }, [applications]);
+
+    const handleCopyUid = (uid: string) => {
+        navigator.clipboard.writeText(uid);
+        toast({ title: 'UID Copied', description: uid });
+    };
     
     const handleApplication = async (application: AdvertiserApplication, newStatus: 'approved' | 'rejected') => {
         if (!user) return;
@@ -248,6 +267,31 @@ export function UserManagementClient() {
                    </Table>
                 </CardContent>
             </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>All Unique User IDs (UIDs)</CardTitle>
+                    <CardDescription>A complete list of all unique UIDs from both accounts and admin collections.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {(accountsLoading || adminsLoading) && <p>Loading UIDs...</p>}
+                    {(accountsError || adminsError) && <p className="text-destructive">Error loading UIDs: {accountsError || adminsError}</p>}
+                    {!accountsLoading && !adminsLoading && (
+                        <div className="max-h-64 overflow-y-auto space-y-2">
+                            {allUIDs.map(uid => (
+                                <div key={uid} className="flex items-center justify-between p-2 bg-muted/50 rounded-md">
+                                    <span className="font-mono text-xs">{uid}</span>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleCopyUid(uid)}>
+                                        <Copy className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
         </>
     );
 }
+
+    
