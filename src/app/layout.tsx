@@ -32,8 +32,23 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
   const shouldReduceMotion = useReducedMotion();
-  const isSpecialLayout = pathname.startsWith('/admin') || pathname.startsWith('/advertiser') || pathname.startsWith('/admin-stable');
+
+  const isSpecialLayout = pathname.startsWith('/admin') || pathname.startsWith('/advertiser');
+  const isPublicPage = [
+    '/',
+    '/login',
+    '/token',
+    '/buy',
+    '/ecosystem',
+    '/developers',
+    '/for-businesses',
+    '/symbi',
+    '/network-status',
+    '/compliance'
+  ].some(path => pathname === path || (path !== '/' && pathname.startsWith(path)));
   
+  const showTicker = !isSpecialLayout && !isPublicPage;
+
   const pageVariants = {
     initial: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
     animate: { opacity: 1, y: 0 },
@@ -46,7 +61,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={cn("dark", fontHeadline.variable, fontBody.variable)}>
+    <html lang="en" className={cn("dark", fontHeadline.variable, fontBody.variable)} suppressHydrationWarning>
       <head>
          <link rel="icon" href="https://indiemedia.llc/vsdlogo.jpg" />
          <meta name="description" content={siteConfig.description} />
@@ -60,12 +75,12 @@ export default function RootLayout({
         <meta name="twitter:description" content={siteConfig.description} />
         <meta name="twitter:image" content="https://indiemedia.llc/vsd-og-image.jpg" />
       </head>
-      <body className="font-body antialiased min-h-screen flex flex-col relative bg-background">
+      <body className="font-body antialiased min-h-screen flex flex-col relative bg-background" suppressHydrationWarning>
         <FirebaseClientProvider>
           {!isSpecialLayout && <BackgroundVideo />}
           <div className={cn("relative z-0 flex flex-col min-h-screen w-full")}>
             <Header />
-            {!isSpecialLayout && <div className="sticky top-16 z-40"><Ticker /></div>}
+            {showTicker && <div className="sticky top-16 z-40"><Ticker /></div>}
             <AnimatePresence mode="wait">
               <motion.main
                 key={pathname}
