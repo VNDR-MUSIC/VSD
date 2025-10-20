@@ -32,12 +32,8 @@ const DataCard = ({ icon: Icon, title, value, isLoading }: { icon: React.Element
 export function LiveTokenData() {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
-  const firestore = useFirestore();
-
+  
   const { data: blockchainData, isLoading: isLoadingBlockchain, error: blockchainError } = useBlockchainData();
-  const { data: transactions, isLoading: isLoadingTransactions } = useCollection(
-    useMemoFirebase(() => firestore ? collection(firestore, 'transactions') : null, [firestore])
-  );
 
   const handleCopy = () => {
     navigator.clipboard.writeText(tokenData.contractAddress);
@@ -65,18 +61,12 @@ export function LiveTokenData() {
                 <p className="text-sm">{blockchainError}</p>
             </div>
           )}
-          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border/50">
+          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border/50">
             <DataCard 
               icon={Database} 
               title="Total Supply" 
               value={blockchainData.totalSupply ? Number(blockchainData.totalSupply).toLocaleString() : '--'} 
               isLoading={isLoadingBlockchain} 
-            />
-            <DataCard 
-              icon={ArrowRightLeft} 
-              title="Total Transfers" 
-              value={transactions?.length ?? '--'}
-              isLoading={isLoadingTransactions}
             />
             <DataCard 
               icon={Users} 
