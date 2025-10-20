@@ -39,6 +39,7 @@ const NavLink = ({ href, children, currentPathname }: { href: string, children: 
             "text-sm font-medium transition-colors hover:text-primary",
             currentPathname === href ? "text-primary" : "text-foreground/70"
         )}
+        suppressHydrationWarning
     >
         {children}
     </Link>
@@ -61,7 +62,7 @@ const NavDropdown = ({ item, currentPathname }: { item: NavItem, currentPathname
             <DropdownMenuSeparator />
             {item.subItems?.map(subItem => (
                 <DropdownMenuItem key={subItem.href} asChild>
-                    <Link href={subItem.href}>{subItem.title}</Link>
+                    <Link href={subItem.href} suppressHydrationWarning>{subItem.title}</Link>
                 </DropdownMenuItem>
             ))}
         </DropdownMenuContent>
@@ -189,9 +190,9 @@ export function Header() {
   const headerClasses = "sticky top-0 z-50 w-full animated-gradient-background mask-gradient-to-bottom";
 
   return (
-    <header className={cn(headerClasses)}>
+    <header className={cn(headerClasses)} suppressHydrationWarning>
       <div className="container flex h-16 max-w-screen-2xl items-center">
-        <Link href="/" className="flex items-center space-x-2 mr-6">
+        <Link href="/" className="flex items-center space-x-2 mr-6" suppressHydrationWarning>
             <Logo size={36} />
             <span className="font-bold sm:inline-block">VSD Network</span>
         </Link>

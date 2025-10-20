@@ -8,34 +8,34 @@ import { cn } from '@/lib/utils';
 
 export function Footer() {
   return (
-    <footer className={cn("border-t border-border/40 animated-gradient-background")}>
+    <footer className={cn("border-t border-border/40 animated-gradient-background")} suppressHydrationWarning>
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
           {/* Main Links */}
           <div className="flex flex-col gap-2 p-4 rounded-lg col-span-2 sm:col-span-1">
             <h4 className="font-bold mb-2">Platform</h4>
-            <Link href="/token" className="text-muted-foreground hover:text-primary transition-colors">VSD Token</Link>
-            <Link href="/ecosystem" className="text-muted-foreground hover:text-primary transition-colors">Ecosystem</Link>
-            <Link href="/buy" className="text-muted-foreground hover:text-primary transition-colors">Buy VSD</Link>
-            <Link href="/earn" className="text-muted-foreground hover:text-primary transition-colors">Earn VSD</Link>
+            <Link href="/token" className="text-muted-foreground hover:text-primary transition-colors" suppressHydrationWarning>VSD Token</Link>
+            <Link href="/ecosystem" className="text-muted-foreground hover:text-primary transition-colors" suppressHydrationWarning>Ecosystem</Link>
+            <Link href="/buy" className="text-muted-foreground hover:text-primary transition-colors" suppressHydrationWarning>Buy VSD</Link>
+            <Link href="/earn" className="text-muted-foreground hover:text-primary transition-colors" suppressHydrationWarning>Earn VSD</Link>
           </div>
 
           {/* Developer Links */}
           <div className="flex flex-col gap-2 p-4 rounded-lg">
             <h4 className="font-bold mb-2">Developers</h4>
-            <Link href="/developers/documentation" className="text-muted-foreground hover:text-primary transition-colors">Whitepaper</Link>
-            <Link href="/developers/api-reference" className="text-muted-foreground hover:text-primary transition-colors">API Reference</Link>
-            <Link href="/developers/integration" className="text-muted-foreground hover:text-primary transition-colors">Integration Guide</Link>
-            <Link href="/developers" className="text-muted-foreground hover:text-primary transition-colors">Developer Portal</Link>
+            <Link href="/developers/documentation" className="text-muted-foreground hover:text-primary transition-colors" suppressHydrationWarning>Whitepaper</Link>
+            <Link href="/developers/api-reference" className="text-muted-foreground hover:text-primary transition-colors" suppressHydrationWarning>API Reference</Link>
+            <Link href="/developers/integration" className="text-muted-foreground hover:text-primary transition-colors" suppressHydrationWarning>Integration Guide</Link>
+            <Link href="/developers" className="text-muted-foreground hover:text-primary transition-colors" suppressHydrationWarning>Developer Portal</Link>
           </div>
 
           {/* Company Links */}
           <div className="flex flex-col gap-2 p-4 rounded-lg">
             <h4 className="font-bold mb-2">Company</h4>
-            <Link href="/network-status" className="text-muted-foreground hover:text-primary transition-colors">Network Status</Link>
-            <Link href="/for-businesses" className="text-muted-foreground hover:text-primary transition-colors">For Businesses</Link>
-            <Link href="/compliance" className="text-muted-foreground hover:text-primary transition-colors">Compliance</Link>
-            <Link href="/symbi" className="text-muted-foreground hover:text-primary transition-colors">Knowledge Base</Link>
+            <Link href="/network-status" className="text-muted-foreground hover:text-primary transition-colors" suppressHydrationWarning>Network Status</Link>
+            <Link href="/for-businesses" className="text-muted-foreground hover:text-primary transition-colors" suppressHydrationWarning>For Businesses</Link>
+            <Link href="/compliance" className="text-muted-foreground hover:text-primary transition-colors" suppressHydrationWarning>Compliance</Link>
+            <Link href="/symbi" className="text-muted-foreground hover:text-primary transition-colors" suppressHydrationWarning>Knowledge Base</Link>
           </div>
 
           {/* VSD Network Info */}
@@ -54,7 +54,7 @@ export function Footer() {
             <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} VSD Network. All rights reserved.</p>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <span>An</span>
-                <Link href="https://indiemedia.llc" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition-opacity">
+                <Link href="https://indiemedia.llc" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition-opacity" suppressHydrationWarning>
                     <Image
                         src="https://i.ibb.co/3wpP3F4/logo-full-256x.png"
                         alt="Independent Media Group Logo"

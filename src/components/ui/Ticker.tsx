@@ -75,7 +75,7 @@ export function Ticker() {
     const isLoading = isLeaderboardLoading || isBlockchainLoading;
 
     return (
-        <Link href="/token" className="block relative w-full overflow-hidden bg-background/80 backdrop-blur-sm border-y border-border py-2 cursor-pointer group">
+        <Link href="/token" className="block relative w-full overflow-hidden bg-background/80 backdrop-blur-sm border-y border-border py-2 cursor-pointer group" suppressHydrationWarning>
             <div className="flex animate-marquee group-hover:pause">
                 {doubledItems.map((item, index) => (
                     <React.Fragment key={index}>
