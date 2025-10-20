@@ -26,38 +26,36 @@ export function useBlockchainData() {
   const firestore = useFirestore();
 
   const leaderboardDocRef = useMemoFirebase(() => firestore ? doc(firestore, 'leaderboards', 'topHolders') : null, [firestore]);
-  const { data: leaderboard, isLoading: isLeaderboardLoading } = useDoc<Leaderboard>(leaderboardDocRef);
+  const { data: leaderboard, isLoading: isLeaderboardLoading, error: leaderboardError } = useDoc<Leaderboard>(leaderboardDocRef);
 
 
   useEffect(() => {
-    // This is a mock function. In a real app, this would use ethers.js
-    // or a similar library to call the ERC20 contract.
-    const fetchOnChainData = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 1200));
+    setIsLoading(true);
+    setError(null);
+    
+    if (isLeaderboardLoading) {
+      // Still waiting for leaderboard data, do nothing yet.
+      return;
+    }
 
-        if (isLeaderboardLoading) return; // Wait for leaderboard data
-        
-        const holderCount = leaderboard?.topHolders?.length ?? 0;
+    if (leaderboardError) {
+      console.error("useBlockchainData Error:", leaderboardError);
+      setError("Could not load on-chain data. The network may be busy.");
+      setIsLoading(false);
+      return;
+    }
 
-        setData({
-          totalSupply: siteConfig.tokenValues.TOTAL_SUPPLY.toString(),
-          holders: holderCount,
-        });
+    // Once leaderboard data is available (or not), we can proceed.
+    const holderCount = leaderboard?.topHolders?.length ?? 0;
 
-      } catch (e: any) {
-        console.error("useBlockchainData Error:", e);
-        setError("Could not load on-chain data. The network may be busy.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    setData({
+      totalSupply: siteConfig.tokenValues.TOTAL_SUPPLY.toString(),
+      holders: holderCount,
+    });
+    
+    setIsLoading(false);
 
-    fetchOnChainData();
-  }, [firestore, leaderboard, isLeaderboardLoading]);
+  }, [firestore, leaderboard, isLeaderboardLoading, leaderboardError]);
 
   return { data, isLoading, error };
 }

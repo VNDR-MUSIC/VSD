@@ -5,11 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Bell, User, Wallet } from "lucide-react";
+import { Bell, User, Wallet, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useProtectedRoute } from "@/hooks/use-protected-route";
-import { useUser } from "@/firebase";
+import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { Skeleton } from "@/components/ui/skeleton";
+import { doc } from "firebase/firestore";
+import type { Account } from "@/types/account";
 
 const notificationSettings = [
     { id: 'balanceChanges', label: 'Balance Changes', description: 'Get notified about token transfers and staking rewards.' },
@@ -20,8 +22,14 @@ const notificationSettings = [
 
 export default function SettingsPage() {
     const { toast } = useToast();
-    const { isLoading } = useProtectedRoute();
+    const { isLoading: isAuthLoading } = useProtectedRoute();
     const { user } = useUser();
+    const firestore = useFirestore();
+
+    const accountRef = useMemoFirebase(() => user && firestore ? doc(firestore, 'accounts', user.uid) : null, [firestore, user]);
+    const { data: account, isLoading: isAccountLoading } = useDoc<Account>(accountRef);
+
+    const isLoading = isAuthLoading || isAccountLoading;
 
     const handleSaveChanges = () => {
         // In a real app, you would save the settings to a backend.
@@ -29,6 +37,12 @@ export default function SettingsPage() {
             title: "Settings Saved",
             description: "Your notification preferences have been updated.",
         });
+    };
+
+    const handleCopyAddress = () => {
+        if (!account?.walletAddress) return;
+        navigator.clipboard.writeText(account.walletAddress);
+        toast({ title: 'Wallet Address Copied' });
     };
 
     if (isLoading || !user) {
@@ -69,10 +83,16 @@ export default function SettingsPage() {
                         <CardDescription>{user.email}</CardDescription>
                     </CardHeader>
                     <CardContent className="text-sm">
-                         <div className="flex items-center gap-3">
-                            <Wallet className="h-4 w-4 text-muted-foreground" />
-                            {/* MOCK WALLET */}
-                            <span className="font-mono text-xs truncate">0x...ConnectedWallet</span>
+                         <div className="flex items-center gap-2">
+                            <Wallet className="h-4 w-4 text-muted-foreground shrink-0" />
+                            {isAccountLoading ? <Skeleton className="h-4 w-full" /> : (
+                                <div className="flex items-center gap-1 w-full">
+                                    <span className="font-mono text-xs truncate">{account?.walletAddress}</span>
+                                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCopyAddress}>
+                                        <Copy className="h-3 w-3" />
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
