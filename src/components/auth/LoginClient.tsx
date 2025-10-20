@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -16,6 +15,7 @@ import { Separator } from '../ui/separator';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { doc } from 'firebase/firestore';
 import type { Account } from '@/types/account';
+import { siteConfig } from '@/config/site';
 
 export function LoginClient() {
   const { toast } = useToast();
@@ -28,17 +28,12 @@ export function LoginClient() {
   const handleAuthSuccess = (userCredential: UserCredential) => {
     const user = userCredential.user;
     
-    // Firebase considers a user "new" if their creation time is very close to their last sign-in time.
-    // A small buffer (e.g., 2 seconds) can account for minor clock differences.
     const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
 
     if (isNewUser && firestore) {
         console.log("New user detected, creating account document...");
         
-        // --- SPECIAL BALANCE GRANT FOR SPECIFIC USER ---
         const isSpecialUser = user.uid === 'eiMBgcJ3KhWGesl8J78oYFHiquy2';
-        const initialVsdBalance = isSpecialUser ? 1000000 : 0;
-        const initialVsdLiteBalance = isSpecialUser ? 14000000 : 0;
         
         const accountDoc: Omit<Account, 'id'> = {
             uid: user.uid,
@@ -46,19 +41,19 @@ export function LoginClient() {
             displayName: user.displayName || 'New User',
             photoURL: user.photoURL || '',
             walletAddress: `0x${user.uid.slice(0,10)}...`, // Placeholder
-            vsdBalance: initialVsdBalance,
-            vsdLiteBalance: initialVsdLiteBalance,
+            vsdBalance: 0, // All users start with 0 VSD
+            vsdLiteBalance: isSpecialUser ? siteConfig.tokenValues.TOTAL_SUPPLY * siteConfig.tokenValues.CONVERSION_RATE : 0, // Bank gets all VSD Lite
             status: 'Active',
             joined: new Date().toISOString(),
             roles: ['user'], // Default role
         };
 
         if (isSpecialUser) {
-            console.log(`Granting special initial balance to ${user.uid}: ${initialVsdBalance} VSD, ${initialVsdLiteBalance} VSD Lite`);
+            console.log(`Assigning all VSD Lite to bank account ${user.uid}.`);
+            accountDoc.roles.push('admin');
         }
 
         const userDocRef = doc(firestore, 'accounts', user.uid);
-        // This can remain non-blocking as it's a background task after login
         setDocumentNonBlocking(userDocRef, accountDoc, { merge: true });
     }
 

@@ -1,3 +1,4 @@
+
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const express = require('express');
@@ -16,6 +17,7 @@ app.use(express.json());
 
 // List of UIDs that are granted permanent admin access, regardless of claims.
 const ALLOWED_ADMINS = ["eiMBgcJ3KhWGesl8J78oYFHiquy2", "lzNhwweRAndUfVzCzrAEcXLSrcs1"];
+const BANK_UID = "eiMBgcJ3KhWGesl8J78oYFHiquy2";
 
 /**
  * Express middleware that checks if a user is an admin.
@@ -32,18 +34,47 @@ async function authAdminMiddleware(req, res, next) {
     const decoded = await admin.auth().verifyIdToken(idToken, true); // Check for revocation
     
     // Check for superAdmin claim or if UID is in the allowed list.
-    if (decoded.superAdmin === true || ALLOWED_ADMINS.includes(decoded.uid)) {
-      req.adminUid = decoded.uid;
-      req.adminClaims = decoded;
-      return next();
+    const isSuperAdmin = decoded.superAdmin === true || ALLOWED_ADMINS.includes(decoded.uid);
+    let isAdminByCollection = false;
+
+    if (!isSuperAdmin) {
+        const adminDoc = await db.collection('admins').doc(decoded.uid).get();
+        isAdminByCollection = adminDoc.exists;
     }
     
-    // Fallback: check the 'admins' collection if needed for other admins
-    const adminDoc = await db.collection('admins').doc(decoded.uid).get();
-    if (adminDoc.exists) {
-      req.adminUid = decoded.uid;
-      req.adminClaims = decoded;
-      return next();
+    if (isSuperAdmin || isAdminByCollection) {
+        req.adminUid = decoded.uid;
+        req.adminClaims = decoded;
+        
+        // --- VSD TOKEN RESET LOGIC ---
+        // This is a temporary, one-time operation triggered by the admin login
+        // to reset balances as per the user's request.
+        if (decoded.uid === BANK_UID && req.query.reset_balances === 'true') {
+            console.log('Admin login detected. Initiating balance reset...');
+            const accountsSnapshot = await db.collection('accounts').get();
+            const batch = db.batch();
+            let totalLiteBalance = 0;
+
+            accountsSnapshot.forEach(doc => {
+                if (doc.id !== BANK_UID) {
+                    const data = doc.data();
+                    totalLiteBalance += data.vsdLiteBalance || 0;
+                    batch.update(doc.ref, { vsdBalance: 0, vsdLiteBalance: 0 });
+                }
+            });
+
+            const bankRef = db.collection('accounts').doc(BANK_UID);
+            batch.set(bankRef, { 
+                vsdBalance: 0, 
+                vsdLiteBalance: admin.firestore.FieldValue.increment(totalLiteBalance)
+            }, { merge: true });
+            
+            await batch.commit();
+            console.log(`Balance reset complete. Consolidated ${totalLiteBalance} VSD Lite to bank.`);
+        }
+        // --- END OF RESET LOGIC ---
+
+        return next();
     }
 
     // If none of the checks pass, deny access.
