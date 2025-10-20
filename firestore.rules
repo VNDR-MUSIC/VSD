@@ -1,24 +1,64 @@
-
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-
+    
+    // --- Helper Functions ---
     function isAdmin() {
+      // Admins are identified by specific email addresses.
       return request.auth != null && (
-        request.auth.token.email == "support@vndrmusic.com" ||
+        request.auth.token.email == "support@vndrmusic.com" || 
         request.auth.token.email == "admin@vndrmusic.com"
       );
     }
-    
-    // Public read-only access for leaderboard
-    match /leaderboards/topHolders {
-      allow get: if true;
-      allow list, write, delete: if isAdmin();
+
+    function isOwner(accountId) {
+      // Check if the requesting user's ID matches the account ID in the path.
+      return request.auth != null && request.auth.uid == accountId;
     }
-    
-    // Admin access for all other collections
-    match /{document=**} {
-      allow read, write, list, delete: if isAdmin();
+
+    // --- Admin-Only Collections ---
+    // Admins have full read/write access to these collections.
+    match /tenants/{tenantId} {
+      allow read, write: if isAdmin();
+    }
+    match /vsd_api_logs/{logId} {
+      allow read, write: if isAdmin();
+    }
+     match /advertiserApplications/{appId} {
+      allow read, write: if isAdmin();
+    }
+    match /transactions/{transactionId} {
+      allow read, write: if isAdmin();
+    }
+
+    // --- Publicly Readable Collections ---
+    // Anyone can read these, but only admins can write.
+    match /leaderboards/{docId} {
+        allow get: if true;
+        allow list, write: if isAdmin();
+    }
+    match /advertisements/{adId} {
+        allow get, list: if true;
+        allow write: if isAdmin();
+    }
+
+    // --- User-Specific Data ---
+    match /accounts/{accountId} {
+      // Users can read their own account data.
+      // Writes are restricted to prevent self-modification of balances.
+      allow get: if isOwner(accountId);
+      
+      // Admins can read and write to any user's account document.
+      allow read, write: if isAdmin();
+
+      // --- User Transactions Subcollection ---
+      // A user can only access transactions within their own subcollection.
+      match /transactions/{transactionId} {
+        allow read, create: if isOwner(accountId);
+        // Admins can also read/write transactions for any user.
+        allow read, write: if isAdmin();
+      }
     }
   }
 }
