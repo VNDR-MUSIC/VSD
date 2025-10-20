@@ -12,6 +12,7 @@ import { BackgroundVideo } from '@/components/layout/BackgroundVideo';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { Web3Provider } from '@/components/providers/Web3Provider';
 
 const fontHeadline = Orbitron({
   subsets: ['latin'],
@@ -61,29 +62,31 @@ export default function RootLayout({
         <meta name="twitter:image" content="https://indiemedia.llc/vsd-og-image.jpg" />
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col relative bg-background" suppressHydrationWarning>
-        <FirebaseClientProvider>
-          {!isSpecialLayout && <BackgroundVideo />}
-          <div className={cn("relative z-0 flex flex-col min-h-screen w-full")}>
-            <Header />
-            <AnimatePresence mode="wait">
-              <motion.main
-                key={pathname}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={pageVariants}
-                transition={pageTransition}
-                className="flex-grow w-full max-w-screen-2xl mx-auto"
-              >
-                <div className="h-full my-4 p-4 sm:p-6 lg:p-8">
-                  {children}
-                </div>
-              </motion.main>
-            </AnimatePresence>
-            {!isSpecialLayout && <Footer />}
-            <Toaster />
-          </div>
-        </FirebaseClientProvider>
+        <Web3Provider>
+          <FirebaseClientProvider>
+            {!isSpecialLayout && <BackgroundVideo />}
+            <div className={cn("relative z-0 flex flex-col min-h-screen w-full")}>
+              <Header />
+              <AnimatePresence mode="wait">
+                <motion.main
+                  key={pathname}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={pageVariants}
+                  transition={pageTransition}
+                  className="flex-grow w-full max-w-screen-2xl mx-auto"
+                >
+                  <div className="h-full my-4 p-4 sm:p-6 lg:p-8">
+                    {children}
+                  </div>
+                </motion.main>
+              </AnimatePresence>
+              {!isSpecialLayout && <Footer />}
+              <Toaster />
+            </div>
+          </FirebaseClientProvider>
+        </Web3Provider>
       </body>
     </html>
   );

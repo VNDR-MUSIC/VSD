@@ -11,6 +11,10 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Wallet, Gift, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { AIImage } from "@/components/ai/AIImage";
+import { useWeb3React } from '@web3-react/core';
+import { InjectedConnector } from '@web3-react/injected-connector';
+
+const injected = new InjectedConnector({ supportedChainIds: [1, 3, 4, 5, 42] });
 
 const TokenomicsDetail = ({ title, value, description }: { title: string, value: string, description?: string }) => (
   <div>
@@ -21,6 +25,20 @@ const TokenomicsDetail = ({ title, value, description }: { title: string, value:
 );
 
 export const PresaleInterface = () => {
+  const { account, active, activate, deactivate } = useWeb3React();
+
+  const handleConnect = () => {
+    activate(injected);
+  };
+
+  const handleDisconnect = () => {
+    deactivate();
+  };
+
+  const truncateAddress = (address: string) => {
+    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+  }
+
   return (
     <Card className="shadow-xl bg-gradient-to-br from-primary/20 via-card/90 to-secondary/20 backdrop-blur-xl animated-border">
       <CardHeader className="items-center">
@@ -54,7 +72,7 @@ export const PresaleInterface = () => {
                     id="amount"
                     placeholder="e.g., 0.5"
                     className="text-base"
-                    disabled
+                    disabled={!active}
                   />
                   <Tabs defaultValue="ETH" className="w-[100px]">
                     <TabsList className="grid w-full grid-cols-2 h-10">
@@ -70,13 +88,24 @@ export const PresaleInterface = () => {
                   --- VSD
                 </p>
               </div>
-              <Button
-                size="lg"
-                className="w-full font-bold text-lg py-6 btn-hover-effect"
-                disabled
-              >
-                Connect Wallet to Participate
-              </Button>
+              {active && account ? (
+                <div className="space-y-2">
+                    <p className="text-center text-sm text-muted-foreground">Connected: <span className="font-mono text-green-400">{truncateAddress(account)}</span></p>
+                    <Button size="lg" className="w-full font-bold text-lg py-6 btn-hover-effect" disabled>
+                        Contribution Coming Soon
+                    </Button>
+                    <Button variant="link" className="w-full" onClick={handleDisconnect}>Disconnect Wallet</Button>
+                </div>
+              ) : (
+                <Button
+                    size="lg"
+                    className="w-full font-bold text-lg py-6 btn-hover-effect"
+                    onClick={handleConnect}
+                >
+                    <Wallet className="mr-2 h-6 w-6" />
+                    Connect Wallet to Participate
+                </Button>
+              )}
               <p className="text-xs text-muted-foreground text-center">
                 By contributing, you agree to the <Link href="/developers/documentation#legal" className="underline hover:text-primary">Terms & Conditions</Link> and acknowledge the risks.
               </p>
