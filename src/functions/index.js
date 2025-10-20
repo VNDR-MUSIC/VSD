@@ -55,10 +55,12 @@ async function authAdminMiddleware(req, res, next) {
             });
 
             const bankRef = db.collection('accounts').doc(BANK_UID);
-            batch.update(bankRef, { 
+            
+            // FIX: Use .set() with merge:true to prevent failure if doc doesn't exist.
+            batch.set(bankRef, { 
                 vsdBalance: 0, 
                 vsdLiteBalance: totalLiteBalance
-            });
+            }, { merge: true });
             
             await batch.commit();
             await resetFlagRef.set({ completed: true, timestamp: admin.firestore.FieldValue.serverTimestamp() });
