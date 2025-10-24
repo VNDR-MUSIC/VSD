@@ -136,7 +136,7 @@ export default function AudioExchangePage() {
                       width={600}
                       height={400}
                       className="rounded-t-lg object-cover"
-                      hint={`music album cover for a song called ${track.title}`}
+                      hint={`music album cover ${track.title}`}
                       layout="fill"
                       objectFit="cover"
                    />

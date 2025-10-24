@@ -7,6 +7,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { BrainCircuit, Library, Workflow, Cpu, GitBranch, HelpCircle, Layers, FileJson, Zap, Users, PackagePlus, DollarSign, Milestone, ListChecks, Aperture, ShieldCheck, HandCoins, FileSignature, TrendingUp } from "lucide-react";
 import Link from 'next/link';
 import { AIImage } from '@/components/ai/AIImage';
+import imageData from '@/app/lib/placeholder-images.json';
 
 export const metadata: Metadata = {
   title: 'VSD Token Whitepaper & Documentation',
@@ -37,6 +38,8 @@ const CodeBlock = ({ children }: { children: React.ReactNode }) => (
 );
 
 export default function WhitepaperDocumentationPage() {
+  const { vision, architecture, tokenomics } = imageData.documentation;
+
   return (
     <div className="space-y-12 sm:space-y-16 py-8">
       <header className="text-center">
@@ -54,12 +57,12 @@ export default function WhitepaperDocumentationPage() {
         <p>The digital landscape is rapidly converging around Artificial Intelligence (AI) and decentralized technologies. The VSD Network stands at this intersection as the official financial infrastructure for the **Independent Media Group (IMG)**. Our mission is to democratize access to previously gate-kept services and tools by creating a secure, transparent, and user-centric ecosystem—the IMG Banking System. By leveraging VSD utility tokens and a community-driven ad-revenue model, we empower creators, developers, and platform participants to transact, collaborate, and innovate without traditional barriers.</p>
         <p>This whitepaper details the comprehensive utility of the VSD token, the tokenomics that sustain the ecosystem, our strategic roadmap, and the technical architecture that makes it all possible. We invite you to join us in building the future of the decentralized creative economy.</p>
         <AIImage
-          initialSrc="https://picsum.photos/seed/vision/800/400"
-          alt="Abstract image of AI and music colliding"
+          initialSrc={vision.src}
+          alt={vision.alt}
           width={800}
           height={400}
           className="rounded-md my-6 shadow-md mx-auto max-w-full h-auto" 
-          hint="abstract creative economy"
+          hint={vision.hint}
         />
       </SectionCard>
 
@@ -83,12 +86,12 @@ export default function WhitepaperDocumentationPage() {
         <p>The VSD tokenomics are structured to ensure a balanced distribution, incentivize long-term platform participation, fund ongoing development, and foster a vibrant community. For full details including presale stages, pricing, and accepted currencies, please visit the <Link href="/token#tokenomics">VSD Token Page</Link>.</p>
         <h4 className="text-xl sm:text-2xl mt-6 mb-2">Token Allocation:</h4>
         <AIImage
-            initialSrc="https://picsum.photos/seed/tokenomics-chart/700/450"
-            alt="VSD Token Allocation Pie Chart with music-themed icons"
+            initialSrc={tokenomics.src}
+            alt={tokenomics.alt}
             width={700}
             height={450}
             className="rounded-md my-4 shadow-md mx-auto"
-            hint="tokenomics chart dark"
+            hint={tokenomics.hint}
         />
         <ul className="list-disc pl-5 space-y-1">
             <li><strong>Public Presale:</strong> 20% (200,000,000 VSD)</li>
@@ -107,12 +110,12 @@ export default function WhitepaperDocumentationPage() {
       <SectionCard icon={Workflow} title="4. VSD Network Architecture" description="The technical foundation of the IMG Banking System." id="architecture">
         <p>The VSD Network is a multi-layered system designed for security, scalability, and seamless integration between on-chain and off-chain data. This project's backend is the central ledger and engine for the entire ecosystem.</p>
         <AIImage
-          initialSrc="https://picsum.photos/seed/architecture/800/450"
-          alt="VSD Network IMG Banking Architecture as a sound mixing board"
+          initialSrc={architecture.src}
+          alt={architecture.alt}
           width={800}
           height={450}
           className="rounded-md my-6 shadow-md mx-auto max-w-full h-auto" 
-          hint="abstract network architecture"
+          hint={architecture.hint}
         />
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="arch-core">

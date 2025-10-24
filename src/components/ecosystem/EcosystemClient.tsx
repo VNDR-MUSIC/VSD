@@ -9,13 +9,14 @@ import { AIImage } from '@/components/ai/AIImage';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import Image from 'next/image';
 import { Separator } from '../ui/separator';
+import imageData from '@/app/lib/placeholder-images.json';
 
 export interface Subsidiary {
   name: string;
   description: string;
   link: string;
   logoUrl?: string;
-  hint: string;
+  imageKey: keyof typeof imageData.ecosystem;
 }
 
 export interface SubsidiaryCategory {
@@ -36,14 +37,14 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 description: "Music Distribution and music publishing platform.",
                 link: "https://VNDRmusic.com",
                 logoUrl: "https://i.ibb.co/LzYSVCtz/Background-Eraser-20251014-181324183.png",
-                hint: "digital audio workstation",
+                imageKey: "vndr",
             },
             {
                 name: "SoundKlix",
                 description: "Music streaming platform for indie artists.",
                 link: "https://SoundKlix.com",
                 logoUrl: "https://i.ibb.co/M53tfW4r/6afe7afc-3816-4f85-a250-50819e0f1b00.png",
-                hint: "music streaming mobile",
+                imageKey: "soundklix",
             }
         ]
     },
@@ -57,21 +58,21 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 description: "A decentralized marketplace that revolutionizes music monetization by treating songs as unique digital collectibles.",
                 link: "https://Audio.Exchange",
                 logoUrl: "https://i.ibb.co/fVjNMVpk/logo2.png",
-                hint: "digital marketplace interface",
+                imageKey: "audioExchange",
             },
             {
                 name: "Indie Videos TV",
                 description: "A 24/7 indie-only music video platform that pays artists for music video plays.",
                 link: "https://IndieVideos.TV",
                 logoUrl: "https://i.ibb.co/0RzJsCss/image.png",
-                hint: "television static screen",
+                imageKey: "indieVideos",
             },
             {
                 name: "ND 24/7 Indie Radio",
                 description: "An all-indie radio station that showcases independent audio artists and pays for plays.",
                 link: "#",
                 logoUrl: "https://i.ibb.co/4wvZ1Mzq/ND-Radio-transparent.png",
-                hint: "vintage radio studio",
+                imageKey: "ndRadio",
             }
         ]
     },
@@ -85,13 +86,13 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 description: "Technology and Innovation Labs that helps create and build MVPs for idea makers for free.",
                 link: "https://blaque.tech",
                 logoUrl: "https://i.ibb.co/r2QMqgJG/Blaque-Tech.png",
-                hint: "futuristic technology laboratory",
+                imageKey: "blaqueTech",
             },
              {
                 name: "Qreatv Branding Agency",
                 description: "Artist development and branding to help creators build a powerful market presence.",
                 link: "https://Qreatv.Agency",
-                hint: "branding strategy whiteboard",
+                imageKey: "qreatv",
             }
         ]
     },
@@ -105,20 +106,20 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 description: "An educational platform offering expert-led courses on the new music economy.",
                 link: "https://musicindustry.university",
                 logoUrl: "https://i.ibb.co/sJV522gj/miu-logo.png",
-                hint: "modern university lecture",
+                imageKey: "miu",
             },
             {
                 name: "Music Focus Group",
                 description: "Provides structured, data-driven feedback on music from real listeners to help artists refine their tracks.",
                 link: "https://musicfocus.group",
                 logoUrl: "https://i.ibb.co/tPDWyjWd/Screenshot-2025-07-25-at-10-01-10-AM.png",
-                hint: "people listening headphones",
+                imageKey: "mfg",
             },
              {
                 name: "Inner View Podcasts",
                 description: "Podcasts dedicated to indie music and recording artists.",
                 link: "#",
-                hint: "podcast recording studio",
+                imageKey: "innerView",
             }
         ]
     },
@@ -132,13 +133,13 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 description: "The heart of the community, offering news, resources, and forums specifically for IMG artists.",
                 link: "https://IndieArtist.Network",
                 logoUrl: "https://i.ibb.co/TxdMLzg6/Screenshot-2025-07-27-at-11-09-18-AM.png",
-                hint: "global network abstract",
+                imageKey: "ian",
             },
             {
                 name: "ProFile Share",
                 description: "A profile showcasing platform for secure file sharing of demos and press kits.",
                 link: "https://Share.VNDRmusic.com",
-                hint: "secure file sharing"
+                imageKey: "proFileShare"
             }
         ]
     },
@@ -151,7 +152,7 @@ const imgEcosystem: SubsidiaryCategory[] = [
                 name: "Indie Music News",
                 description: "An independent journalism hub focused on the indie music scene.",
                 link: "#",
-                hint: "journalism newsroom vintage",
+                imageKey: "indieNews",
             }
         ]
     },
@@ -177,17 +178,19 @@ export function EcosystemClient() {
                     {category.category}
                 </h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                    {category.subsidiaries.map(sub => (
+                    {category.subsidiaries.map(sub => {
+                      const image = imageData.ecosystem[sub.imageKey];
+                      return (
                         <Card key={sub.name} className="flex flex-col shadow-lg bg-card/80 backdrop-blur-sm">
                             <CardHeader>
                                 <div className="aspect-video relative mb-4">
                                     <AIImage
-                                        initialSrc={`https://picsum.photos/seed/${encodeURIComponent(sub.hint)}/600/400`}
+                                        initialSrc={image.src}
                                         alt={`Cover art for ${sub.name}`}
                                         width={600}
                                         height={400}
                                         className="rounded-t-lg object-cover"
-                                        hint={sub.hint}
+                                        hint={image.hint}
                                         layout="fill"
                                         objectFit="cover"
                                     />
@@ -218,7 +221,8 @@ export function EcosystemClient() {
                                 </Button>
                             </CardFooter>
                         </Card>
-                    ))}
+                      )
+                    })}
                 </div>
             </section>
         </React.Fragment>

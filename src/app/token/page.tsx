@@ -7,6 +7,7 @@ import type { Metadata } from 'next';
 import Link from "next/link";
 import { AIImage } from "@/components/ai/AIImage";
 import { PresaleInterface } from "@/components/token/PresaleInterface";
+import imageData from '@/app/lib/placeholder-images.json';
 
 export const metadata: Metadata = {
   title: 'VSD Utility Token | Presale & Tokenomics',
@@ -26,6 +27,8 @@ const FeatureItem = ({ icon: Icon, title, children }: { icon: React.ElementType,
 );
 
 export default function TokenPage() {
+  const { power, pie } = imageData.token;
+
   return (
     <div className="space-y-12 sm:space-y-16 py-8">
       <header className="text-center">
@@ -51,12 +54,12 @@ export default function TokenPage() {
                </p>
             </div>
              <AIImage
-                initialSrc="https://picsum.photos/seed/power/700/350"
-                alt="VSD Token powering AI services for IMG"
+                initialSrc={power.src}
+                alt={power.alt}
                 width={700}
                 height={350}
                 className="rounded-md shadow-md w-full h-auto max-w-lg mx-auto"
-                hint="AI token interface"
+                hint={power.hint}
             />
           </CardContent>
         </Card>
@@ -123,12 +126,12 @@ export default function TokenPage() {
                     </ul>
                 </div>
                  <AIImage
-                    initialSrc="https://picsum.photos/seed/token-pie/700/400"
-                    alt="VSD Token Allocation Chart with music elements"
+                    initialSrc={pie.src}
+                    alt={pie.alt}
                     width={700}
                     height={400}
                     className="rounded-md shadow-md w-full h-auto max-w-md mx-auto"
-                    hint="financial pie chart dark"
+                    hint={pie.hint}
                  />
             </div>
             <div className="text-center pt-4">
