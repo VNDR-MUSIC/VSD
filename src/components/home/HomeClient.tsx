@@ -15,6 +15,7 @@ import { useUser } from "@/firebase";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "../ui/skeleton";
 import { LiveTokenData } from "./LiveTokenData";
+import { TokenDataModal } from "./TokenDataModal";
 
 const FeatureCard = ({ icon: Icon, title, description }: { icon: React.ElementType, title: string, description: string }) => (
     <Card className="text-center items-center flex flex-col bg-card/70 backdrop-blur-sm border-white/10 shadow-lg h-full">
@@ -52,7 +53,8 @@ const Step = ({ icon: Icon, title, description, stepNumber }: { icon: React.Elem
 
 
 export function HomeClient() {
-  const [isPopupOpen, setIsOpen] = useState(false);
+  const [isPresalePopupOpen, setPresalePopupOpen] = useState(false);
+  const [isTokenModalOpen, setTokenModalOpen] = useState(false);
   const { user, isUserLoading } = useUser();
   const router = useRouter();
 
@@ -79,7 +81,9 @@ export function HomeClient() {
 
   return (
     <>
-      <PresalePopup isOpen={isPopupOpen} setIsOpen={setIsOpen} />
+      <PresalePopup isOpen={isPresalePopupOpen} setIsOpen={setPresalePopupOpen} />
+      <TokenDataModal isOpen={isTokenModalOpen} setIsOpen={setTokenModalOpen} />
+
       <div className="space-y-20 md:space-y-28">
         
         {/* --- Hero Section --- */}
@@ -104,13 +108,13 @@ export function HomeClient() {
             <Button asChild size="lg" className="font-bold btn-hover-effect w-full sm:w-auto text-lg py-7">
               <Link href="/ecosystem">Explore Ecosystem<ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="font-bold btn-hover-effect w-full sm:w-auto text-lg py-7" onClick={() => setIsOpen(true)}>
+            <Button asChild size="lg" variant="outline" className="font-bold btn-hover-effect w-full sm:w-auto text-lg py-7" onClick={() => setPresalePopupOpen(true)}>
               View Presale
             </Button>
           </div>
         </section>
 
-        <LiveTokenData />
+        <LiveTokenData onOpenModal={() => setTokenModalOpen(true)} />
 
         {/* --- Core Pillars Section --- */}
         <section className="animate-fade-in-up animation-delay-600">

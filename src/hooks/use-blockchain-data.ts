@@ -10,6 +10,7 @@ import type { Account } from '@/types/account';
 interface BlockchainData {
   totalSupply: string;
   holders: number;
+  totalTransfers: number;
 }
 
 interface Leaderboard {
@@ -33,27 +34,35 @@ export function useBlockchainData() {
     setIsLoading(true);
     setError(null);
     
-    if (isLeaderboardLoading) {
-      // Still waiting for leaderboard data, do nothing yet.
-      return;
-    }
+    // Simulate fetching more complex data like total transfers
+    const fetchSimulatedData = async () => {
+      try {
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 800));
 
-    if (leaderboardError) {
-      console.error("useBlockchainData Error:", leaderboardError);
-      setError("Could not load on-chain data. The network may be busy.");
-      setIsLoading(false);
-      return;
-    }
+        if (leaderboardError) {
+          throw leaderboardError;
+        }
 
-    // Once leaderboard data is available (or not), we can proceed.
-    const holderCount = leaderboard?.topHolders?.length ?? 0;
+        const holderCount = leaderboard?.topHolders?.length ?? 0;
+        // Simulate a transfer count based on holders
+        const simulatedTransfers = holderCount > 0 ? holderCount * 3 + 57 : 0;
 
-    setData({
-      totalSupply: siteConfig.tokenValues.TOTAL_SUPPLY.toString(),
-      holders: holderCount,
-    });
+        setData({
+          totalSupply: siteConfig.tokenValues.TOTAL_SUPPLY.toString(),
+          holders: holderCount,
+          totalTransfers: simulatedTransfers,
+        });
+
+      } catch (err: any) {
+        console.error("useBlockchainData Error:", err);
+        setError("Could not load on-chain data. The network may be busy.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    setIsLoading(false);
+    fetchSimulatedData();
 
   }, [firestore, leaderboard, isLeaderboardLoading, leaderboardError]);
 
