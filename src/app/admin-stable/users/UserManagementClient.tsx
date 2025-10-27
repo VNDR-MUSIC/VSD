@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Check, X, MoreHorizontal, UserCog } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useAdminProxy, adminProxyWrite } from '@/firebase';
+import { useAdminProxy, adminProxyWrite, useUser } from '@/firebase';
 import type { Account } from '@/types/account';
 
 interface AdvertiserApplication {
@@ -37,6 +37,7 @@ const UserRowSkeleton = () => (
 export function UserManagementClient() {
     useProtectedRoute({ adminOnly: true });
     const { toast } = useToast();
+    const { user } = useUser();
 
     const { data: accounts, isLoading: accountsLoading, error: accountsError } = useAdminProxy<Account>('accounts');
     const { data: applications, isLoading: applicationsLoading, error: applicationsError } = useAdminProxy<AdvertiserApplication>('advertiserApplications');
@@ -46,15 +47,17 @@ export function UserManagementClient() {
     }, [applications]);
     
     const handleApplication = async (application: AdvertiserApplication, newStatus: 'approved' | 'rejected') => {
+        if (!user) return;
         try {
+            const idToken = await user.getIdToken(true);
             // Update the application status
-            await adminProxyWrite('advertiserApplications', application.id, { status: newStatus });
+            await adminProxyWrite(idToken, 'advertiserApplications', application.id, { status: newStatus });
 
             if (newStatus === 'approved') {
                 const userDoc = accounts?.find(acc => acc.uid === application.userId);
                 if (userDoc && !userDoc.roles.includes('advertiser')) {
                     const updatedRoles = [...userDoc.roles, 'advertiser'];
-                    await adminProxyWrite('accounts', application.userId, { roles: updatedRoles });
+                    await adminProxyWrite(idToken, 'accounts', application.userId, { roles: updatedRoles });
                 }
             }
 
