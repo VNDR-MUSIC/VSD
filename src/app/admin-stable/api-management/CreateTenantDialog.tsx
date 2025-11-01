@@ -10,7 +10,7 @@ import { PlusCircle, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { adminProxyCreate } from '@/firebase';
+import { adminProxyCreate, useUser } from '@/firebase';
 
 const tenantSchema = z.object({
     name: z.string().min(3, "Tenant name must be at least 3 characters."),
@@ -29,6 +29,7 @@ export function CreateTenantDialog() {
     const [isOpen, setIsOpen] = React.useState(false);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const { toast } = useToast();
+    const { user } = useUser();
     
     const form = useForm<TenantFormValues>({
         resolver: zodResolver(tenantSchema),
@@ -36,6 +37,14 @@ export function CreateTenantDialog() {
     });
 
     const onSubmit = async (data: TenantFormValues) => {
+        if (!user) {
+            toast({
+                variant: 'destructive',
+                title: 'Authentication Error',
+                description: 'You must be logged in to create a tenant.',
+            });
+            return;
+        }
         setIsSubmitting(true);
         const newTenant = {
             ...data,
@@ -45,7 +54,8 @@ export function CreateTenantDialog() {
         };
 
         try {
-            await adminProxyCreate('tenants', newTenant);
+            const idToken = await user.getIdToken(true);
+            await adminProxyCreate(idToken, 'tenants', newTenant);
             toast({
                 title: 'Tenant Created',
                 description: `Successfully created tenant "${data.name}".`,

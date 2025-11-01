@@ -25,6 +25,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { cn } from '@/lib/utils';
 import { useAnimatedCounter } from '@/hooks/use-animated-counter';
 import { motion } from 'framer-motion';
+import { Badge } from '@/components/ui/badge';
 
 interface Transaction {
   id: string;

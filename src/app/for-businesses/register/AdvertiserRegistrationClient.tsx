@@ -110,7 +110,8 @@ export function AdvertiserRegistrationClient() {
             status: 'Active' as const,
             createdAt: new Date().toISOString(),
         };
-        await adminProxyCreate('tenants', newTenant);
+        const idToken = await user.getIdToken(true);
+        await adminProxyCreate(idToken, 'tenants', newTenant);
         finalResult.apiKey = newTenant.apiKey;
 
       } else {

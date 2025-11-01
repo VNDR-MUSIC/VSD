@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { useAdminProxy } from '@/firebase';
 import { Skeleton } from '@/components/ui/skeleton';

@@ -53,7 +53,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
    useEffect(() => {
     if (window.ethereum) {
       const handleAccountsChanged = (accounts: string[]) => {
-        if (accounts.length > 0) {
+        if (accounts.length > 0 && window.ethereum) {
           setAccount(accounts[0]);
           const browserProvider = new ethers.BrowserProvider(window.ethereum);
           browserProvider.getSigner().then(setSigner);
@@ -66,12 +66,14 @@ export function Web3Provider({ children }: { children: ReactNode }) {
         window.location.reload();
       };
       
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('accountsChanged', handleAccountsChanged as (...args: unknown[]) => void);
       window.ethereum.on('chainChanged', handleChainChanged);
 
       return () => {
-        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-        window.ethereum.removeListener('chainChanged', handleChainChanged);
+        if (window.ethereum) {
+          window.ethereum.removeListener('accountsChanged', handleAccountsChanged as (...args: unknown[]) => void);
+          window.ethereum.removeListener('chainChanged', handleChainChanged);
+        }
       };
     }
   }, []);

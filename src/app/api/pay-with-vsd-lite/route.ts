@@ -4,6 +4,7 @@
 import { NextResponse } from 'next/server';
 import { getApps, getApp, initializeApp, type App } from 'firebase-admin/app';
 import { getFirestore, Firestore, FieldValue } from 'firebase-admin/firestore';
+import type { firestore } from 'firebase-admin';
 import { siteConfig } from '@/config/site';
 
 const { CONVERSION_RATE } = siteConfig.tokenValues;
@@ -98,7 +99,7 @@ export async function POST(request: Request) {
     // Convert the VSD amount to the VSD Lite amount
     const vsdLiteAmount = vsdAmount * CONVERSION_RATE;
 
-    const result = await firestore.runTransaction(async (transaction) => {
+    const result = await firestore.runTransaction(async (transaction: firestore.Transaction) => {
         const userDoc = await transaction.get(userAccountRef);
         if (!userDoc.exists) {
             throw new Error('User account not found.');

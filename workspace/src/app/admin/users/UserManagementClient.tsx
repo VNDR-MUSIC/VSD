@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAdminProxy, adminProxyWrite, useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import type { Account } from '@/types/account';
-import { EditUserRolesDialog } from './EditUserRolesDialog';
+// import { EditUserRolesDialog } from './EditUserRolesDialog';
 import { doc } from 'firebase/firestore';
 
 
@@ -67,15 +67,17 @@ export function UserManagementClient() {
     }, [applications]);
     
     const handleApplication = async (application: AdvertiserApplication, newStatus: 'approved' | 'rejected') => {
+        if (!user) return;
         try {
+            const idToken = await user.getIdToken(true);
             // Update the application status
-            await adminProxyWrite('advertiserApplications', application.id, { status: newStatus });
+            await adminProxyWrite(idToken, 'advertiserApplications', application.id, { status: newStatus });
 
             if (newStatus === 'approved') {
                 const userDoc = allAccounts?.find(acc => acc.uid === application.userId);
                 if (userDoc && !userDoc.roles.includes('advertiser')) {
                     const updatedRoles = [...userDoc.roles, 'advertiser'];
-                    await adminProxyWrite('accounts', application.userId, { roles: updatedRoles });
+                    await adminProxyWrite(idToken, 'accounts', application.userId, { roles: updatedRoles });
                 }
             }
 
@@ -93,9 +95,11 @@ export function UserManagementClient() {
     };
     
     const handleToggleSuspend = async (account: Account) => {
+        if (!user) return;
         const newStatus = account.status === 'Active' ? 'Suspended' : 'Active';
         try {
-            await adminProxyWrite('accounts', account.uid, { status: newStatus });
+            const idToken = await user.getIdToken(true);
+            await adminProxyWrite(idToken, 'accounts', account.uid, { status: newStatus });
             toast({
                 title: `User ${newStatus}`,
                 description: `${account.displayName} has been ${newStatus.toLowerCase()}.`,
@@ -112,12 +116,12 @@ export function UserManagementClient() {
 
     return (
         <>
-            {editingUser && (
+            {/* {editingUser && (
                 <EditUserRolesDialog
                     user={editingUser}
                     onClose={() => setEditingUser(null)}
                 />
-            )}
+            )} */}
             <div className="flex items-center">
                 <h1 className="text-lg font-semibold md:text-2xl">User Management</h1>
             </div>
