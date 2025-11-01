@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ArrowUpRight, ArrowDownLeft, Send, HandCoins, BarChart, FileJson, Copy, PiggyBank, Loader2, Search, Gift, Coins, ChevronsUpDown, Check, Wallet } from "lucide-react";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip } from "recharts";
 import { useToast } from "@/hooks/use-toast";
-import { useDoc, useCollection, useFirestore, useUser, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase';
+import { useDoc, useCollection, useFirestore, useUser, addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase';
 import { doc, collection, runTransaction, increment, query, where, getDocs, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProtectedRoute } from '@/hooks/use-protected-route';
@@ -25,6 +25,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { cn } from '@/lib/utils';
 import { useAnimatedCounter } from '@/hooks/use-animated-counter';
 import { motion } from 'framer-motion';
+import { Badge } from '@/components/ui/badge';
 
 interface Transaction {
   id: string;
@@ -170,7 +171,7 @@ export function DashboardClient() {
         if (account) {
             checkDailyReward();
         }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [account, accountRef, transactionsRef, toast]);
 
 

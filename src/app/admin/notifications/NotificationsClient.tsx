@@ -5,8 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useProtectedRoute } from '@/hooks/use-protected-route';
 import { useAdminProxy } from '@/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import { formatDistanceToNow } from 'date-fns';
-import { Briefcase, KeyRound, UserPlus } from 'lucide-react';
+import { KeyRound, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 
 interface AdvertiserApplication {
