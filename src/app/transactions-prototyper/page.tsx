@@ -126,7 +126,6 @@ export default function TransactionsPrototyper() {
       }
     };
 
-    setLoading(true);
     ensureAuth()
       .then(setupTransactions)
       .catch((err: any) => {

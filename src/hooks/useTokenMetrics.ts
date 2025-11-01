@@ -21,7 +21,9 @@ export function useTokenMetrics() {
 
   useEffect(() => {
     if (isAccountsLoading || !accounts) {
-      setMetrics(prev => ({ ...prev, loading: true }));
+      if (!metrics.loading) {
+        setMetrics(prev => ({ ...prev, loading: true }));
+      }
       return;
     }
 
@@ -35,15 +37,15 @@ export function useTokenMetrics() {
 
     const treasuryVSD = metrics.totalSupply - circulatingVSD;
 
-    setMetrics({
-      totalSupply: metrics.totalSupply,
+    setMetrics(prev => ({
+      ...prev,
       circulatingVSD,
       treasuryVSD,
       circulatingVSDLite,
       loading: false,
-    });
+    }));
 
-  }, [accounts, isAccountsLoading, metrics.totalSupply]);
+  }, [accounts, isAccountsLoading, metrics.totalSupply, metrics.loading]);
 
   const simulateAirdrop = (distribution: {[uid: string]: number}) => {
     let totalDistributed = 0;
